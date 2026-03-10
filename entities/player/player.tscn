@@ -40,3 +40,7 @@ position = Vector2(6, 0)
 texture = ExtResource("4_bls4j")
 centered = false
 offset = Vector2(-34, -15)
+
+[node name="AttackTimer" type="Timer" parent="." unique_id=618798759]
+wait_time = 0.25
+one_shot = true

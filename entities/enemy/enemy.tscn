@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://pu2c45uixpy0"]
+
+[ext_resource type="Script" uid="uid://c7lobg8xpka2u" path="res://entities/enemy/enemy.gd" id="1_im2q6"]
+[ext_resource type="Texture2D" uid="uid://cpl7g0kbq3wh4" path="res://entities/enemy/enemy.png" id="2_3fvr7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dt443"]
+radius = 7.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_im2q6"]
+radius = 12.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_im2q6"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+
+[node name="Enemy" type="CharacterBody2D" unique_id=1435173822 groups=["enemy"]]
+script = ExtResource("1_im2q6")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=942864269]
+texture = ExtResource("2_3fvr7")
+centered = false
+offset = Vector2(-16, -28)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=520045919]
+position = Vector2(0, -9)
+shape = SubResource("CircleShape2D_dt443")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1803973472]
+position = Vector2(0, -9)
+collision_layer = 0
+collision_mask = 256
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1875354202]
+shape = SubResource("CircleShape2D_im2q6")
+debug_color = Color(0.65105337, 0.41757444, 0.8009966, 0.41960785)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=2049813085]
+replication_config = SubResource("SceneReplicationConfig_im2q6")

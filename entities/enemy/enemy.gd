@@ -1,9 +1,8 @@
 extends CharacterBody2D
 
-var current_health : int = 3
-
 @onready var area_2d: Area2D = $Area2D
 @onready var track_timer: Timer = $TrackTimer
+@onready var health_component: HealthComponent = $HealthComponent
 
 var track_target: Vector2
 var has_track_target: bool = false
@@ -12,6 +11,7 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		area_2d.area_entered.connect(_on_area_entered)
 		track_timer.timeout.connect(_on_track_timer_timeout)
+		health_component.health_ended.connect(_on_health_ended)
 		_update_track_target()
 	else:
 		track_timer.process_mode = Node.PROCESS_MODE_DISABLED
@@ -43,19 +43,18 @@ func _update_track_target() -> void:
 		has_track_target = false
 
 
-func _handle_hit() -> void:
-	current_health -= 1
-	if current_health <= 0:
-		queue_free()
-
-
 func _on_area_entered(area: Area2D) -> void:
 	if not area.owner is Bullet:
 		return
 	var bullet := area.owner as Bullet
 	bullet.register_collision()
-	_handle_hit()
+	health_component.take_damage(1)
 
 
 func _on_track_timer_timeout() -> void:
 	_update_track_target()
+
+
+func _on_health_ended() -> void:
+	GameEvents.emit_enemy_died()
+	queue_free()

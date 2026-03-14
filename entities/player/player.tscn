@@ -20,6 +20,7 @@ radius = 8.0
 
 [node name="Player" type="CharacterBody2D" unique_id=443941569 groups=["player"]]
 collision_layer = 0
+motion_mode = 1
 script = ExtResource("1_abrql")
 
 [node name="PlayerInputMultiplayerSynchronizerComponent" parent="." unique_id=914505172 node_paths=PackedStringArray("aim_root") instance=ExtResource("3_sglur")]

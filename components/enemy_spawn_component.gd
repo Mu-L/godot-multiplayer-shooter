@@ -1,6 +1,8 @@
 class_name EnemySpawnComponent
 extends Node
 
+signal round_changed(round_count: int)
+
 const ENEMY = preload("uid://pu2c45uixpy0")
 
 const BASE_ROUND_TIME: float = 10
@@ -12,7 +14,12 @@ const SPAWN_INTERVAL_GROWTH: float = -0.2
 @export var spawn_root: Node2D
 @export var spawn_rect: ReferenceRect
 
-var round_count: int = 0
+var round_count: int = 0:
+	get:
+		return round_count
+	set(value):
+		round_count = value
+		round_changed.emit(value)
 var round_min_spawn_interval: float = BASE_MIN_SPAWN_INTERVAL
 var round_max_spawn_interval: float = BASE_MAX_SPAWN_INTERVAL
 var enemy_count: int = 0
@@ -26,9 +33,6 @@ func _ready() -> void:
 		round_timer.timeout.connect(_on_round_timer_timeout)
 		GameEvents.enemy_died.connect(_on_enemy_died)
 		_start_round()
-	else:
-		spawn_timer.process_mode = Node.PROCESS_MODE_DISABLED
-		round_timer.process_mode = Node.PROCESS_MODE_DISABLED
 
 
 func _start_round() -> void:
@@ -38,6 +42,7 @@ func _start_round() -> void:
 	round_max_spawn_interval = BASE_MAX_SPAWN_INTERVAL + (round_count - 1) * SPAWN_INTERVAL_GROWTH
 	round_timer.start(BASE_ROUND_TIME + (round_count - 1) * ROUND_TIME_GROWTH)
 	spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
+	synchronize()
 
 
 func _check_round_completed() -> void:
@@ -55,6 +60,34 @@ func _get_random_position() -> Vector2:
 	)
 	pos += spawn_rect.global_position
 	return pos
+
+
+func get_round_time_left() -> float:
+	return round_timer.time_left
+
+
+func synchronize(peer_id: int = -1) -> void:
+	if not is_multiplayer_authority():
+		return
+	var data = {
+		"round_count": round_count,
+		"round_timer_time_left": round_timer.time_left,
+		"round_timer_running": not round_timer.is_stopped()
+	}
+	if peer_id < 0:
+		_synchronize.rpc(data)
+	elif peer_id > 1:
+		_synchronize.rpc_id(peer_id, data)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _synchronize(data: Dictionary) -> void:
+	round_count = data.round_count
+	var wait_time: float = data.round_timer_time_left
+	if wait_time > 0:
+		round_timer.wait_time = wait_time
+	if data.round_timer_running:
+		round_timer.start()
 
 
 func _on_spawn_timer_timeout() -> void:

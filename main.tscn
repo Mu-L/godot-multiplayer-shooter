@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dhhqh2jhxgeag" path="res://main.gd" id="1_0xm2m"]
 [ext_resource type="Texture2D" uid="uid://cs6mguapgbjft" path="res://assets/arena.png" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://lfrnuc5iv0jl" path="res://components/enemy_spawn_component.tscn" id="3_h2yge"]
+[ext_resource type="PackedScene" uid="uid://biirhbv3815k7" path="res://ui/game_ui/round_timer_ui.tscn" id="4_1bvp3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
 size = Vector2(32, 300)
@@ -75,3 +76,6 @@ metadata/_edit_lock_ = true
 
 [node name="YSortRoot" type="Node2D" parent="." unique_id=216170404]
 y_sort_enabled = true
+
+[node name="RoundTimerUI" parent="." unique_id=106671089 node_paths=PackedStringArray("enemy_spawn_component") instance=ExtResource("4_1bvp3")]
+enemy_spawn_component = NodePath("../EnemySpawnComponent")

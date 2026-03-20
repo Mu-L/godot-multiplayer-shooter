@@ -2,9 +2,12 @@ extends CharacterBody2D
 
 @onready var track_timer: Timer = $TrackTimer
 @onready var health_component: HealthComponent = $HealthComponent
+@onready var visual: Node2D = $Visual
 
 var track_target: Vector2
 var has_track_target: bool = false
+
+var is_spawning: bool = false
 
 func _ready() -> void:
 	if is_multiplayer_authority():
@@ -13,13 +16,34 @@ func _ready() -> void:
 		_update_track_target()
 	else:
 		track_timer.process_mode = Node.PROCESS_MODE_DISABLED
+	_play_spawn_animation()
 
 
 func _process(_delta: float) -> void:
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() and not is_spawning:
 		if has_track_target:
 			velocity = global_position.direction_to(track_target) * 40
 			move_and_slide()
+	if not is_spawning:
+		_update_direction()
+
+
+func _play_spawn_animation() -> void:
+	is_spawning = true
+	var tween := create_tween()
+	tween.tween_property(visual, "scale", Vector2.ONE, 0.4)\
+		.from(Vector2.ZERO)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_BACK)
+	tween.finished.connect(func():
+		is_spawning = false
+	)
+
+
+func _update_direction() -> void:
+	visual.scale = Vector2.ONE\
+		if track_target.x > global_position.x\
+		else Vector2(-1, 1)
 
 
 func _update_track_target() -> void:

@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://gej5lujd4wsv"]
+
+[ext_resource type="FontFile" uid="uid://c01sui44xmo53" path="res://assets/fusion-pixel-10px-monospaced-zh_hans.otf" id="1_nixot"]
+
+[resource]
+default_font = ExtResource("1_nixot")
+default_font_size = 20

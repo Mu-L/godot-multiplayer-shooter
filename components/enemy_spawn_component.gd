@@ -40,6 +40,8 @@ func _start_round() -> void:
 	print("Round %s start" % round_count)
 	round_min_spawn_interval = BASE_MIN_SPAWN_INTERVAL + (round_count - 1) * SPAWN_INTERVAL_GROWTH
 	round_max_spawn_interval = BASE_MAX_SPAWN_INTERVAL + (round_count - 1) * SPAWN_INTERVAL_GROWTH
+	round_min_spawn_interval = clamp(round_min_spawn_interval, 0, round_min_spawn_interval)
+	round_max_spawn_interval = clamp(round_max_spawn_interval, round_min_spawn_interval, BASE_MAX_SPAWN_INTERVAL)
 	round_timer.start(BASE_ROUND_TIME + (round_count - 1) * ROUND_TIME_GROWTH)
 	spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
 	synchronize()

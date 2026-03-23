@@ -1,52 +1,78 @@
+class_name Enemy
 extends CharacterBody2D
 
 @onready var track_timer: Timer = $TrackTimer
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var visual: Node2D = $Visual
+@onready var state_machine: StateMachine = $StateMachine
+@onready var warning_icon: Sprite2D = $WarningIcon
+@onready var attack_cool_down_timer: Timer = $AttackCoolDownTimer
+@onready var charge_timer: Timer = $ChargeTimer
+@onready var hit_collision_shape_2d: CollisionShape2D = %HitCollisionShape2D
 
 var track_target: Vector2
 var has_track_target: bool = false
+var charge_tip_tween: Tween
 
-var is_spawning: bool = false
 
 func _ready() -> void:
+	warning_icon.scale = Vector2.ZERO
 	if is_multiplayer_authority():
 		track_timer.timeout.connect(_on_track_timer_timeout)
 		health_component.health_depleted.connect(_on_health_depleted)
-		_update_track_target()
+		state_machine.current_state = "spawn"
 	else:
 		track_timer.process_mode = Node.PROCESS_MODE_DISABLED
-	_play_spawn_animation()
 
 
 func _process(_delta: float) -> void:
-	if is_multiplayer_authority() and not is_spawning:
-		if has_track_target:
-			velocity = global_position.direction_to(track_target) * 40
-			move_and_slide()
-	if not is_spawning:
-		_update_direction()
+	if is_multiplayer_authority():
+		move_and_slide()
 
 
-func _play_spawn_animation() -> void:
-	is_spawning = true
-	var tween := create_tween()
+## 播放生成动画
+func play_spawn_animation() -> void:
+	var tween = create_tween()
 	tween.tween_property(visual, "scale", Vector2.ONE, 0.4)\
 		.from(Vector2.ZERO)\
 		.set_ease(Tween.EASE_OUT)\
 		.set_trans(Tween.TRANS_BACK)
-	tween.finished.connect(func():
-		is_spawning = false
-	)
+	if is_multiplayer_authority():
+		# 状态切换仅在服务端执行
+		tween.finished.connect(func():
+			state_machine.current_state = "normal"
+		)
 
 
-func _update_direction() -> void:
+func show_charge_tip() -> void:
+	charge_tip_tween = create_tween()
+	charge_tip_tween.tween_property(warning_icon, "scale", Vector2.ONE, 0.2)\
+		.from(Vector2.ZERO)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_BACK)
+
+
+func hide_charge_tip() -> void:
+	if charge_tip_tween.is_valid():
+		charge_tip_tween.kill()
+	charge_tip_tween = create_tween()
+	charge_tip_tween.tween_property(warning_icon, "scale", Vector2.ZERO, 0.2)\
+		.from(Vector2.ONE)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_BACK)
+
+
+func velocity_down() -> void:
+	velocity = velocity.lerp(Vector2.ZERO, 1.0 - exp(-10 * get_process_delta_time()))
+
+
+func update_direction() -> void:
 	visual.scale = Vector2.ONE\
 		if track_target.x > global_position.x\
 		else Vector2(-1, 1)
 
 
-func _update_track_target() -> void:
+func update_track_target() -> void:
 	var players := get_tree().get_nodes_in_group("player")
 	var min_squared_distance: float
 	var track_player: Node2D = null
@@ -66,9 +92,8 @@ func _update_track_target() -> void:
 
 
 func _on_track_timer_timeout() -> void:
-	_update_track_target()
+	update_track_target()
 
 
 func _on_health_depleted() -> void:
-	GameEvents.emit_enemy_died()
-	queue_free()
+	state_machine.current_state = "died"

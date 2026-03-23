@@ -7,4 +7,5 @@ var enemy: Enemy
 func enter() -> void:
 	enemy = owner
 	enemy.play_spawn_animation()
-	enemy.velocity = Vector2.ZERO
+	if is_multiplayer_authority():
+		enemy.velocity = Vector2.ZERO

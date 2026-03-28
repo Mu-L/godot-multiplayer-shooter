@@ -5,7 +5,8 @@ const PLAYER = preload("uid://dgstmloeo60yy")
 const ENEMY = preload("uid://pu2c45uixpy0")
 const MAIN_MENU = preload("uid://dkve68vq7kmiw")
 
-static var backgound_effect: Node
+static var background_effect: Node
+static var background_effect_clip: Node
 
 var player_dict: Dictionary[int, Player] = {}
 var died_peers: Array[int] = []
@@ -13,10 +14,14 @@ var died_peers: Array[int] = []
 @onready var multiplayer_spawner: MultiplayerSpawner = %MultiplayerSpawner
 @onready var player_spawn_marker: Marker2D = $PlayerSpawnMarker
 @onready var enemy_spawn_component: EnemySpawnComponent = $EnemySpawnComponent
-@onready var _backgound_effect: Node2D = $BackgoundEffect
+@onready var _background_effect: Node2D = $BackgroundEffect
+@onready var _background_effect_clip: Sprite2D = %BackgroundEffectClip
+
+
 
 func _ready() -> void:
-	backgound_effect = _backgound_effect
+	background_effect = _background_effect
+	background_effect_clip = _background_effect_clip
 	multiplayer_spawner.spawn_function = func(data):
 		print("[peer %s] Spawn player: %s, pos: %s" % [multiplayer.get_unique_id(), data.peer_id, player_spawn_marker.global_position])
 		var player = PLAYER.instantiate() as Player

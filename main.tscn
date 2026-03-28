@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cs6mguapgbjft" path="res://assets/arena.png" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://lfrnuc5iv0jl" path="res://components/enemy_spawn_component.tscn" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://biirhbv3815k7" path="res://ui/game_ui/round_timer_ui.tscn" id="4_1bvp3"]
+[ext_resource type="Texture2D" uid="uid://bsribtxmknyhs" path="res://assets/arena_mask.png" id="4_lquwl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
 size = Vector2(32, 300)
@@ -74,7 +75,13 @@ offset_bottom = 255.0
 border_width = 2.0
 metadata/_edit_lock_ = true
 
-[node name="BackgoundEffect" type="Node2D" parent="." unique_id=1297577301]
+[node name="BackgroundEffect" type="Node2D" parent="." unique_id=1297577301]
+
+[node name="BackgroundEffectClip" type="Sprite2D" parent="BackgroundEffect" unique_id=100458127]
+unique_name_in_owner = true
+clip_children = 1
+position = Vector2(320, 180)
+texture = ExtResource("4_lquwl")
 
 [node name="YSortRoot" type="Node2D" parent="." unique_id=216170404]
 y_sort_enabled = true

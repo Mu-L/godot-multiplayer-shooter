@@ -108,7 +108,7 @@ func _play_hit_effect() -> void:
 @rpc("authority", "call_local")
 func _play_died_effect() -> void:
 	var effect := ENEMY_DIED_EFFECT.instantiate() as Node2D
-	Main.backgound_effect.add_child(effect)
+	Main.background_effect_clip.add_child(effect)
 	effect.global_position = global_position
 
 

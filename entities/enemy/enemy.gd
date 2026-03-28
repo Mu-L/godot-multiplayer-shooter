@@ -13,6 +13,7 @@ const ENEMY_DIED_EFFECT = preload("uid://dv1y8ri1kqvnf")
 @onready var charge_timer: Timer = $ChargeTimer
 @onready var hit_collision_shape_2d: CollisionShape2D = %HitCollisionShape2D
 @onready var hurtbox_component: HurtboxComponent = $HurtboxComponent
+@onready var flash_sprite_component: FlashSpriteComponent = $Visual/FlashSpriteComponent
 
 var track_target: Vector2
 var has_track_target: bool = false
@@ -100,6 +101,7 @@ func update_track_target() -> void:
 
 @rpc("authority", "call_local")
 func _play_hit_effect() -> void:
+	flash_sprite_component.play_flash_animation()
 	var effect := HIT_EFFECT.instantiate() as Node2D
 	get_parent().add_child(effect)
 	effect.global_position = hurtbox_component.global_position

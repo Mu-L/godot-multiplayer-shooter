@@ -8,7 +8,7 @@ var host_port: int
 var join_ip: String
 var join_port: int
 
-@onready var MAIN_MENU = load("uid://yubvfldj7w73")
+@onready var MAIN_MENU = load("uid://dkve68vq7kmiw")
 @onready var player_name_text_edit: TextEdit = %PlayerNameTextEdit
 @onready var host_ip_text_edit: TextEdit = %HostIPTextEdit
 @onready var host_port_text_edit: TextEdit = %HostPortTextEdit

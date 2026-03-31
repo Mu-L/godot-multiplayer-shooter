@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://ch32vetv5hls8"]
+
+[ext_resource type="Script" uid="uid://chv088dp7pwqt" path="res://ui/confirm_dialog.gd" id="1_u1io5"]
+
+[node name="ConfirmDialog" type="Control" unique_id=1601727630]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u1io5")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=926285024]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8627451)
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1228491661]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"TexturePanelContainer"
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1548580328]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=1847372997]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1253090661]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.45181504, 0.39130002, 1)
+text = "Error"
+
+[node name="MessageLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1315388795]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.45181504, 0.39130002, 1)
+text = "There is an error while connecting to server."
+
+[node name="ConfirmButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=1349103117]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "OK"

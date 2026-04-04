@@ -8,7 +8,7 @@ extends Control
 func _ready() -> void:
 	GameEvents.local_player_health_changed.connect(_on_local_player_health_changed)
 	if multiplayer.multiplayer_peer is OfflineMultiplayerPeer:
-		player_name_label.visible = false
+		player_name_label.text = "Player"
 	else:
 		player_name_label.text = MultiplayerConfig.display_name
 	health_bar.value = 1.0

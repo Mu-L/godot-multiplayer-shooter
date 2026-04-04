@@ -5,6 +5,7 @@ signal died
 
 const BULLET = preload("uid://clvtit5mibwed")
 const MUZZLE_FLASH_EFFECT = preload("uid://ckgdgjh2c5e2s")
+const REVIVE_HEALTH: int = 1
 
 var input_peer_id: int
 var input_display_name: String
@@ -22,13 +23,14 @@ var is_dead: bool = false
 @onready var attack_point: Marker2D = %AttackPoint
 @onready var display_name_label: Label = %DisplayNameLabel
 @onready var health_progress_bar: TextureProgressBar = %TextureProgressBar
+@onready var player_info: VBoxContainer = %PlayerInfo
 
 func _ready() -> void:
 	print("[peer %s] Set player(%s) input authroity %s" % [multiplayer.get_unique_id(), name, input_peer_id])
 	player_input_multiplayer_synchronizer_component.set_multiplayer_authority(input_peer_id)
-	if multiplayer.multiplayer_peer is OfflineMultiplayerPeer:
-		display_name_label.visible = false
-	else:
+	var is_peer_authority = multiplayer.get_unique_id() == input_peer_id
+	player_info.visible = not is_peer_authority
+	if not is_peer_authority:
 		display_name_label.text = input_display_name
 	if is_multiplayer_authority():
 		health_component.health_depleted.connect(_on_health_depleted)
@@ -90,7 +92,7 @@ func revive(pos: Vector2) -> void:
 	global_position = pos
 	velocity = Vector2.ZERO
 	process_mode = Node.PROCESS_MODE_INHERIT
-	health_component.reset()
+	health_component.reset(REVIVE_HEALTH)
 	set_player_visible.rpc(true)
 	is_dead = false
 

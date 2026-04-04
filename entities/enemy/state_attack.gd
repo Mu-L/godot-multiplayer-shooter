@@ -3,7 +3,7 @@ extends State
 
 ## Enemy进入攻击状态,冲撞玩家,可以造成伤害,攻击过程中不与其他Enemy碰撞
 
-const ATTACK_SPEED: float = 1000
+const ATTACK_SPEED: float = 700
 const STOP_ATTACK_SPEED_SQUARED: float = 100
 
 var enemy: Enemy

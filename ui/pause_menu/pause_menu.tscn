@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cnuvaijhay34l"]
+
+[ext_resource type="Script" uid="uid://cic2c44st02ug" path="res://ui/pause_menu/pause_menu.gd" id="1_mnjdh"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=1544799969]
+process_mode = 3
+script = ExtResource("1_mnjdh")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=265770167]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.78431374)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2014895207]
+custom_minimum_size = Vector2(150, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=732409239]
+layout_mode = 2
+text = "Game Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer" unique_id=1803216352]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Resume"
+
+[node name="BackToMainButton" type="Button" parent="VBoxContainer" unique_id=198719525]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back To Main"

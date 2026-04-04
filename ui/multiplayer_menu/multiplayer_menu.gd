@@ -18,6 +18,11 @@ var is_connecting: bool = false
 
 
 func _ready() -> void:
+	player_name_text_edit.text = MultiplayerConfig.display_name
+	host_ip_text_edit.text = MultiplayerConfig.host_ip
+	host_port_text_edit.text = str(MultiplayerConfig.host_port)
+	join_ip_text_edit.text = MultiplayerConfig.join_ip
+	join_port_text_edit.text = str(MultiplayerConfig.join_port)
 	host_button.pressed.connect(_on_host_button_pressed)
 	join_button.pressed.connect(_on_join_button_pressed)
 	back_button.pressed.connect(_on_back_button_pressed)

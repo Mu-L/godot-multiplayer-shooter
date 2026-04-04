@@ -16,6 +16,7 @@ var died_peers: Array[int] = []
 @onready var enemy_spawn_component: EnemySpawnComponent = $EnemySpawnComponent
 @onready var _background_effect: Node2D = $BackgroundEffect
 @onready var _background_effect_clip: Sprite2D = %BackgroundEffectClip
+@onready var pause_menu: PauseMenu = $PauseMenu
 
 
 
@@ -33,6 +34,7 @@ func _ready() -> void:
 			player.died.connect(_on_player_died.bind(data.peer_id))
 			player_dict[data.peer_id] = player
 		return player
+	pause_menu.quit_requested.connect(_on_quit_requested)
 	if is_multiplayer_authority():
 		enemy_spawn_component.round_completed.connect(_on_round_completed)
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
@@ -49,6 +51,7 @@ func _peer_ready(player_data: Dictionary) -> void:
 
 
 func _end_game() -> void:
+	get_tree().paused = false
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	get_tree().change_scene_to_file("res://ui/menu/main_menu.tscn")
 
@@ -89,3 +92,7 @@ func _on_peer_disconnected(peer_id: int) -> void:
 	if peer_id in died_peers:
 		died_peers.erase(peer_id)
 	_check_game_over()
+
+
+func _on_quit_requested() -> void:
+	_end_game()

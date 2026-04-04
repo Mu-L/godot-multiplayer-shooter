@@ -69,7 +69,7 @@ func hide_charge_tip() -> void:
 
 
 func velocity_down() -> void:
-	velocity = velocity.lerp(Vector2.ZERO, 1.0 - exp(-10 * get_process_delta_time()))
+	velocity = velocity.lerp(Vector2.ZERO, 1.0 - exp(-7 * get_process_delta_time()))
 
 
 func update_direction() -> void:

@@ -22,7 +22,6 @@ var died_peers: Array[int] = []
 @onready var lobby_component: LobbyComponent = %LobbyComponent
 
 
-
 func _ready() -> void:
 	background_effect = _background_effect
 	background_effect_clip = _background_effect_clip

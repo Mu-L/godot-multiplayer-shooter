@@ -14,6 +14,7 @@ const SPAWN_INTERVAL_GROWTH: float = -0.2
 
 @export var spawn_root: Node2D
 @export var spawn_rect: ReferenceRect
+@export var uprade_component: UpgradeComponent
 
 var round_count: int = 0:
 	get:
@@ -33,6 +34,7 @@ func _ready() -> void:
 		spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 		round_timer.timeout.connect(_on_round_timer_timeout)
 		GameEvents.enemy_died.connect(_on_enemy_died)
+		uprade_component.upgrade_finished.connect(_on_upgrade_finished)
 
 
 func start() -> void:
@@ -116,3 +118,7 @@ func _on_round_timer_timeout() -> void:
 func _on_enemy_died() -> void:
 	enemy_count -= 1
 	_check_round_completed()
+
+
+func _on_upgrade_finished() -> void:
+	_start_round()

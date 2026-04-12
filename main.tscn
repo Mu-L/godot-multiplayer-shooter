@@ -27,14 +27,16 @@ unique_name_in_owner = true
 _spawnable_scenes = PackedStringArray("uid://clvtit5mibwed", "uid://pu2c45uixpy0")
 spawn_path = NodePath("../YSortRoot")
 
-[node name="EnemySpawnComponent" parent="." unique_id=1168245383 node_paths=PackedStringArray("spawn_root", "spawn_rect") instance=ExtResource("3_h2yge")]
+[node name="EnemySpawnComponent" parent="." unique_id=1168245383 node_paths=PackedStringArray("spawn_root", "spawn_rect", "uprade_component") instance=ExtResource("3_h2yge")]
 spawn_root = NodePath("../YSortRoot")
 spawn_rect = NodePath("../ReferenceRect")
+uprade_component = NodePath("../UpgradeComponent")
 
 [node name="LobbyComponent" parent="." unique_id=2002126853 instance=ExtResource("8_4c57u")]
 unique_name_in_owner = true
 
 [node name="UpgradeComponent" parent="." unique_id=1374266706 node_paths=PackedStringArray("enemy_spawn_component", "upgrade_options_ui") instance=ExtResource("4_efxa6")]
+unique_name_in_owner = true
 enemy_spawn_component = NodePath("../EnemySpawnComponent")
 upgrade_options_ui = NodePath("../GameUILayer/UpgradeOptionsUI")
 

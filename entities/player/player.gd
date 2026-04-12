@@ -6,12 +6,14 @@ signal died
 const BULLET = preload("uid://clvtit5mibwed")
 const MUZZLE_FLASH_EFFECT = preload("uid://ckgdgjh2c5e2s")
 const REVIVE_HEALTH: int = 1
+const BASE_MOVE_SPEED: float = 100
+const BASE_FIRE_RATE: float = 0.5
+const BASE_BULLET_DAMAGE: int = 1
 
 var input_peer_id: int
 var input_display_name: String
 
 var move_vector: Vector2 = Vector2.ZERO
-var move_speed: float = 100.0
 var is_dead: bool = false
 
 @onready var player_input_multiplayer_synchronizer_component: PlayerInputMultiplayerSynchronizerComponent = $PlayerInputMultiplayerSynchronizerComponent
@@ -41,7 +43,7 @@ func _process(_delta: float) -> void:
 	_update_aim_direction()
 	if is_multiplayer_authority():
 		var input := player_input_multiplayer_synchronizer_component.move_vector
-		velocity = input * move_speed
+		velocity = input * _get_move_speed()
 		move_and_slide()
 		if player_input_multiplayer_synchronizer_component.is_attack_pressing:
 			_try_to_attack()
@@ -53,14 +55,41 @@ func _update_aim_direction() -> void:
 	weapon_root.look_at(weapon_root.global_position + aim_vector)
 
 
+func _get_move_speed() -> float:
+	var upgrade_count := UpgradeComponent.get_peer_upgrade_count(
+		input_peer_id,
+		"move_speed"
+	)
+	return BASE_MOVE_SPEED * (1.0 + 0.1 * upgrade_count)
+
+
+func _get_fire_rate() -> float:
+	var upgrade_count := UpgradeComponent.get_peer_upgrade_count(
+		input_peer_id,
+		"fire_rate"
+	)
+	return BASE_FIRE_RATE * clamp(1.0 - 0.08 * upgrade_count, 0, 100)
+
+
+
+func _get_bullet_damage() -> int:
+	var upgrade_count := UpgradeComponent.get_peer_upgrade_count(
+		input_peer_id,
+		"damage"
+	)
+	return BASE_BULLET_DAMAGE + upgrade_count
+
+
 func _try_to_attack() -> void:
 	if not attack_timer.is_stopped():
 		return
+	attack_timer.wait_time = _get_fire_rate()
 	attack_timer.start()
 	var bullet := BULLET.instantiate() as Bullet
 	bullet.global_position = attack_point.global_position
 	bullet.direction = player_input_multiplayer_synchronizer_component.aim_vector
 	bullet.rotation = bullet.direction.angle()
+	bullet.damage = _get_bullet_damage()
 	get_parent().add_child(bullet, true)
 	_play_attack_effect.rpc()
 

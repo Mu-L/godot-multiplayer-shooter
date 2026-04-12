@@ -18,7 +18,7 @@ func _ready() -> void:
 
 
 func _init_with_resource() -> void:
-	title_label.text = resource.option
+	title_label.text = resource.display_name
 	description_label.text = resource.description
 
 

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="UpgradeResource" format=3 uid="uid://c3d8w8qvl63v0"]
+
+[ext_resource type="Script" uid="uid://dxyttex512alu" path="res://resources/upgrade_resource/upgrade_resource.gd" id="1_fnpx4"]
+
+[resource]
+script = ExtResource("1_fnpx4")
+id = "damage"
+display_name = "Incresed Damage"
+description = "Bullet damage +1"
+metadata/_custom_type_script = "uid://dxyttex512alu"

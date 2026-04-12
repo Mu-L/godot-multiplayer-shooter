@@ -2,9 +2,10 @@ class_name Bullet
 extends Node2D
 
 
-const SPEED : float = 600.0
+const SPEED: float = 600.0
 
-var direction : Vector2
+var direction: Vector2
+var damage: int
 
 @onready var timer: Timer = $Timer
 @onready var hitbox_component: HitboxComponent = $HitboxComponent
@@ -13,6 +14,7 @@ var direction : Vector2
 func _ready() -> void:
 	if is_multiplayer_authority():
 		timer.timeout.connect(_on_life_timer_timeout)
+		hitbox_component.damage = damage
 		hitbox_component.hit.connect(_on_hit)
 	else:
 		timer.process_mode = Node.PROCESS_MODE_DISABLED

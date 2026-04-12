@@ -14,6 +14,7 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1727084564]
+custom_minimum_size = Vector2(180, 150)
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 10
@@ -28,7 +29,13 @@ mouse_filter = 2
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1929155066]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Fire Rate"
+theme_override_colors/font_color = Color(1, 0.49, 0.49, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 15
+text = "Incresed Bullet Damage"
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 3
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=2129674756]
 layout_mode = 2
@@ -36,7 +43,10 @@ mouse_filter = 2
 
 [node name="DescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=617370968]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 15
 text = "this is just a fox jump through a dog."
+horizontal_alignment = 1
 autowrap_mode = 3

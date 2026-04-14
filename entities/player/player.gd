@@ -40,7 +40,7 @@ func _ready() -> void:
 		health_component.health_changed.connect(_on_health_changed)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_update_aim_direction()
 	var input := player_input_multiplayer_synchronizer_component.move_vector
 	if is_zero_approx(input.length_squared()):
@@ -48,7 +48,8 @@ func _process(_delta: float) -> void:
 	elif not move_animation_player.is_playing():
 		move_animation_player.play("move")
 	if is_multiplayer_authority():
-		velocity = input * _get_move_speed()
+		var target_velocity = input * _get_move_speed()
+		velocity = velocity.lerp(target_velocity, 1.0 - exp(-20.0 * delta))
 		move_and_slide()
 		if player_input_multiplayer_synchronizer_component.is_attack_pressing:
 			_try_to_attack()

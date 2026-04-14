@@ -29,6 +29,7 @@ properties/2/replication_mode = 2
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ogeq8"]
 resource_local_to_scene = true
 shader = ExtResource("10_jfjhj")
+shader_parameter/input_color = Color(1, 1, 1, 1)
 shader_parameter/percent = 0.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dt443"]
@@ -86,6 +87,7 @@ motion_mode = 1
 script = ExtResource("1_im2q6")
 
 [node name="HealthComponent" parent="." unique_id=390402674 instance=ExtResource("3_3fvr7")]
+max_health = 5
 
 [node name="TrackTimer" type="Timer" parent="." unique_id=1052182996]
 wait_time = 0.2

@@ -6,6 +6,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c101w"]
 resource_local_to_scene = true
 shader = ExtResource("1_ryou0")
+shader_parameter/input_color = Color(1, 1, 1, 1)
 shader_parameter/percent = 0.0
 
 [node name="FlashSpriteComponent" type="Sprite2D" unique_id=1374404885]

@@ -27,6 +27,9 @@ var is_dead: bool = false
 @onready var health_progress_bar: TextureProgressBar = %TextureProgressBar
 @onready var player_info: VBoxContainer = %PlayerInfo
 @onready var move_animation_player: AnimationPlayer = %MoveAnimationPlayer
+@onready var hurtbox_component: HurtboxComponent = $HurtboxComponent
+@onready var flash_sprite_component: FlashSpriteComponent = $VisualRoot/FlashSpriteComponent
+@onready var collision_shape_2d: CollisionShape2D = $HurtboxComponent/CollisionShape2D
 
 func _ready() -> void:
 	print("[peer %s] Set player(%s) input authroity %s" % [multiplayer.get_unique_id(), name, input_peer_id])
@@ -38,6 +41,7 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		health_component.health_depleted.connect(_on_health_depleted)
 		health_component.health_changed.connect(_on_health_changed)
+		hurtbox_component.hit.connect(_on_hit)
 
 
 func _process(delta: float) -> void:
@@ -117,7 +121,6 @@ func _player_died() -> void:
 	print("[peer %s] Player %s died!" % [multiplayer.get_unique_id(), input_peer_id])
 	velocity = Vector2.ZERO
 	process_mode = Node.PROCESS_MODE_DISABLED
-	is_dead = true
 	set_player_visible.rpc(false)
 	died.emit()
 
@@ -143,8 +146,25 @@ func set_player_health_bar(rate: float) -> void:
 		GameEvents.emit_local_player_health_changed(rate)
 
 
+@rpc("authority", "call_local")
+func play_hit_effects() -> void:
+	flash_sprite_component.play_flash_animation()
+	if is_multiplayer_authority():
+		collision_shape_2d.disabled = true
+	var tween := create_tween()
+	tween.set_loops(10)
+	tween.tween_property(flash_sprite_component, "visible", false, 0.1)
+	tween.tween_property(flash_sprite_component, "visible", true, 0.1)
+	if is_multiplayer_authority():
+		tween.finished.connect(func():
+			collision_shape_2d.disabled = false
+		)
+
+
 func _on_health_depleted() -> void:
-	_player_died()
+	if not is_dead:
+		is_dead = true
+		_player_died.call_deferred()
 
 
 func _on_health_changed(max_value: int, current_value: int) -> void:
@@ -152,3 +172,8 @@ func _on_health_changed(max_value: int, current_value: int) -> void:
 		multiplayer.get_unique_id(), input_peer_id, current_value, max_value
 	])
 	set_player_health_bar.rpc(current_value * 1.0 / max_value)
+
+
+func _on_hit() -> void:
+	if not is_dead:
+		play_hit_effects.rpc()

@@ -9,9 +9,11 @@ const MAIN = preload("uid://yubvfldj7w73")
 @onready var multiplayer_button: Button = $VBoxContainer/MultiplayerButton
 @onready var quit_button: Button = $VBoxContainer/QuitButton
 
+const CURSOR = preload("uid://bf4bnwundf36w")
 
 
 func _ready() -> void:
+	Input.set_custom_mouse_cursor(CURSOR)
 	single_player_button.pressed.connect(_on_single_player_button_pressed)
 	multiplayer_button.pressed.connect(_on_multiplayer_button_pressed)
 	quit_button.pressed.connect(_on_quit_button_pressed)

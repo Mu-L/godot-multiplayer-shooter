@@ -21,11 +21,12 @@ var is_dead: bool = false
 @onready var attack_timer: Timer = $AttackTimer
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var visual_root: Node2D = $VisualRoot
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var weapon_animation_player: AnimationPlayer = %WeaponAnimationPlayer
 @onready var attack_point: Marker2D = %AttackPoint
 @onready var display_name_label: Label = %DisplayNameLabel
 @onready var health_progress_bar: TextureProgressBar = %TextureProgressBar
 @onready var player_info: VBoxContainer = %PlayerInfo
+@onready var move_animation_player: AnimationPlayer = %MoveAnimationPlayer
 
 func _ready() -> void:
 	print("[peer %s] Set player(%s) input authroity %s" % [multiplayer.get_unique_id(), name, input_peer_id])
@@ -41,8 +42,12 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	_update_aim_direction()
+	var input := player_input_multiplayer_synchronizer_component.move_vector
+	if is_zero_approx(input.length_squared()):
+		move_animation_player.play("RESET")
+	elif not move_animation_player.is_playing():
+		move_animation_player.play("move")
 	if is_multiplayer_authority():
-		var input := player_input_multiplayer_synchronizer_component.move_vector
 		velocity = input * _get_move_speed()
 		move_and_slide()
 		if player_input_multiplayer_synchronizer_component.is_attack_pressing:
@@ -96,9 +101,9 @@ func _try_to_attack() -> void:
 
 @rpc("authority", "call_local", "unreliable")
 func _play_attack_effect() -> void:
-	if animation_player.is_playing():
-		animation_player.stop()
-	animation_player.play("attack")
+	if weapon_animation_player.is_playing():
+		weapon_animation_player.stop()
+	weapon_animation_player.play("attack")
 	var effect: Node2D = MUZZLE_FLASH_EFFECT.instantiate()
 	effect.global_position = attack_point.global_position
 	effect.global_rotation = attack_point.global_rotation

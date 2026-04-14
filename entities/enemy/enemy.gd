@@ -14,6 +14,7 @@ const ENEMY_DIED_EFFECT = preload("uid://dv1y8ri1kqvnf")
 @onready var hit_collision_shape_2d: CollisionShape2D = %HitCollisionShape2D
 @onready var hurtbox_component: HurtboxComponent = $HurtboxComponent
 @onready var flash_sprite_component: FlashSpriteComponent = $Visual/FlashSpriteComponent
+@onready var move_animation_player: AnimationPlayer = %MoveAnimationPlayer
 
 var track_target: Vector2
 var has_track_target: bool = false

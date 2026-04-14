@@ -2,7 +2,8 @@ extends State
 
 ## Enemy的正常状态,允许移动
 
-const MAX_ATTACK_DISTANCE_SQUARED: float = 10000
+const ATTACK_DISTANCE_SQUARED: float = 14400.0
+const MIN_ATTACK_DISTANCE_SQUARED: float = 256.0
 
 var enemy: Enemy
 
@@ -20,11 +21,13 @@ func update() -> void:
 	if is_multiplayer_authority():
 		# 如果有跟踪目标,则设置速度,向目标移动
 		if enemy.has_track_target:
-			enemy.velocity = enemy.global_position.direction_to(enemy.track_target) * 40
+			enemy.velocity = enemy.global_position.direction_to(enemy.track_target) * 35
 			play_move_effects.rpc(true)
 			# 如果距离目标玩家距离小于一定值,准备攻击
-			if enemy.global_position.distance_squared_to(enemy.track_target) < MAX_ATTACK_DISTANCE_SQUARED:
-				if enemy.attack_cool_down_timer.is_stopped():
+			var squared_distance = enemy.global_position.distance_squared_to(enemy.track_target)
+			if squared_distance < MIN_ATTACK_DISTANCE_SQUARED or \
+				(squared_distance < ATTACK_DISTANCE_SQUARED and \
+				enemy.attack_cool_down_timer.is_stopped()):
 					enemy.attack_cool_down_timer.start()
 					transitioned.emit("charge")
 		else:

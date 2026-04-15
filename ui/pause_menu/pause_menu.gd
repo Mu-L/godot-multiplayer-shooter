@@ -12,6 +12,12 @@ var current_pause_peer: int = -1
 func _ready() -> void:
 	back_to_main_button.pressed.connect(_on_back_to_main_button_pressed)
 	resume_button.pressed.connect(_on_resume_button_pressed)
+	var btns: Array[Button] = [
+		back_to_main_button,
+		resume_button,
+	]
+	SoundManager.register_hover(btns)
+	SoundManager.register_click(btns)
 	if is_multiplayer_authority():
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 

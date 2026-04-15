@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bytopyw472gnu"]
+
+[ext_resource type="Script" uid="uid://cyqfhvpsmdjne" path="res://autoload/sound_manager.gd" id="1_i3yra"]
+[ext_resource type="AudioStream" uid="uid://die14160gs36b" path="res://assets/audio/btn_hover.mp3" id="2_vmyfj"]
+[ext_resource type="AudioStream" uid="uid://2ndgxpoiedc" path="res://assets/audio/btn_click.mp3" id="3_5qmgl"]
+[ext_resource type="AudioStream" uid="uid://ch7aw32nyqs4b" path="res://assets/audio/btn_select.mp3" id="4_clwvi"]
+
+[node name="SoundManager" type="Node" unique_id=567059942]
+script = ExtResource("1_i3yra")
+
+[node name="HoverAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=2107774460]
+stream = ExtResource("2_vmyfj")
+max_polyphony = 2
+bus = &"sfx"
+
+[node name="ClickAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1067493570]
+stream = ExtResource("3_5qmgl")
+max_polyphony = 2
+bus = &"sfx"
+
+[node name="SelectAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=2116450665]
+stream = ExtResource("4_clwvi")
+bus = &"sfx"

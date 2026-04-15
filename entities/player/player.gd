@@ -30,6 +30,7 @@ var is_dead: bool = false
 @onready var hurtbox_component: HurtboxComponent = $HurtboxComponent
 @onready var flash_sprite_component: FlashSpriteComponent = $VisualRoot/FlashSpriteComponent
 @onready var collision_shape_2d: CollisionShape2D = $HurtboxComponent/CollisionShape2D
+@onready var audio_stream_player: AudioStreamPlayer = %AudioStreamPlayer
 
 func _ready() -> void:
 	print("[peer %s] Set player(%s) input authroity %s" % [multiplayer.get_unique_id(), name, input_peer_id])
@@ -109,6 +110,7 @@ func _play_attack_effect() -> void:
 	if weapon_animation_player.is_playing():
 		weapon_animation_player.stop()
 	weapon_animation_player.play("attack")
+	audio_stream_player.play()
 	var effect: Node2D = MUZZLE_FLASH_EFFECT.instantiate()
 	effect.global_position = attack_point.global_position
 	effect.global_rotation = attack_point.global_rotation

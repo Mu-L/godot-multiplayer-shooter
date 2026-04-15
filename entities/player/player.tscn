@@ -10,13 +10,15 @@
 [ext_resource type="PackedScene" uid="uid://d4dbjbld66ye3" path="res://components/health_component.tscn" id="6_qiwj3"]
 [ext_resource type="PackedScene" uid="uid://bckrnncvijtky" path="res://components/flash_sprite_component.tscn" id="7_wvtmh"]
 [ext_resource type="Shader" uid="uid://cmi5pwj65438r" path="res://resources/shader/flash_sprite_component.gdshader" id="8_7thud"]
+[ext_resource type="AudioStream" uid="uid://caovjfylqwsuh" path="res://assets/audio/fire1.mp3" id="11_j3ovn"]
+[ext_resource type="AudioStream" uid="uid://cwrv60p3wvgf5" path="res://assets/audio/fire2.mp3" id="12_afbqv"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_sglur"]
 properties/0/path = NodePath(".:global_position")
 properties/0/spawn = true
 properties/0/replication_mode = 2
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_wvtmh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yqrof"]
 resource_local_to_scene = true
 shader = ExtResource("8_7thud")
 shader_parameter/input_color = Color(0.84, 0.21839999, 0.21839999, 1)
@@ -117,6 +119,13 @@ _data = {
 &"move": SubResource("Animation_bectd")
 }
 
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_3wlsy"]
+random_pitch = 1.0656005
+random_volume_offset_db = 2.0
+streams_count = 2
+stream_0/stream = ExtResource("11_j3ovn")
+stream_1/stream = ExtResource("12_afbqv")
+
 [node name="Player" type="CharacterBody2D" unique_id=443941569 groups=["player"]]
 collision_layer = 8
 motion_mode = 1
@@ -173,7 +182,7 @@ texture_progress = ExtResource("4_bectd")
 [node name="VisualRoot" type="Node2D" parent="." unique_id=1130646804]
 
 [node name="FlashSpriteComponent" parent="VisualRoot" unique_id=1374404885 instance=ExtResource("7_wvtmh")]
-material = SubResource("ShaderMaterial_wvtmh")
+material = SubResource("ShaderMaterial_yqrof")
 texture = ExtResource("2_sglur")
 centered = false
 offset = Vector2(-13, -32)
@@ -222,3 +231,10 @@ libraries/ = SubResource("AnimationLibrary_26q78")
 unique_name_in_owner = true
 libraries/ = SubResource("AnimationLibrary_wvtmh")
 speed_scale = 0.7
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1855133175]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamRandomizer_3wlsy")
+volume_db = -1.0
+max_polyphony = 3
+bus = &"sfx"

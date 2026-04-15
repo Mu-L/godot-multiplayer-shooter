@@ -14,6 +14,8 @@
 [ext_resource type="Texture2D" uid="uid://dlib4ff7bbyjk" path="res://entities/enemy/Sprite-0008.png" id="9_7vrfk"]
 [ext_resource type="Shader" uid="uid://cmi5pwj65438r" path="res://resources/shader/flash_sprite_component.gdshader" id="10_jfjhj"]
 [ext_resource type="PackedScene" uid="uid://bckrnncvijtky" path="res://components/flash_sprite_component.tscn" id="10_ogeq8"]
+[ext_resource type="AudioStream" uid="uid://dh2v8bmefu03k" path="res://assets/audio/hit1.mp3" id="15_t1g2p"]
+[ext_resource type="AudioStream" uid="uid://cci0tqh2hi3gw" path="res://assets/audio/hit2.mp3" id="16_0mv3s"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_im2q6"]
 properties/0/path = NodePath(".:global_position")
@@ -79,6 +81,13 @@ _data = {
 &"RESET": SubResource("Animation_jfjhj"),
 &"move": SubResource("Animation_ogeq8")
 }
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_kh7fx"]
+random_pitch = 1.0656005
+random_volume_offset_db = 2.0
+streams_count = 2
+stream_0/stream = ExtResource("15_t1g2p")
+stream_1/stream = ExtResource("16_0mv3s")
 
 [node name="Enemy" type="CharacterBody2D" unique_id=1435173822 groups=["enemy"]]
 collision_layer = 2
@@ -162,3 +171,10 @@ debug_color = Color(0.99893695, 0, 0.14098063, 0.41960785)
 unique_name_in_owner = true
 libraries/ = SubResource("AnimationLibrary_jfjhj")
 speed_scale = 0.5
+
+[node name="HitAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1379173009]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamRandomizer_kh7fx")
+volume_db = -2.0
+max_polyphony = 3
+bus = &"sfx"

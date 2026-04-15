@@ -20,6 +20,7 @@ var died_peers: Array[int] = []
 @onready var round_timer_ui: MarginContainer = %RoundTimerUI
 @onready var ready_state_ui: ReadyStateUI = %ReadyStateUI
 @onready var lobby_component: LobbyComponent = %LobbyComponent
+@onready var enemy_died_audio_stream_player: AudioStreamPlayer = %EnemyDiedAudioStreamPlayer
 
 
 func _ready() -> void:
@@ -41,6 +42,7 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		enemy_spawn_component.round_completed.connect(_on_round_completed)
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+		GameEvents.enemy_died.connect(_on_enemy_died)
 	else:
 		multiplayer.server_disconnected.connect(_on_server_disconnected)
 	_create_player.rpc_id(1, { "display_name": MultiplayerConfig.display_name })
@@ -75,6 +77,11 @@ func _check_game_over() -> void:
 			break
 	if is_game_over:
 		_end_game()
+
+
+@rpc("authority", "call_local")
+func _play_enemy_died_effects() -> void:
+	enemy_died_audio_stream_player.play()
 
 
 func _on_player_died(peer_id: int) -> void:
@@ -112,3 +119,7 @@ func _on_all_peers_ready_checked() -> void:
 	if is_multiplayer_authority():
 		lobby_component.close_lobby()
 		enemy_spawn_component.start()
+
+
+func _on_enemy_died() -> void:
+	_play_enemy_died_effects.rpc()

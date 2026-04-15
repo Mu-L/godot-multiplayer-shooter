@@ -14,6 +14,11 @@ var resource: UpgradeResource
 
 func _ready() -> void:
 	select_button.pressed.connect(_on_select_button_pressed)
+	var btns: Array[Button] = [
+		select_button,
+	]
+	SoundManager.register_hover(btns)
+	SoundManager.register_select(btns)
 	_init_with_resource()
 
 

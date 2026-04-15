@@ -26,6 +26,13 @@ func _ready() -> void:
 	host_button.pressed.connect(_on_host_button_pressed)
 	join_button.pressed.connect(_on_join_button_pressed)
 	back_button.pressed.connect(_on_back_button_pressed)
+	var btns: Array[Button] = [
+		host_button,
+		join_button,
+		back_button,
+	]
+	SoundManager.register_hover(btns)
+	SoundManager.register_click(btns)
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	player_name_text_edit.text_changed.connect(_on_text_changed)

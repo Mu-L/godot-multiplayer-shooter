@@ -12,12 +12,19 @@
 [ext_resource type="PackedScene" uid="uid://7ekdi6cfbyw3" path="res://ui/game_ui/ready_state_ui.tscn" id="7_kek77"]
 [ext_resource type="PackedScene" uid="uid://bae6wkegs6yiv" path="res://components/lobby_component.tscn" id="8_4c57u"]
 [ext_resource type="PackedScene" uid="uid://by08acufa0y3u" path="res://ui/game_ui/upgrade_options_ui.tscn" id="10_dg77c"]
+[ext_resource type="AudioStream" uid="uid://tchnd21la6eh" path="res://assets/audio/burst.mp3" id="13_ycdy4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
 size = Vector2(32, 300)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h2yge"]
 size = Vector2(500, 32)
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_w48qg"]
+random_pitch = 1.0656005
+random_volume_offset_db = 2.0
+streams_count = 1
+stream_0/stream = ExtResource("13_ycdy4")
 
 [node name="Main" type="Node" unique_id=1056906370]
 script = ExtResource("1_0xm2m")
@@ -124,3 +131,10 @@ visible = false
 [node name="GameCamera" parent="." unique_id=903918361 instance=ExtResource("6_7mycd")]
 position = Vector2(320, 180)
 metadata/_edit_lock_ = true
+
+[node name="EnemyDiedAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1512230142]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamRandomizer_w48qg")
+volume_db = -2.0
+max_polyphony = 3
+bus = &"sfx"

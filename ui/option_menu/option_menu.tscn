@@ -1,0 +1,131 @@
+[gd_scene format=3 uid="uid://g2x3v6dbpxfa"]
+
+[ext_resource type="Script" uid="uid://wo4lqdbwoh51" path="res://ui/option_menu/option_menu.gd" id="1_ag6lb"]
+
+[node name="OptionMenu" type="Control" unique_id=838140882]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ag6lb")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=372675551]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer" unique_id=779543955]
+layout_mode = 2
+color = Color(0, 0, 0, 0.78431374)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=594493800]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 30
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer" unique_id=149126551]
+layout_mode = 2
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 30
+text = "Game Options"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SFXHBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1213955128]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/SFXHBoxContainer" unique_id=1655349540]
+layout_mode = 2
+theme_override_constants/outline_size = 5
+text = "SFX Volume"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/SFXHBoxContainer" unique_id=1134688369]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="SFXMinusButton" type="Button" parent="MarginContainer/VBoxContainer/SFXHBoxContainer/HBoxContainer" unique_id=1208213019]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "-"
+
+[node name="SFXProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/SFXHBoxContainer/HBoxContainer" unique_id=291871314]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+max_value = 1.0
+value = 1.0
+show_percentage = false
+
+[node name="SFXPlusButton" type="Button" parent="MarginContainer/VBoxContainer/SFXHBoxContainer/HBoxContainer" unique_id=1644272286]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "+"
+
+[node name="MusicHBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=630396331]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 20
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/MusicHBoxContainer" unique_id=2027941425]
+layout_mode = 2
+theme_override_constants/outline_size = 5
+text = "SFX Volume"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MusicHBoxContainer" unique_id=1492208265]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="MusicMinusButton" type="Button" parent="MarginContainer/VBoxContainer/MusicHBoxContainer/HBoxContainer" unique_id=1062080064]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "-"
+
+[node name="MusicProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/MusicHBoxContainer/HBoxContainer" unique_id=706130625]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 20)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+max_value = 1.0
+value = 1.0
+show_percentage = false
+
+[node name="MusicPlusButton" type="Button" parent="MarginContainer/VBoxContainer/MusicHBoxContainer/HBoxContainer" unique_id=1992404090]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "+"
+
+[node name="CloseButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=240894576]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "Close"

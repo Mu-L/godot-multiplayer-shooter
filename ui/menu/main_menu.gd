@@ -2,6 +2,7 @@ class_name MainMenu
 extends Control
 
 const MAIN = preload("uid://yubvfldj7w73")
+const OPTION_MENU = preload("uid://g2x3v6dbpxfa")
 
 
 @onready var MULTIPLAYER_MENU = load("uid://bscefedv8fyhc")
@@ -18,6 +19,7 @@ func _ready() -> void:
 	single_player_button.pressed.connect(_on_single_player_button_pressed)
 	multiplayer_button.pressed.connect(_on_multiplayer_button_pressed)
 	quit_button.pressed.connect(_on_quit_button_pressed)
+	options_button.pressed.connect(_on_options_button_pressed)
 	var btns: Array[Button] = [
 		single_player_button,
 		multiplayer_button,
@@ -38,3 +40,7 @@ func _on_multiplayer_button_pressed() -> void:
 
 func _on_quit_button_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_options_button_pressed() -> void:
+	add_child(OPTION_MENU.instantiate())

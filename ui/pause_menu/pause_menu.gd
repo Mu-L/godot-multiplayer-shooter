@@ -3,18 +3,23 @@ extends CanvasLayer
 
 signal quit_requested
 
+const OPTION_MENU = preload("uid://g2x3v6dbpxfa")
+
 var current_pause_peer: int = -1
 
 @onready var back_to_main_button: Button = %BackToMainButton
 @onready var resume_button: Button = %ResumeButton
+@onready var options_button: Button = %OptionsButton
 
 
 func _ready() -> void:
 	back_to_main_button.pressed.connect(_on_back_to_main_button_pressed)
 	resume_button.pressed.connect(_on_resume_button_pressed)
+	options_button.pressed.connect(_on_options_button_pressed)
 	var btns: Array[Button] = [
 		back_to_main_button,
 		resume_button,
+		options_button,
 	]
 	SoundManager.register_hover(btns)
 	SoundManager.register_click(btns)
@@ -50,6 +55,7 @@ func request_resume() -> void:
 func pause(pause_peer_id: int) -> void:
 	current_pause_peer = pause_peer_id
 	resume_button.disabled = pause_peer_id != multiplayer.get_unique_id()
+	options_button.disabled = pause_peer_id != multiplayer.get_unique_id()
 	get_tree().paused = true
 	visible = true
 
@@ -72,3 +78,7 @@ func _on_resume_button_pressed() -> void:
 func _on_peer_disconnected(peer_id: int) -> void:
 	if current_pause_peer == peer_id:
 		resume.rpc()
+
+
+func _on_options_button_pressed() -> void:
+	add_child(OPTION_MENU.instantiate())

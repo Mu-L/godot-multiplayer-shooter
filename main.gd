@@ -26,6 +26,9 @@ var is_game_over: bool = false
 @onready var player_look_select_ui: PlayerLookSelectUI = %PlayerLookSelectUI
 @onready var hurt_notify_ui: HurtNotifyUI = %HurtNotifyUI
 @onready var player_died_ui: PlayerDiedUI = %PlayerDiedUI
+@onready var game_win_ui: GameWinUI = %GameWinUI
+@onready var round_win_ui: RoundWinUI = %RoundWinUI
+@onready var upgrade_component: UpgradeComponent = %UpgradeComponent
 
 
 func _ready() -> void:
@@ -90,6 +93,9 @@ func _game_completed(win: bool) -> void:
 	else:
 		await get_tree().create_timer(1.0).timeout
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	if win:
+		game_win_ui.visible = true
+	SoundManager.play_game_end(win)
 	await get_tree().create_timer(4.0).timeout
 	get_tree().change_scene_to_packed(GAME_END_MENU)
 
@@ -139,6 +145,19 @@ func _play_player_died_effect() -> void:
 	SoundManager.play_died()
 
 
+@rpc("authority", "call_local")
+func _hide_player_died_effect() -> void:
+	player_died_ui.hide_died_tip()
+
+
+@rpc("authority", "call_local")
+func _play_round_completed_effect() -> void:
+	SoundManager.play_round_win()
+	round_win_ui.show_win_tip()
+	await get_tree().create_timer(10.0).timeout
+	round_win_ui.hide_win_tip()
+
+
 func _on_player_hurt(peer_id: int) -> void:
 	_play_player_hurt_effect.rpc_id(peer_id)
 
@@ -152,8 +171,13 @@ func _on_player_died(peer_id: int) -> void:
 func _on_round_completed() -> void:
 	for peer_id in died_peers:
 		var player := player_dict[peer_id]
+		_hide_player_died_effect.rpc_id(peer_id)
 		player.revive(player_spawn_marker.global_position)
 	died_peers.clear()
+	await get_tree().create_timer(1.0).timeout
+	_play_round_completed_effect.rpc()
+	await get_tree().create_timer(3.0).timeout
+	upgrade_component.generate_options()
 
 
 func _on_max_round_end() -> void:

@@ -5,7 +5,6 @@ signal upgrade_finished
 
 static var instance: UpgradeComponent
 
-@export var enemy_spawn_component: EnemySpawnComponent
 @export var upgrade_options_ui: UpgradeOptionsUI
 @export var available_upgrade_resources: Array[UpgradeResource]
 
@@ -29,7 +28,6 @@ func _ready() -> void:
 		resources_id_dict[res.id] = res
 	upgrade_options_ui.upgrade_selected.connect(_on_upgrade_option_selected)
 	if is_multiplayer_authority():
-		enemy_spawn_component.round_completed.connect(_on_round_completed)
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
 
@@ -85,10 +83,6 @@ func select_upgrade_option(index: int) -> void:
 func _on_upgrade_option_selected(index: int) -> void:
 	# 由各peer本地触发, peer id需要传递给服务器
 	select_upgrade_option.rpc_id(1, index)
-
-
-func _on_round_completed() -> void:
-	generate_options()
 
 
 func _on_peer_disconnected(peer_id: int) -> void:

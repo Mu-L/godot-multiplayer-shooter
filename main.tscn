@@ -14,7 +14,9 @@
 [ext_resource type="PackedScene" uid="uid://by08acufa0y3u" path="res://ui/game_ui/upgrade_options_ui.tscn" id="10_dg77c"]
 [ext_resource type="PackedScene" uid="uid://bxarvf8ogscvs" path="res://ui/game_ui/player_died_ui.tscn" id="11_2cqfq"]
 [ext_resource type="PackedScene" uid="uid://by50ne11du40u" path="res://ui/player_look_select_ui/player_look_select_ui.tscn" id="11_w48qg"]
+[ext_resource type="PackedScene" uid="uid://chf5vb2mbhvnt" path="res://ui/game_ui/round_win_ui.tscn" id="12_074og"]
 [ext_resource type="PackedScene" uid="uid://cmdyhkfjb0l2u" path="res://ui/game_ui/hurt_notify_ui.tscn" id="12_vivmo"]
+[ext_resource type="PackedScene" uid="uid://pcedff52r0lm" path="res://ui/game_ui/game_win_ui.tscn" id="12_yaehf"]
 [ext_resource type="AudioStream" uid="uid://tchnd21la6eh" path="res://assets/audio/burst.mp3" id="13_ycdy4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
@@ -45,9 +47,8 @@ uprade_component = NodePath("../UpgradeComponent")
 [node name="LobbyComponent" parent="." unique_id=2002126853 instance=ExtResource("8_4c57u")]
 unique_name_in_owner = true
 
-[node name="UpgradeComponent" parent="." unique_id=1374266706 node_paths=PackedStringArray("enemy_spawn_component", "upgrade_options_ui") instance=ExtResource("4_efxa6")]
+[node name="UpgradeComponent" parent="." unique_id=1374266706 node_paths=PackedStringArray("upgrade_options_ui") instance=ExtResource("4_efxa6")]
 unique_name_in_owner = true
-enemy_spawn_component = NodePath("../EnemySpawnComponent")
 upgrade_options_ui = NodePath("../GameUILayer/UpgradeOptionsUI")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1570274783]
@@ -132,6 +133,14 @@ unique_name_in_owner = true
 
 [node name="PlayerDiedUI" parent="GameUILayer" unique_id=842013290 instance=ExtResource("11_2cqfq")]
 unique_name_in_owner = true
+
+[node name="RoundWinUI" parent="GameUILayer" unique_id=1522668860 instance=ExtResource("12_074og")]
+unique_name_in_owner = true
+visible = false
+
+[node name="GameWinUI" parent="GameUILayer" unique_id=382258027 instance=ExtResource("12_yaehf")]
+unique_name_in_owner = true
+visible = false
 
 [node name="UpgradeOptionsUI" parent="GameUILayer" unique_id=109763391 instance=ExtResource("10_dg77c")]
 

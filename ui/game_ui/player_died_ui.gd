@@ -14,3 +14,7 @@ func show_died_tip() -> void:
 	tween.tween_property(self, "modulate", Color.WHITE, 0.5)
 	tween.tween_interval(3.0)
 	tween.tween_property(self, "modulate", Color.TRANSPARENT, 0.2)
+
+
+func hide_died_tip() -> void:
+	modulate.a = 0.0

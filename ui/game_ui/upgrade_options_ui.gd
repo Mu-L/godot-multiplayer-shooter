@@ -41,8 +41,11 @@ func show_upgrade_options(resources: Array) -> void:
 		.from(Vector2.ZERO)\
 		.set_ease(Tween.EASE_OUT)\
 		.set_trans(Tween.TRANS_BACK)
-	await get_tree().create_timer(1).timeout
-	items_container.process_mode = Node.PROCESS_MODE_INHERIT
+	tween.tween_interval(0.2)
+	tween.finished.connect(func():
+		items_container.process_mode = Node.PROCESS_MODE_INHERIT,
+		CONNECT_ONE_SHOT
+	)
 
 
 func _on_item_selected(index: int) -> void:

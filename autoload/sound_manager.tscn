@@ -9,6 +9,8 @@
 [ext_resource type="AudioStream" uid="uid://b2d6es6yrp1vg" path="res://assets/audio/hurt3.mp3" id="7_ekme8"]
 [ext_resource type="AudioStream" uid="uid://co675ic7rom1m" path="res://assets/audio/hurt4.mp3" id="8_tfrwk"]
 [ext_resource type="AudioStream" uid="uid://bubj65sk6sh8u" path="res://assets/audio/died1.mp3" id="9_r8tf1"]
+[ext_resource type="AudioStream" uid="uid://137hvg7b0aph" path="res://assets/audio/music.mp3" id="10_ekme8"]
+[ext_resource type="AudioStream" uid="uid://crqbnc53gmmfd" path="res://assets/audio/round_win_cheer.mp3" id="11_tfrwk"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_p7ier"]
 random_pitch = 1.1892071
@@ -53,3 +55,13 @@ bus = &"sfx"
 stream = SubResource("AudioStreamRandomizer_ekme8")
 volume_db = -2.0
 bus = &"sfx"
+
+[node name="MusicAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=891419591]
+stream = ExtResource("10_ekme8")
+autoplay = true
+bus = &"music"
+
+[node name="GameEndAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=884487662]
+
+[node name="RoundAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=775100583]
+stream = ExtResource("11_tfrwk")

@@ -57,6 +57,7 @@ func _ready() -> void:
 		enemy_spawn_component.max_round_end.connect(_on_max_round_end)
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 		GameEvents.enemy_died.connect(_on_enemy_died)
+		upgrade_component.upgrade_finished.connect(_on_upgrade_finished)
 	else:
 		multiplayer.server_disconnected.connect(_on_server_disconnected)
 	_create_player.rpc_id(1, { "display_name": MultiplayerConfig.display_name })
@@ -95,9 +96,10 @@ func _game_completed(win: bool) -> void:
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	if win:
 		game_win_ui.visible = true
+		await get_tree().create_timer(5.0).timeout
 	SoundManager.play_game_end(win)
-	await get_tree().create_timer(4.0).timeout
-	get_tree().change_scene_to_packed(GAME_END_MENU)
+	await get_tree().create_timer(5.0).timeout
+	get_tree().change_scene_to_file("res://ui/game_end/game_end_menu.tscn")
 
 
 func _check_game_over() -> void:
@@ -145,7 +147,7 @@ func _play_player_died_effect() -> void:
 	SoundManager.play_died()
 
 
-@rpc("authority", "call_local")
+@rpc("authority", "call_local", "reliable")
 func _hide_player_died_effect() -> void:
 	player_died_ui.hide_died_tip()
 
@@ -154,7 +156,10 @@ func _hide_player_died_effect() -> void:
 func _play_round_completed_effect() -> void:
 	SoundManager.play_round_win()
 	round_win_ui.show_win_tip()
-	await get_tree().create_timer(10.0).timeout
+
+
+@rpc("authority", "call_local", "reliable")
+func _hide_round_completed_effect() -> void:
 	round_win_ui.hide_win_tip()
 
 
@@ -221,3 +226,7 @@ func _on_player_look_selected(index: int) -> void:
 
 func _on_player_look_button_pressed() -> void:
 	player_look_select_ui.visible = true
+
+
+func _on_upgrade_finished() -> void:
+	_hide_round_completed_effect.rpc()

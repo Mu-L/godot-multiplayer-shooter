@@ -11,11 +11,8 @@ const OPTION_MENU = preload("uid://g2x3v6dbpxfa")
 @onready var options_button: Button = $VBoxContainer/OptionsButton
 @onready var quit_button: Button = $VBoxContainer/QuitButton
 
-const CURSOR = preload("uid://bf4bnwundf36w")
-
 
 func _ready() -> void:
-	Input.set_custom_mouse_cursor(CURSOR)
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	single_player_button.pressed.connect(_on_single_player_button_pressed)
 	multiplayer_button.pressed.connect(_on_multiplayer_button_pressed)

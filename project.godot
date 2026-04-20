@@ -25,6 +25,7 @@ GameEvents="*uid://2ntv2pohfu86"
 Background="*uid://bjhlq4xd580rd"
 SoundManager="*uid://bytopyw472gnu"
 GameState="*uid://ca6butkvra4ge"
+GameCursor="*uid://b4pl36qdnbkli"
 
 [display]
 

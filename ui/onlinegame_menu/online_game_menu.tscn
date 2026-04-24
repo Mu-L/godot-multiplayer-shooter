@@ -1,0 +1,112 @@
+[gd_scene format=3 uid="uid://vbp8gv45a5mu"]
+
+[ext_resource type="Script" uid="uid://bpin1f4mw2qaf" path="res://ui/onlinegame_menu/online_game_menu.gd" id="1_umsln"]
+
+[node name="OnlineGameMenu" type="Control" unique_id=2054284175]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_umsln")
+
+[node name="BackButton" type="Button" parent="." unique_id=1153483145]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 82.0
+offset_bottom = 54.0
+text = "Back"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=87603317]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1759274455]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer" unique_id=547694877]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.90576947, 0.90576947, 0.90576947, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+text = "Player Name"
+
+[node name="PlayerNameTextEdit" type="TextEdit" parent="VBoxContainer/HBoxContainer" unique_id=100128832]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Player"
+placeholder_text = "Display Name"
+scroll_fit_content_height = true
+scroll_fit_content_width = true
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer" unique_id=1760370314]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="VBoxContainer/GridContainer" unique_id=602540641]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer/GridContainer/VBoxContainer3" unique_id=772632255]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+columns = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/GridContainer/VBoxContainer3/GridContainer" unique_id=1426250302]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.90576947, 0.90576947, 0.90576947, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+text = "Server IP"
+
+[node name="ServerIPTextEdit" type="TextEdit" parent="VBoxContainer/GridContainer/VBoxContainer3/GridContainer" unique_id=1165143668]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "127.0.0.1"
+placeholder_text = "Host IP"
+scroll_fit_content_height = true
+scroll_fit_content_width = true
+
+[node name="Label2" type="Label" parent="VBoxContainer/GridContainer/VBoxContainer3/GridContainer" unique_id=1097331523]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.90576947, 0.90576947, 0.90576947, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+text = "Server Port"
+
+[node name="ServerPortTextEdit" type="TextEdit" parent="VBoxContainer/GridContainer/VBoxContainer3/GridContainer" unique_id=1202288692]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "35320"
+placeholder_text = "Host Port"
+scroll_fit_content_height = true
+scroll_fit_content_width = true
+
+[node name="JoinButton" type="Button" parent="VBoxContainer/GridContainer/VBoxContainer3" unique_id=704123315]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Let's Go!"

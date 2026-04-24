@@ -8,3 +8,5 @@ static var host_ip: String = "*"
 static var host_port: int = 32530
 static var join_ip: String = "127.0.0.1"
 static var join_port: int = 32530
+static var server_ip: String = "112.124.49.112"
+static var server_port: int = 32530

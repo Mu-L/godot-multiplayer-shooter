@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bf4bnwundf36w" path="res://assets/cursor.tres" id="2_t303s"]
 
 [node name="Cursor" type="CanvasLayer" unique_id=1589348823]
+process_mode = 3
 layer = 100
 script = ExtResource("1_gajw0")
 

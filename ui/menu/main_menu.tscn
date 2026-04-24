@@ -35,6 +35,10 @@ text = "Single Player"
 layout_mode = 2
 text = "Multiplayer"
 
+[node name="OnlineGameButton" type="Button" parent="VBoxContainer" unique_id=589764435]
+layout_mode = 2
+text = "Online Game"
+
 [node name="OptionsButton" type="Button" parent="VBoxContainer" unique_id=737084998]
 layout_mode = 2
 text = "Options"

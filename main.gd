@@ -64,11 +64,6 @@ func _ready() -> void:
 	ready_state_ui.visible = true
 	if not Tools.is_headless_server():
 		_create_player.rpc_id(1, { "display_name": MultiplayerConfig.display_name })
-	#var is_single_player := multiplayer.multiplayer_peer is OfflineMultiplayerPeer
-	#round_timer_ui.visible = is_single_player
-	#ready_state_ui.visible = not is_single_player
-	#if is_single_player:
-		#enemy_spawn_component.start()
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -79,7 +74,8 @@ func _create_player(player_data: Dictionary) -> void:
 
 
 func _end_game() -> void:
-	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	if not Tools.is_headless_server():
+		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://ui/menu/main_menu.tscn")
 
@@ -94,7 +90,8 @@ func _game_completed(win: bool) -> void:
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	else:
 		await get_tree().create_timer(1.0).timeout
-		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+		if not Tools.is_headless_server():
+			multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	SoundManager.play_game_end(win)
 	if win:
 		game_win_ui.visible = true

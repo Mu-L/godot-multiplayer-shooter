@@ -1,6 +1,11 @@
 extends Node
 
 
+func _ready() -> void:
+	if is_headless_server():
+		print("This is a headless server running!!!")
+
+
 func is_headless_server() -> bool:
 	if OS.has_feature("dedicated_server") or\
 		DisplayServer.get_name() == "headless" or\

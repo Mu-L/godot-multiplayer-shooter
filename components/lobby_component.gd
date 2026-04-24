@@ -14,7 +14,7 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		multiplayer.peer_connected.connect(_on_peer_connected)
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-		ready_peers_changed.emit.call_deferred(ready_peers.size(), _total_peer_count())
+		ready_peers_changed.emit.call_deferred(ready_peers.size(), Tools.get_game_peers_count())
 	else:
 		_request_ready_peers_status.rpc_id(1)
 
@@ -30,7 +30,7 @@ func close_lobby() -> void:
 func _check_all_peer_ready() -> void:
 	if not is_multiplayer_authority() or lobby_closed:
 		return
-	if ready_peers.size() == _total_peer_count():
+	if ready_peers.size() == Tools.get_game_peers_count():
 		_emit_all_peers_ready_checked.rpc()
 
 
@@ -45,7 +45,7 @@ func _try_append_ready_peer(peer_id: int) -> void:
 	if peer_id not in ready_peers:
 		ready_peers.append(peer_id)
 		_emit_self_ready_changed.rpc_id(peer_id, true)
-		_emit_ready_peers_changed.rpc(ready_peers.size(), _total_peer_count())
+		_emit_ready_peers_changed.rpc(ready_peers.size(), Tools.get_game_peers_count())
 		_check_all_peer_ready()
 
 
@@ -61,7 +61,7 @@ func _request_ready_peers_status() -> void:
 	if not is_multiplayer_authority():
 		return
 	var sender_id := multiplayer.get_remote_sender_id()
-	_emit_ready_peers_changed.rpc_id(sender_id, ready_peers.size(), _total_peer_count())
+	_emit_ready_peers_changed.rpc_id(sender_id, ready_peers.size(), Tools.get_game_peers_count())
 	if lobby_closed:
 		_emit_all_peers_ready_checked.rpc_id(sender_id)
 
@@ -81,14 +81,10 @@ func _emit_all_peers_ready_checked() -> void:
 	all_peers_ready_checked.emit()
 
 
-func _total_peer_count() -> int:
-	return multiplayer.get_peers().size() + 1
-
-
 func _on_peer_connected(_peer_id: int) -> void:
-	_emit_ready_peers_changed.rpc(ready_peers.size(), _total_peer_count())
+	_emit_ready_peers_changed.rpc(ready_peers.size(), Tools.get_game_peers_count())
 
 
 func _on_peer_disconnected(peer_id: int) -> void:
 	_try_erase_ready_peer(peer_id)
-	_emit_ready_peers_changed.rpc(ready_peers.size(), _total_peer_count())
+	_emit_ready_peers_changed.rpc(ready_peers.size(), Tools.get_game_peers_count())

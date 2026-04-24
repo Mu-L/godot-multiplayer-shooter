@@ -34,8 +34,7 @@ func _ready() -> void:
 func generate_options() -> void:
 	if not is_multiplayer_authority():
 		return
-	var all_peers := multiplayer.get_peers()
-	all_peers.append(1)
+	var all_peers := Tools.get_game_peers()
 	avaiable_peer_resources.clear()
 	for peer in all_peers:
 		var copy_resources := Array(available_upgrade_resources)

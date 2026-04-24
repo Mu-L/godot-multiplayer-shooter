@@ -8,6 +8,9 @@ const MAIN_MENU = preload("uid://dkve68vq7kmiw")
 
 
 func _ready() -> void:
+	if Tools.is_headless_server():
+		get_tree().change_scene_to_file("res://ui/menu/main_menu.tscn")
+		return
 	title_label.text = "Congratulations!" if GameState.game_win else "Try Again"
 	msg_label.text = "Game Win ~" if GameState.game_win else "Game Lost!"
 	back_button.pressed.connect(_on_back_button_pressed)

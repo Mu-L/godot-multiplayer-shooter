@@ -13,6 +13,10 @@ const OPTION_MENU = preload("uid://g2x3v6dbpxfa")
 
 
 func _ready() -> void:
+	if Tools.is_headless_server():
+		await get_tree().create_timer(1.0).timeout
+		_start_headless_server()
+		return
 	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	single_player_button.pressed.connect(_on_single_player_button_pressed)
 	multiplayer_button.pressed.connect(_on_multiplayer_button_pressed)
@@ -26,6 +30,19 @@ func _ready() -> void:
 	]
 	SoundManager.register_hover(btns)
 	SoundManager.register_click(btns)
+
+
+func _start_headless_server() -> void:
+	var server_peer := ENetMultiplayerPeer.new()
+	if MultiplayerConfig.host_ip != "*":
+		server_peer.set_bind_ip(MultiplayerConfig.host_ip)
+	var err := server_peer.create_server(MultiplayerConfig.host_port)
+	if err != OK:
+		push_error("Error",
+			"Creating server error: %s" % [error_string(err)])
+		get_tree().quit(1)
+	multiplayer.multiplayer_peer = server_peer
+	get_tree().change_scene_to_packed(MAIN)
 
 
 func _on_single_player_button_pressed() -> void:

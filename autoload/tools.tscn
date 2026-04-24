@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dv2so7q57nsuc"]
+
+[ext_resource type="Script" uid="uid://ca36lap330mh6" path="res://autoload/tools.gd" id="1_8d023"]
+
+[node name="Tools" type="Node" unique_id=1167314999]
+script = ExtResource("1_8d023")

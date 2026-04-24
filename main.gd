@@ -60,9 +60,10 @@ func _ready() -> void:
 		upgrade_component.upgrade_finished.connect(_on_upgrade_finished)
 	else:
 		multiplayer.server_disconnected.connect(_on_server_disconnected)
-	_create_player.rpc_id(1, { "display_name": MultiplayerConfig.display_name })
 	round_timer_ui.visible = false
 	ready_state_ui.visible = true
+	if not Tools.is_headless_server():
+		_create_player.rpc_id(1, { "display_name": MultiplayerConfig.display_name })
 	#var is_single_player := multiplayer.multiplayer_peer is OfflineMultiplayerPeer
 	#round_timer_ui.visible = is_single_player
 	#ready_state_ui.visible = not is_single_player
@@ -78,9 +79,9 @@ func _create_player(player_data: Dictionary) -> void:
 
 
 func _end_game() -> void:
+	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://ui/menu/main_menu.tscn")
-	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 
 
 @rpc("authority", "call_local", "reliable")
@@ -97,16 +98,17 @@ func _game_completed(win: bool) -> void:
 	SoundManager.play_game_end(win)
 	if win:
 		game_win_ui.visible = true
-		await get_tree().create_timer(5.0).timeout
+		if not Tools.is_headless_server():
+			await get_tree().create_timer(5.0).timeout
 	# TODO game over ui展示,并且需要等待玩家死亡UI显示一小会
-	await get_tree().create_timer(5.0).timeout
+	if not Tools.is_headless_server():
+		await get_tree().create_timer(5.0).timeout
 	get_tree().change_scene_to_file("res://ui/game_end/game_end_menu.tscn")
 
 
 func _check_game_over() -> void:
 	# multiplayer.get_peers 返回所有已连接的peer,不包含自身
-	var all_peers := multiplayer.get_peers()
-	all_peers.append(multiplayer.get_unique_id())
+	var all_peers := Tools.get_game_peers()
 	is_game_over = true
 	for peer_id in all_peers:
 		if not died_peers.has(peer_id):
@@ -175,8 +177,7 @@ func _on_player_died(peer_id: int) -> void:
 
 
 func _on_round_completed() -> void:
-	var all_peers := multiplayer.get_peers()
-	all_peers.append(1)
+	var all_peers := Tools.get_game_peers()
 	for peer_id in all_peers:
 		var player := player_dict[peer_id]
 		if peer_id in died_peers:

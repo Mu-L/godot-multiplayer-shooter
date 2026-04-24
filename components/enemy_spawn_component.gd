@@ -107,7 +107,7 @@ func _synchronize(data: Dictionary) -> void:
 
 
 func _on_spawn_timer_timeout() -> void:
-	var peers := multiplayer.get_peers().size() + 1
+	var peers := Tools.get_game_peers_count()
 	var multi_enemy_rate := randf_range(0.0, 0.1 * peers + 0.05 * round_count)
 	var is_multi_enemy_spawn := randf() < multi_enemy_rate
 	var spawn_count := randi_range(1, int((peers + round_count))) if is_multi_enemy_spawn else 1

@@ -23,7 +23,6 @@ var move_vector: Vector2 = Vector2.ZERO
 var is_dead: bool = false
 var is_immnue: bool = false
 
-var phantom_camera: PhantomCamera2D
 
 @onready var player_input_multiplayer_synchronizer_component: PlayerInputMultiplayerSynchronizerComponent = $PlayerInputMultiplayerSynchronizerComponent
 @onready var weapon_root: Node2D = %WeaponRoot
@@ -51,16 +50,11 @@ func _ready() -> void:
 	flash_sprite_component.frame = player_look_index
 	GameEvents.player_look_changed.connect(_on_player_look_changed)
 	if is_peer_authority:
-		phantom_camera = PhantomCamera2D.new()
-		phantom_camera.priority = 10
-		phantom_camera.follow_mode = PhantomCamera2D.FollowMode.SIMPLE
-		phantom_camera.follow_target = self
-		var tween_resource = PhantomCameraTween.new()
-		tween_resource.duration = 2.0
-		tween_resource.transition = PhantomCameraTween.TransitionType.QUART
-		tween_resource.ease = PhantomCameraTween.EaseType.EASE_OUT
-		phantom_camera.tween_resource = tween_resource
-		get_parent().add_child(phantom_camera, true)
+		var remote_transform2d: RemoteTransform2D = RemoteTransform2D.new()
+		remote_transform2d.remote_path = ^"../../../GameCamera"
+		remote_transform2d.update_rotation = false
+		remote_transform2d.update_scale = false
+		add_child(remote_transform2d)
 	else:
 		display_name_label.text = input_display_name
 	if is_multiplayer_authority():

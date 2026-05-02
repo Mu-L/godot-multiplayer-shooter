@@ -22,6 +22,8 @@ var player_look_index: int = 0
 var move_vector: Vector2 = Vector2.ZERO
 var is_dead: bool = false
 
+var phantom_camera: PhantomCamera2D
+
 @onready var player_input_multiplayer_synchronizer_component: PlayerInputMultiplayerSynchronizerComponent = $PlayerInputMultiplayerSynchronizerComponent
 @onready var weapon_root: Node2D = %WeaponRoot
 @onready var attack_timer: Timer = $AttackTimer
@@ -47,7 +49,18 @@ func _ready() -> void:
 	player_info.visible = not is_peer_authority
 	flash_sprite_component.frame = player_look_index
 	GameEvents.player_look_changed.connect(_on_player_look_changed)
-	if not is_peer_authority:
+	if is_peer_authority:
+		phantom_camera = PhantomCamera2D.new()
+		phantom_camera.priority = 10
+		phantom_camera.follow_mode = PhantomCamera2D.FollowMode.SIMPLE
+		phantom_camera.follow_target = self
+		var tween_resource = PhantomCameraTween.new()
+		tween_resource.duration = 2.0
+		tween_resource.transition = PhantomCameraTween.TransitionType.QUART
+		tween_resource.ease = PhantomCameraTween.EaseType.EASE_OUT
+		phantom_camera.tween_resource = tween_resource
+		get_parent().add_child(phantom_camera, true)
+	else:
 		display_name_label.text = input_display_name
 	if is_multiplayer_authority():
 		health_component.health_depleted.connect(_on_health_depleted)

@@ -13,4 +13,4 @@ position = Vector2(317, 187)
 rotation = 0.7843489
 texture = ExtResource("1_ftkrq")
 region_enabled = true
-region_rect = Rect2(0, 0, 800, 800)
+region_rect = Rect2(0, 0, 1600, 1600)

@@ -18,12 +18,13 @@
 [ext_resource type="PackedScene" uid="uid://cmdyhkfjb0l2u" path="res://ui/game_ui/hurt_notify_ui.tscn" id="12_vivmo"]
 [ext_resource type="PackedScene" uid="uid://pcedff52r0lm" path="res://ui/game_ui/game_win_ui.tscn" id="12_yaehf"]
 [ext_resource type="AudioStream" uid="uid://tchnd21la6eh" path="res://assets/audio/burst.mp3" id="13_ycdy4"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="18_cegan"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0xm2m"]
-size = Vector2(32, 300)
+size = Vector2(32, 500)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h2yge"]
-size = Vector2(500, 32)
+size = Vector2(900, 32)
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_w48qg"]
 random_pitch = 1.0656005
@@ -53,41 +54,30 @@ upgrade_options_ui = NodePath("../GameUILayer/UpgradeOptionsUI")
 
 [node name="Background" type="Sprite2D" parent="." unique_id=1570274783]
 position = Vector2(320, 180)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_0xm2m")
 metadata/_edit_lock_ = true
 
 [node name="Static" type="Node2D" parent="." unique_id=737235782]
 
 [node name="StaticBody2D" type="StaticBody2D" parent="Static" unique_id=1416058182]
-position = Vector2(95, 162)
 collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Static/StaticBody2D" unique_id=1810118465]
+position = Vector2(0, 180)
 shape = SubResource("RectangleShape2D_0xm2m")
 
-[node name="StaticBody2D2" type="StaticBody2D" parent="Static" unique_id=2068740689]
-position = Vector2(545, 164)
-collision_mask = 0
-metadata/_edit_lock_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Static/StaticBody2D2" unique_id=852209843]
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Static/StaticBody2D" unique_id=852209843]
+position = Vector2(655, 180)
 shape = SubResource("RectangleShape2D_0xm2m")
 
-[node name="StaticBody2D3" type="StaticBody2D" parent="Static" unique_id=42209704]
-position = Vector2(325, 45)
-collision_mask = 0
-metadata/_edit_lock_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Static/StaticBody2D3" unique_id=171008005]
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Static/StaticBody2D" unique_id=171008005]
+position = Vector2(300, -15)
 shape = SubResource("RectangleShape2D_h2yge")
 
-[node name="StaticBody2D4" type="StaticBody2D" parent="Static" unique_id=1035532054]
-position = Vector2(326, 288)
-collision_mask = 0
-metadata/_edit_lock_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Static/StaticBody2D4" unique_id=63399873]
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="Static/StaticBody2D" unique_id=63399873]
+position = Vector2(300, 335)
 shape = SubResource("RectangleShape2D_h2yge")
 
 [node name="PlayerSpawnMarker" type="Marker2D" parent="." unique_id=478673854]
@@ -110,6 +100,7 @@ metadata/_edit_lock_ = true
 unique_name_in_owner = true
 clip_children = 1
 position = Vector2(320, 180)
+scale = Vector2(2, 2)
 texture = ExtResource("4_lquwl")
 
 [node name="YSortRoot" type="Node2D" parent="." unique_id=216170404]
@@ -151,8 +142,16 @@ unique_name_in_owner = true
 visible = false
 
 [node name="GameCamera" parent="." unique_id=903918361 instance=ExtResource("6_7mycd")]
+top_level = true
 position = Vector2(320, 180)
+editor_draw_limits = true
 metadata/_edit_lock_ = true
+
+[node name="PhantomCameraHost" type="Node" parent="GameCamera" unique_id=1352644365]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("18_cegan")
+metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
 [node name="EnemyDiedAudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1512230142]
 unique_name_in_owner = true

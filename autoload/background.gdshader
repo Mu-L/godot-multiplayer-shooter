@@ -6,7 +6,7 @@ shader_type canvas_item;
 
 void fragment() {
 	// Called for every pixel the material is visible on.
-	vec4 color = texture(TEXTURE, UV + vec2(TIME * -0.032, TIME * -0.045));
+	vec4 color = texture(TEXTURE, UV + vec2(TIME * -0.022, TIME * -0.045));
 	COLOR = color;
 }
 

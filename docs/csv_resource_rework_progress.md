@@ -1,4 +1,4 @@
-# CSV 资源系统分阶段任务进度
+﻿# CSV 资源系统分阶段任务进度
 
 ## 执行规则
 
@@ -20,7 +20,7 @@
 | 任务 | 名称 | 状态 | 验收结论 |
 | --- | --- | --- | --- |
 | Task 0 | 建立任务进度文档 | 已验收 | 用户已验收 |
-| Task 1 | CSV 到运行时 Resource 缓存 | 进行中 | - |
+| Task 1 | CSV 鍒拌繍琛屾椂 Resource 缂撳瓨 | 寰呴獙鏀?| 2026-05-19 |
 | Task 2 | 敌人生成接入 `enemy_config.csv` | 未开始 | - |
 | Task 3 | 被动物品替代旧升级奖励 | 未开始 | - |
 | Task 4 | 实现 6 个被动物品效果 | 未开始 | - |
@@ -72,7 +72,9 @@
 
 ### 改动范围
 
-- 进行中。
+- 新增 `autoload/csv_resource_cache.gd`（CSV 读取、缓存、查询 autoload）。
+- 修改 `project.godot`（注册 CSVResourceCache autoload）。
+- 新增 `resources/enemy_resource.gd`、`resources/passive_item_resource.gd`、`resources/pickup_item_resource.gd`（三个 Resource 类型）。
 
 ### 测试方式
 
@@ -81,11 +83,11 @@
 
 ### 测试结果
 
-- 未开始。
+- `--check-only` 通过，零编译错误。运行时输出: Loaded 3 enemy configs, Loaded 6 passive item configs, Loaded 2 pickup item configs。
 
 ### 当前状态
 
-- 进行中。
+- 待验收。
 
 ### 验收结论
 
@@ -253,3 +255,4 @@
 | --- | --- | --- | --- |
 | Task 0 | 2026-05-18 21:30:40 +08:00 | `Test-Path` 返回 `True`；`rg` 命中 Task 0-6、验收门禁、测试方式、验收记录 | 已验收 |
 | Task 0 审核补充 | 2026-05-18 21:36:15 +08:00 | 已记录 `comment_xxx` 忽略规则、`xxx_key` + `tr()` 国际化规则，并同步到 `AGENTS.md` | 已验收 |
+| Task 1 | 2026-05-19 21:36:59 +08:00 | --check-only 0 errors; 3 enemy + 6 passive + 2 pickup loaded | 寰呴獙鏀?|

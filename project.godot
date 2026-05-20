@@ -8,6 +8,8 @@
 
 config_version=5
 
+"ï»¿config_version"=5
+
 [application]
 
 config/name="01-multi-player"
@@ -29,6 +31,7 @@ SoundManager="*uid://bytopyw472gnu"
 GameState="*uid://ca6butkvra4ge"
 GameCursor="*uid://b4pl36qdnbkli"
 KLogger="*uid://dqkjoq0kbi8f4"
+CSVResourceCache="*res://autoload/csv_resource_cache.gd"
 
 [display]
 

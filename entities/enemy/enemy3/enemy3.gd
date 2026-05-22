@@ -1,0 +1,171 @@
+class_name Enemy3
+extends CharacterBody2D
+
+const HIT_EFFECT = preload("uid://da0onk1mh08tv")
+const ENEMY_DIED_EFFECT = preload("uid://dv1y8ri1kqvnf")
+const NORMAL_TEXTURE: Texture2D = preload("res://assets/stone-slime-normal.tres")
+const ATTACK_TEXTURE: Texture2D = preload("res://assets/stone-slime-attack.tres")
+const MOVE_SPEED: float = 45.0
+
+@onready var track_timer: Timer = $TrackTimer
+@onready var health_component: HealthComponent = $HealthComponent
+@onready var visual: Node2D = $Visual
+@onready var state_machine: StateMachine = $StateMachine
+@onready var warning_icon: Sprite2D = $WarningIcon
+@onready var attack_cool_down_timer: Timer = $AttackCoolDownTimer
+@onready var hurtbox_component: HurtboxComponent = $HurtboxComponent
+@onready var flash_sprite_component: FlashSpriteComponent = $Visual/FlashSpriteComponent
+@onready var move_animation_player: AnimationPlayer = %MoveAnimationPlayer
+@onready var hit_audio_stream_player: AudioStreamPlayer = %HitAudioStreamPlayer
+@onready var hurt_collision_shape_2d: CollisionShape2D = $HurtboxComponent/HurtCollisionShape2D
+@onready var hit_collision_shape_2d: CollisionShape2D = %HitCollisionShape2D
+@onready var hitbox_component: HitboxComponent = $HitboxComponent
+
+var track_target: Vector2
+var has_track_target: bool = false
+var charge_tip_tween: Tween
+
+
+func _ready() -> void:
+	warning_icon.scale = Vector2.ZERO
+	hurt_collision_shape_2d.disabled = true
+	hit_collision_shape_2d.disabled = true
+	if is_multiplayer_authority():
+		track_timer.timeout.connect(_on_track_timer_timeout)
+		health_component.health_depleted.connect(_on_health_depleted)
+		hurtbox_component.hit.connect(_on_hit)
+		state_machine.current_state = "spawn"
+	else:
+		track_timer.process_mode = Node.PROCESS_MODE_DISABLED
+
+
+func _process(_delta: float) -> void:
+	if is_multiplayer_authority():
+		move_and_slide()
+
+
+func apply_enemy_config(config: EnemyResource) -> void:
+	var health := _random_value_from_range(config.health_range)
+	health_component.max_health = health
+	health_component.reset(health)
+	hitbox_component.damage = _random_value_from_range(config.damage_range)
+
+
+func _random_value_from_range(value_range: Vector2) -> float:
+	var min_value := minf(value_range.x, value_range.y)
+	var max_value := maxf(value_range.x, value_range.y)
+	return randf_range(min_value, max_value)
+
+
+func play_spawn_animation() -> void:
+	var tween := create_tween()
+	tween.tween_property(visual, "scale", Vector2.ONE, 0.4)\
+		.from(Vector2.ZERO)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_BACK)
+	if is_multiplayer_authority():
+		tween.finished.connect(func() -> void:
+			state_machine.current_state = "normal"
+		)
+
+
+func show_charge_tip() -> void:
+	charge_tip_tween = create_tween()
+	charge_tip_tween.tween_property(warning_icon, "scale", Vector2.ONE, 0.2)\
+		.from(Vector2.ZERO)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_BACK)
+
+
+func hide_charge_tip() -> void:
+	if charge_tip_tween != null and charge_tip_tween.is_valid():
+		charge_tip_tween.kill()
+	charge_tip_tween = create_tween()
+	charge_tip_tween.tween_property(warning_icon, "scale", Vector2.ZERO, 0.2)\
+		.from(Vector2.ONE)\
+		.set_ease(Tween.EASE_OUT)\
+		.set_trans(Tween.TRANS_BACK)
+
+
+func velocity_down() -> void:
+	velocity = velocity.lerp(Vector2.ZERO, 1.0 - exp(-8.0 * get_process_delta_time()))
+
+
+func update_direction() -> void:
+	visual.scale = Vector2.ONE\
+		if track_target.x > global_position.x\
+		else Vector2(-1.0, 1.0)
+
+
+func update_track_target() -> void:
+	var players := get_tree().get_nodes_in_group("player")
+	var min_squared_distance: float
+	var track_player: Node2D = null
+	for player in players:
+		if player.is_dead:
+			continue
+		if track_player == null:
+			track_player = player
+			min_squared_distance = track_player.global_position.distance_squared_to(global_position)
+		var squared_distance: float = player.global_position.distance_squared_to(global_position)
+		if squared_distance < min_squared_distance:
+			min_squared_distance = squared_distance
+			track_player = player
+	if track_player != null:
+		track_target = track_player.global_position
+		has_track_target = true
+	else:
+		has_track_target = false
+
+
+func start_attack_collision() -> void:
+	if not is_multiplayer_authority():
+		return
+	hitbox_component.reset_hit_records()
+	hitbox_component.is_single_hit_per_hurtbox = true
+	hit_collision_shape_2d.disabled = false
+
+
+func stop_attack_collision() -> void:
+	if not is_multiplayer_authority():
+		return
+	hit_collision_shape_2d.disabled = true
+
+
+func set_attack_visual(enabled: bool) -> void:
+	if enabled:
+		flash_sprite_component.texture = ATTACK_TEXTURE
+		flash_sprite_component.offset = Vector2(-30.0, -45.0)
+	else:
+		flash_sprite_component.texture = NORMAL_TEXTURE
+		flash_sprite_component.offset = Vector2(-20.0, -35.0)
+
+
+@rpc("authority", "call_local")
+func _play_hit_effect() -> void:
+	flash_sprite_component.play_flash_animation()
+	hit_audio_stream_player.play()
+	var effect := HIT_EFFECT.instantiate() as Node2D
+	get_parent().add_child(effect)
+	effect.global_position = hurtbox_component.global_position
+
+
+@rpc("authority", "call_local")
+func _play_died_effect() -> void:
+	SoundManager.play_enemy_died()
+	var effect := ENEMY_DIED_EFFECT.instantiate() as Node2D
+	Main.background_effect_clip.add_child(effect)
+	effect.global_position = global_position
+
+
+func _on_track_timer_timeout() -> void:
+	update_track_target()
+
+
+func _on_health_depleted() -> void:
+	_play_died_effect.rpc()
+	state_machine.current_state = "died"
+
+
+func _on_hit() -> void:
+	_play_hit_effect.rpc()

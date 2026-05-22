@@ -120,7 +120,12 @@
 
 - `C:\Users\fetasty\bin\godot.exe --headless --path . --check-only --quit` 退出码为 0。
 - 输出包含：`[CSV] Loaded 3 enemy configs`、`[CSV] Loaded 6 passive item configs`、`[CSV] Loaded 2 pickup item configs`。
-- `stone_poke` 当前没有独立场景资源，暂复用 `enemy1.tscn`，但已满足每个 enemy id 都能加载 scene。
+- `stone_poke` 已追加独立 `enemy3.tscn`，不再复用 `enemy1.tscn`。
+- 2026-05-22 追加修正：新增 enemy3，使用 `stone-slime-normal` / `stone-slime-attack` 资源；生成后追踪最近玩家，近距离蓄力后切换 attack 资源并打开 1 帧攻击碰撞检测。
+- 2026-05-22 追加验证：`C:\Users\fetasty\bin\godot.exe --headless --path . --check-only --quit` 退出码为 0，输出包含 3 enemy configs loaded，未出现脚本解析错误。
+- 2026-05-22 MCP 验证：Godot MCP 已确认 Godot 4.6.2 editor 运行且响应；成功打开并读取 `enemy3.tscn`；scene tree 包含 Enemy3 根节点、StateMachine 五个状态、Hitbox/Hurtbox；通过 MCP 直接调用 `set_attack_visual(true/false)` 和 `update_track_target()` 成功。
+- 2026-05-22 追加修正：enemy3 攻击状态改为维持 2 秒、期间不可移动；攻击碰撞在整个攻击窗口内开启；Hitbox 增加按 Hurtbox 记录命中的能力，enemy3 每次攻击对同一 Hurtbox 只造成一次伤害。
+- 2026-05-22 追加验证：`C:\Users\fetasty\bin\godot.exe --headless --path . --check-only --quit` 退出码为 0；MCP 成功读取更新后的 `enemy3.gd`、`state_attack.gd`、`hitbox_component.gd`、`hurtbox_component.gd`。
 - Godot 退出时仍有资源泄漏警告：`ObjectDB instances leaked at exit` / `1 resources still in use at exit`，未出现脚本解析错误。
 
 ### 当前状态
@@ -264,3 +269,4 @@
 | Task 0 审核补充 | 2026-05-18 21:36:15 +08:00 | 已记录 `comment_xxx` 忽略规则、`xxx_key` + `tr()` 国际化规则，并同步到 `AGENTS.md` | 已验收 |
 | Task 1 | 2026-05-19 21:36:59 +08:00 | `--check-only` 0 errors; 3 enemy + 6 passive + 2 pickup loaded | 已验收 |
 | Task 2 | 2026-05-20 22:30:04 +08:00 | `--check-only --quit` exit 0; 3 enemy configs loaded; enemy scenes registered from CSV | 待验收 |
+| Task 2 追加 enemy3 | 2026-05-22 | 新增 `enemy3.tscn`；`stone_poke` 指向 enemy3；攻击改为 2 秒定身窗口且同一 Hurtbox 每次攻击只受伤一次；`--check-only --quit` exit 0; MCP 打开场景并读取更新后脚本成功 | 待验收 |

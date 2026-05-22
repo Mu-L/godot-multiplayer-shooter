@@ -23,6 +23,8 @@ func _on_area_entered(area: Area2D) -> void:
 	var hitbox := area as HitboxComponent
 	if hitbox.is_single_hit and hitbox.hit_count > 0:
 		return
+	if hitbox.is_single_hit_per_hurtbox and hitbox.has_hit_hurtbox(self):
+		return
 	take_damage(hitbox.damage)
 	hitbox.register_hit(self)
 	hit.emit()

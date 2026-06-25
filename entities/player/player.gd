@@ -94,28 +94,30 @@ func _update_aim_direction() -> void:
 
 
 func _get_move_speed() -> float:
-	var upgrade_count := UpgradeComponent.get_peer_upgrade_count(
-		input_peer_id,
-		"move_speed_up"
-	)
-	return BASE_MOVE_SPEED * (1.0 + 0.1 * upgrade_count)
+	return UpgradeComponent.calc_move_speed(input_peer_id, BASE_MOVE_SPEED)
 
 
 func _get_fire_rate() -> float:
-	var upgrade_count := UpgradeComponent.get_peer_upgrade_count(
-		input_peer_id,
-		"attack_speed_up"
-	)
-	return BASE_FIRE_RATE * clamp(1.0 - 0.08 * upgrade_count, 0, 100)
+	return UpgradeComponent.calc_fire_rate(input_peer_id, BASE_FIRE_RATE)
 
 
+func _get_bullet_damage() -> float:
+	return UpgradeComponent.calc_bullet_damage(input_peer_id, BASE_BULLET_DAMAGE)
 
-func _get_bullet_damage() -> int:
-	var upgrade_count := UpgradeComponent.get_peer_upgrade_count(
-		input_peer_id,
-		"basic_damage_up"
-	)
-	return BASE_BULLET_DAMAGE + upgrade_count
+
+# TODO 生效
+func _get_bullet_count() -> int:
+	return UpgradeComponent.calc_bullet_count(input_peer_id)
+
+
+# TODO 生效
+func _get_health_limit() -> float:
+	return UpgradeComponent.calc_health_limit(input_peer_id, health_component.max_health)
+
+
+# TODO 生效
+func _get_defence() -> float:
+	return UpgradeComponent.calc_defence(input_peer_id)
 
 
 func _try_to_attack() -> void:

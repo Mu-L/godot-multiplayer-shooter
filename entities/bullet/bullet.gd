@@ -5,7 +5,7 @@ extends Node2D
 const SPEED: float = 600.0
 
 var direction: Vector2
-var damage: int
+var damage: float
 
 @onready var timer: Timer = $Timer
 @onready var hitbox_component: HitboxComponent = $HitboxComponent

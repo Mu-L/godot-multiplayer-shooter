@@ -66,7 +66,16 @@ func _load_passive_csv() -> void:
 		res.name_key = _col(row, header_map.get("name_key", -1))
 		res.description_key = _col(row, header_map.get("description_key", -1))
 		res.effect_type = _col(row, header_map.get("effect_type", -1))
-		res.effect_params = _col(row, header_map.get("effect_params", -1))
+		var effect_params_col: String = _col(row, header_map.get("effect_params", -1))
+		var params_strs: PackedStringArray = effect_params_col.split(";", false)
+		res.effect_params = []
+		for param_str in params_strs:
+			if param_str.is_valid_int():
+				res.effect_params.append(param_str.to_int())
+			elif param_str.is_valid_float():
+				res.effect_params.append(param_str.to_float())
+			else:
+				res.effect_params.append(param_str)
 		res.valid_count = _to_int(_col(row, header_map.get("valid_count", -1)))
 		res.valid_duration = _to_float(_col(row, header_map.get("valid_duration", -1)))
 		passive_resources[res.id] = res

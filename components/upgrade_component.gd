@@ -3,6 +3,14 @@ extends Node
 
 signal upgrade_finished
 
+const ITEM_ID_MOVE_SPEED_UP: String = "move_speed_up"
+const ITEM_ID_BASIC_DAMAGE_UP: String = "basic_damage_up"
+const ITEM_ID_ATTACK_SPEED_UP: String = "attack_speed_up"
+const ITEM_ID_HEALTH_LIMIT_UP: String = "health_limit_up"
+const ITEM_ID_BULLET_SPLIT: String = "bullet_split"
+const ITEM_ID_DEFENCE_UP: String = "defence_up"
+
+
 static var instance: UpgradeComponent
 
 @export var upgrade_options_ui: UpgradeOptionsUI
@@ -23,6 +31,85 @@ static func get_peer_passive_count(peer_id: int, passive_id: String) -> int:
 		return 0
 	var selected_passives: Dictionary = instance.peer_selected_passives[peer_id]
 	return selected_passives.get(passive_id, 0)
+
+
+static func calc_health_limit(peer_id: int, base_value: float) -> float:
+	if not is_instance_valid(instance):
+		return base_value
+	var count: int = get_peer_passive_count(peer_id, ITEM_ID_HEALTH_LIMIT_UP)
+	var res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_HEALTH_LIMIT_UP)
+	var param: float = 1.0
+	if res and not res.effect_params.is_empty():
+		param = count * res.effect_params[0]
+	return base_value + param
+
+
+static func calc_defence(peer_id: int) -> float:
+	if not is_instance_valid(instance):
+		return 1.0
+	var count: int = get_peer_passive_count(peer_id, ITEM_ID_DEFENCE_UP)
+	var res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_DEFENCE_UP)
+	var param: float = 1.0 # 实际承受伤害的比例
+	if res and not res.effect_params.is_empty():
+		param = res.effect_params[0] ** count
+	return param
+
+
+static func calc_move_speed(peer_id: int, base_speed: float) -> float:
+	if not is_instance_valid(instance):
+		return base_speed
+	var count: int = get_peer_passive_count(peer_id, ITEM_ID_MOVE_SPEED_UP)
+	var res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_MOVE_SPEED_UP)
+	var param: float = 0.1
+	if res and not res.effect_params.is_empty():
+		param = res.effect_params[0]
+	else:
+		KLogger.error("wrong csv params for item %s" % ITEM_ID_MOVE_SPEED_UP)
+	return base_speed * (1.0 + param * count)
+
+
+static func calc_fire_rate(peer_id: int, base_rate: float) -> float:
+	if not is_instance_valid(instance):
+		return base_rate
+	var count: int = get_peer_passive_count(peer_id, ITEM_ID_ATTACK_SPEED_UP)
+	var res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_ATTACK_SPEED_UP)
+	var param: float = 0.1
+	if res and not res.effect_params.is_empty():
+		param = res.effect_params[0]
+	else:
+		KLogger.error("wrong csv params for item %s" % ITEM_ID_ATTACK_SPEED_UP)
+	return base_rate * clampf(1.0 - param * count, 0.001, 10.0)
+
+
+static func calc_bullet_damage(peer_id: int, base_damage: float) -> float:
+	if not is_instance_valid(instance):
+		return base_damage
+	# 先计算基础攻击加成
+	var damage_up_count: int = get_peer_passive_count(peer_id, ITEM_ID_BASIC_DAMAGE_UP)
+	var damage_up_res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_BASIC_DAMAGE_UP)
+	var damage_param: float = 1.0
+	if damage_up_res and not damage_up_res.effect_params.is_empty():
+		damage_param = damage_up_res.effect_params[0]
+	base_damage += damage_up_count * damage_param
+	# 再计算弹道分裂减伤
+	var split_item_count: int = get_peer_passive_count(peer_id, ITEM_ID_BULLET_SPLIT)
+	var split_item_res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_BULLET_SPLIT)
+	var split_param: float = 0.7
+	if split_item_res and split_item_res.effect_params.size() > 1:
+		split_param = split_item_res.effect_params[1]
+	base_damage *= (split_param ** split_item_count)
+	return base_damage
+
+
+static func calc_bullet_count(peer_id: int) -> int:
+	if not is_instance_valid(instance):
+		return 1
+	var item_count: int = get_peer_passive_count(peer_id, ITEM_ID_BULLET_SPLIT)
+	var item_res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_BULLET_SPLIT)
+	var item_param: int = 2
+	if item_res and item_res.effect_params.size() > 0:
+		item_param = item_res.effect_params[0]
+	return 1 + item_param * item_count
 
 
 func _ready() -> void:

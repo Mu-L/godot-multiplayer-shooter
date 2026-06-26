@@ -5,6 +5,8 @@ signal hit
 
 @export var health_component: HealthComponent
 
+var damage_modifier: Callable
+
 
 func _ready() -> void:
 	if is_multiplayer_authority():
@@ -14,7 +16,9 @@ func _ready() -> void:
 
 
 func take_damage(damage: float) -> void:
-	health_component.take_damage(damage)
+	var final_damage: float = damage_modifier.call(damage) if damage_modifier.is_valid() else damage
+	health_component.take_damage(final_damage)
+	hit.emit()
 
 
 func _on_area_entered(area: Area2D) -> void:
@@ -27,4 +31,3 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 	take_damage(hitbox.damage)
 	hitbox.register_hit(self)
-	hit.emit()

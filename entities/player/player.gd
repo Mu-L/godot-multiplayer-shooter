@@ -63,6 +63,8 @@ func _ready() -> void:
 		health_component.health_depleted.connect(_on_health_depleted)
 		health_component.health_changed.connect(_on_health_changed)
 		hurtbox_component.hit.connect(_on_hit)
+		hurtbox_component.damage_modifier = func(raw_damage: float) -> float:
+			return raw_damage * _get_defence()
 
 
 func _process(delta: float) -> void:
@@ -78,15 +80,6 @@ func _process(delta: float) -> void:
 		move_and_slide()
 		if player_input_multiplayer_synchronizer_component.is_attack_pressing:
 			_try_to_attack()
-
-
-func take_damage(damage: float) -> void:
-	if not is_multiplayer_authority():
-		return
-	if is_immnue:
-		return
-	health_component.take_damage(damage)
-	try_play_hurt_effect()
 
 
 func _update_aim_direction() -> void:
@@ -116,7 +109,7 @@ func _get_health_limit() -> float:
 	return UpgradeComponent.calc_health_limit(input_peer_id, health_component.max_health)
 
 
-# TODO 生效
+# TODO 防御减伤机制已经实现, 但是没有视觉提示
 func _get_defence() -> float:
 	return UpgradeComponent.calc_defence(input_peer_id)
 

@@ -131,7 +131,7 @@ func burst() -> void:
 		player_detect_component.detected_players.size()
 	])
 	for player in player_detect_component.detected_players:
-		player.take_damage(burst_damage)
+		player.hurtbox_component.take_damage(burst_damage)
 	# 下一帧消失
 	state_machine.current_state = "died"
 

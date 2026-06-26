@@ -13,6 +13,8 @@ const REVIVE_HEALTH: int = 1
 const BASE_MOVE_SPEED: float = 100
 const BASE_FIRE_RATE: float = 0.5
 const BASE_BULLET_DAMAGE: int = 1
+const BULLET_SPREAD_ANGLE: float = deg_to_rad(30.0)
+const BULLET_SPAWN_OFFSET: float = 4.0
 
 var input_peer_id: int
 var input_display_name: String
@@ -105,7 +107,6 @@ func _get_bullet_damage() -> float:
 	return UpgradeComponent.calc_bullet_damage(input_peer_id, BASE_BULLET_DAMAGE)
 
 
-# TODO 生效
 func _get_bullet_count() -> int:
 	return UpgradeComponent.calc_bullet_count(input_peer_id)
 
@@ -125,13 +126,29 @@ func _try_to_attack() -> void:
 		return
 	attack_timer.wait_time = _get_fire_rate()
 	attack_timer.start()
-	# TODO 多颗子弹
-	var bullet := BULLET.instantiate() as Bullet
-	bullet.global_position = attack_point.global_position
-	bullet.direction = player_input_multiplayer_synchronizer_component.aim_vector
-	bullet.rotation = bullet.direction.angle()
-	bullet.damage = _get_bullet_damage()
-	get_parent().add_child(bullet, true)
+
+	var bullet_count: int = _get_bullet_count()
+	var aim_vector := player_input_multiplayer_synchronizer_component.aim_vector
+	var base_angle: float = aim_vector.angle()
+	var bullet_damage: float = _get_bullet_damage()
+
+	var spawn_perp := Vector2(-sin(base_angle), cos(base_angle))
+
+	for i in range(bullet_count):
+		var angle_offset: float = 0.0
+		var pos_offset: float = 0.0
+		if bullet_count > 1:
+			var t := i - (bullet_count - 1) * 0.5
+			angle_offset = t * BULLET_SPREAD_ANGLE / (bullet_count - 1)
+			pos_offset = t * BULLET_SPAWN_OFFSET
+
+		var bullet := BULLET.instantiate() as Bullet
+		bullet.global_position = attack_point.global_position + spawn_perp * pos_offset
+		bullet.direction = Vector2.RIGHT.rotated(base_angle + angle_offset)
+		bullet.rotation = base_angle + angle_offset
+		bullet.damage = bullet_damage
+		get_parent().add_child(bullet, true)
+
 	_play_attack_effect.rpc()
 
 

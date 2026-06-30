@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cyefbedhrtvig"]
+
+[ext_resource type="Shader" uid="uid://cjgjdb52r2ioj" path="res://resources/shader/shield_ghost.gdshader" id="1_au7g5"]
+[ext_resource type="Script" uid="uid://cim6dmh76phri" path="res://components/shield_ghost_component.gd" id="2_8p7rf"]
+[ext_resource type="Texture2D" uid="uid://rnho2a824a3g" path="res://assets/defence_up.tres" id="2_ea265"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sn0t7"]
+shader = ExtResource("1_au7g5")
+shader_parameter/shield_color = Color(0.45, 0.7, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/fill_alpha = 0.70000003325
+shader_parameter/rim_power = 2.0
+shader_parameter/rim_width = 0.25
+
+[node name="ShieldGhostComponent" type="Sprite2D" unique_id=1726474368]
+material = SubResource("ShaderMaterial_sn0t7")
+texture = ExtResource("2_ea265")
+script = ExtResource("2_8p7rf")

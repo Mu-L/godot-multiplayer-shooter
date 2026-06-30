@@ -13,6 +13,7 @@
 [ext_resource type="Shader" uid="uid://cmi5pwj65438r" path="res://resources/shader/flash_sprite_component.gdshader" id="8_7thud"]
 [ext_resource type="PackedScene" uid="uid://di1t1xvv6tgy7" path="res://effects/healing_effect.tscn" id="10_afbqv"]
 [ext_resource type="AudioStream" uid="uid://caovjfylqwsuh" path="res://assets/audio/fire1.mp3" id="11_j3ovn"]
+[ext_resource type="PackedScene" uid="uid://cyefbedhrtvig" path="res://components/shield_ghost_component.tscn" id="11_yqrof"]
 [ext_resource type="AudioStream" uid="uid://cwrv60p3wvgf5" path="res://assets/audio/fire2.mp3" id="12_afbqv"]
 [ext_resource type="PackedScene" uid="uid://bp7lwwwjqwd2k" path="res://components/detectable_component.tscn" id="12_gx6sm"]
 
@@ -24,7 +25,7 @@ properties/1/path = NodePath(".:player_look_index")
 properties/1/spawn = true
 properties/1/replication_mode = 0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_gx6sm"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yqrof"]
 resource_local_to_scene = true
 shader = ExtResource("8_7thud")
 shader_parameter/input_color = Color(0.84, 0.21839999, 0.21839999, 1)
@@ -197,7 +198,7 @@ texture = ExtResource("5_j3ovn")
 
 [node name="FlashSpriteComponent" parent="VisualRoot" unique_id=1374404885 instance=ExtResource("7_wvtmh")]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_gx6sm")
+material = SubResource("ShaderMaterial_yqrof")
 texture = ExtResource("2_sglur")
 centered = false
 offset = Vector2(-13, -32)
@@ -222,6 +223,11 @@ position = Vector2(19, -2)
 
 [node name="HealingEffect" parent="VisualRoot" unique_id=1320950043 instance=ExtResource("10_afbqv")]
 unique_name_in_owner = true
+
+[node name="ShieldGhostComponent" parent="VisualRoot" unique_id=773133935 instance=ExtResource("11_yqrof")]
+unique_name_in_owner = true
+scale = Vector2(1.5, 1.5)
+offset = Vector2(0, -8)
 
 [node name="AttackTimer" type="Timer" parent="." unique_id=618798759]
 wait_time = 0.25

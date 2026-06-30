@@ -170,7 +170,19 @@ func select_upgrade_option(index: int) -> void:
 		selected_resource.id,
 		count + 1,
 	])
+	if selected_resource.id == ITEM_ID_DEFENCE_UP:
+		_on_defence_upgraded(peer_id)
 	_check_upgrade_finished()
+
+
+## 防御升级后通知对应 peer 更新 HUD 减伤百分比
+func _on_defence_upgraded(peer_id: int) -> void:
+	var percent: float = snappedf((1.0 - calc_defence(peer_id)) * 100.0, 1.0)
+	var players := get_tree().get_nodes_in_group("player")
+	for p in players:
+		if p is Player and p.input_peer_id == peer_id:
+			p._notify_defense_changed.rpc_id(peer_id, percent)
+			return
 
 
 func _on_upgrade_option_selected(index: int) -> void:

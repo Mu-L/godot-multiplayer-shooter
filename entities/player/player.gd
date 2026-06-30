@@ -39,6 +39,7 @@ var is_immnue: bool = false
 @onready var move_animation_player: AnimationPlayer = %MoveAnimationPlayer
 @onready var hurtbox_component: HurtboxComponent = $HurtboxComponent
 @onready var flash_sprite_component: FlashSpriteComponent = %FlashSpriteComponent
+@onready var shield_ghost_component: ShieldGhostComponent = %ShieldGhostComponent
 @onready var collision_shape_2d: CollisionShape2D = $HurtboxComponent/CollisionShape2D
 @onready var audio_stream_player: AudioStreamPlayer = %AudioStreamPlayer
 @onready var healing_effect: HealingEffect = %HealingEffect
@@ -50,6 +51,8 @@ func _ready() -> void:
 	var is_peer_authority = multiplayer.get_unique_id() == input_peer_id
 	player_info.visible = not is_peer_authority
 	flash_sprite_component.frame = player_look_index
+	if is_multiplayer_authority():
+		_notify_defense_changed.rpc_id(input_peer_id, _get_defense_percent())
 	GameEvents.player_look_changed.connect(_on_player_look_changed)
 	if is_peer_authority:
 		var remote_transform2d: RemoteTransform2D = RemoteTransform2D.new()
@@ -112,6 +115,10 @@ func _get_health_limit() -> float:
 # TODO 防御减伤机制已经实现, 但是没有视觉提示
 func _get_defence() -> float:
 	return UpgradeComponent.calc_defence(input_peer_id)
+
+
+func _get_defense_percent() -> float:
+	return snapped((1.0 - _get_defence()) * 100.0, 1.0)
 
 
 func _try_to_attack() -> void:
@@ -204,6 +211,17 @@ func set_player_health_bar(rate: float) -> void:
 
 
 @rpc("authority", "call_local")
+func _play_shield_ghost() -> void:
+	shield_ghost_component.play_shield_animation()
+
+
+## 通知指定 peer 更新其本地 HUD 的防御百分比显示
+@rpc("authority", "call_local")
+func _notify_defense_changed(percent: float) -> void:
+	GameEvents.emit_local_player_defense_changed(percent)
+
+
+@rpc("authority", "call_local")
 func play_hit_effects() -> void:
 	flash_sprite_component.play_flash_animation()
 	if is_multiplayer_authority():
@@ -241,6 +259,8 @@ func _on_health_changed(max_value: float, current_value: float) -> void:
 
 func _on_hit() -> void:
 	try_play_hurt_effect()
+	if _get_defence() < 1.0:
+		_play_shield_ghost.rpc()
 
 
 func _on_player_look_changed(peer_id: int, index: int) -> void:

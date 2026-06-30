@@ -355,6 +355,10 @@ msgstr "舞台是你的了!"
 msgid "DEFAULT_PLAYER_DIED_TIP"
 msgstr "归于星辰"
 
+#: ui/game_ui/player_health_ui.gd
+msgid "DEFENSE_TEXT"
+msgstr "减伤 %s%%"
+
 #: ui/game_ui/ready_state_ui.gd:41
 msgid "READY_COUNT_INFO"
 msgstr "%s/%s 已准备"

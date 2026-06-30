@@ -355,6 +355,10 @@ msgstr "The stage is yours!"
 msgid "DEFAULT_PLAYER_DIED_TIP"
 msgstr "Returning to the stars."
 
+#: ui/game_ui/player_health_ui.gd
+msgid "DEFENSE_TEXT"
+msgstr "DEF %s%%"
+
 #: ui/game_ui/ready_state_ui.gd:41
 msgid "READY_COUNT_INFO"
 msgstr "%s/%s Ready"

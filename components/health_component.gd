@@ -35,3 +35,11 @@ func reset(health: float = -1) -> void:
 		current_health = max_health
 	else:
 		current_health = clamp(health, 1.0, max_health)
+
+
+## 更新血量上限, 可选择是否回满差额
+func set_max_health(new_max: float, heal_delta: bool = true) -> void:
+	var diff: float = new_max - max_health
+	max_health = new_max
+	if heal_delta and diff > 0:
+		healing(diff)

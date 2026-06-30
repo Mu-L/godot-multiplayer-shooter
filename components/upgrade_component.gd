@@ -172,6 +172,8 @@ func select_upgrade_option(index: int) -> void:
 	])
 	if selected_resource.id == ITEM_ID_DEFENCE_UP:
 		_on_defence_upgraded(peer_id)
+	elif selected_resource.id == ITEM_ID_HEALTH_LIMIT_UP:
+		_on_health_limit_upgraded(peer_id)
 	_check_upgrade_finished()
 
 
@@ -182,6 +184,15 @@ func _on_defence_upgraded(peer_id: int) -> void:
 	for p in players:
 		if p is Player and p.input_peer_id == peer_id:
 			p._notify_defense_changed.rpc_id(peer_id, percent)
+			return
+
+
+## 血量上限升级后通知对应 player 刷新属性
+func _on_health_limit_upgraded(peer_id: int) -> void:
+	var players := get_tree().get_nodes_in_group("player")
+	for p in players:
+		if p is Player and p.input_peer_id == peer_id:
+			p._refresh_health_limit()
 			return
 
 

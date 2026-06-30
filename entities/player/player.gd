@@ -107,12 +107,18 @@ func _get_bullet_count() -> int:
 	return UpgradeComponent.calc_bullet_count(input_peer_id)
 
 
-# TODO 生效, 监听数量变化, 实时生效
 func _get_health_limit() -> float:
 	return UpgradeComponent.calc_health_limit(input_peer_id, health_component.max_health)
 
 
-# TODO 防御减伤机制已经实现, 但是没有视觉提示
+## 刷新血量上限, 升级时调用(authority only)
+func _refresh_health_limit() -> void:
+	if not is_multiplayer_authority():
+		return
+	var new_max: float = _get_health_limit()
+	health_component.set_max_health(new_max, true)
+
+
 func _get_defence() -> float:
 	return UpgradeComponent.calc_defence(input_peer_id)
 

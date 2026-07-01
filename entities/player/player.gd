@@ -270,6 +270,15 @@ func _on_hit() -> void:
 		_play_shield_ghost.rpc()
 
 
+## 奖励关免费升级触发后, 刷新对应属性 (authority-only 由 UpgradeComponent 调用)
+func _on_free_upgrade_applied(item_id: String) -> void:
+	if item_id == UpgradeComponent.ITEM_ID_HEALTH_LIMIT_UP:
+		_refresh_health_limit()
+	elif item_id == UpgradeComponent.ITEM_ID_DEFENCE_UP:
+		_notify_defense_changed.rpc_id(input_peer_id, _get_defense_percent())
+	# 攻击 / 移速 / 射速 在下次 _get_xxx 调用时自动生效
+
+
 func _on_player_look_changed(peer_id: int, index: int) -> void:
 	if peer_id != input_peer_id:
 		return

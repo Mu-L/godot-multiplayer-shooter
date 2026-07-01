@@ -212,3 +212,20 @@ func _refresh_passive_resources() -> void:
 	resources_id_dict.clear()
 	for res: PassiveItemResource in CSVResourceCache.get_all_passives():
 		resources_id_dict[res.id] = res
+
+
+## 免费升级: 奖励关拾取物触发. 不走全玩家同步流程, 单人次直接应用 (instance method)
+func apply_free_upgrade(peer_id: int) -> void:
+	if resources_id_dict.is_empty():
+		return
+	var all_passives := resources_id_dict.keys()
+	var chosen: String = all_passives[randi() % all_passives.size()]
+	var peer_passive_count_dic: Dictionary = peer_selected_passives.get_or_add(peer_id, {})
+	var count: int = peer_passive_count_dic.get_or_add(chosen, 0)
+	peer_passive_count_dic[chosen] = count + 1
+	KLogger.info("[FreeUpgrade] peer %s got %s (count: %s)" % [peer_id, chosen, count + 1])
+	var players := get_tree().get_nodes_in_group("player")
+	for p in players:
+		if p is Player and p.input_peer_id == peer_id:
+			p._on_free_upgrade_applied(chosen)
+			return

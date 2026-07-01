@@ -41,11 +41,11 @@ func _process(_delta: float) -> void:
 		move_and_slide()
 
 
-func apply_enemy_config(config: EnemyResource) -> void:
-	var health := _random_value_from_range(config.health_range)
+func apply_enemy_config(config: EnemyResource, hp_scale: float = 1.0, dmg_scale: float = 1.0) -> void:
+	var health := _random_value_from_range(config.health_range) * hp_scale
 	health_component.max_health = health
 	health_component.reset(health)
-	hitbox_component.damage = _random_value_from_range(config.damage_range)
+	hitbox_component.damage = _random_value_from_range(config.damage_range) * dmg_scale
 
 
 func _random_value_from_range(value_range: Vector2) -> float:

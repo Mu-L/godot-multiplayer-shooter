@@ -54,6 +54,8 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		enemy_spawn_component.round_completed.connect(_on_round_completed)
 		enemy_spawn_component.max_round_end.connect(_on_max_round_end)
+		enemy_spawn_component.bonus_round_started.connect(_on_bonus_round_started)
+		enemy_spawn_component.boss_round_started.connect(_on_boss_round_started)
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 		upgrade_component.upgrade_finished.connect(_on_upgrade_finished)
 	else:
@@ -183,6 +185,14 @@ func _on_round_completed() -> void:
 	_play_round_completed_effect.rpc()
 	await get_tree().create_timer(3.0).timeout
 	upgrade_component.generate_options()
+
+
+func _on_bonus_round_started() -> void:
+	print("[Main] bonus round started")
+
+
+func _on_boss_round_started() -> void:
+	print("[Main] boss round started")
 
 
 func _on_max_round_end() -> void:

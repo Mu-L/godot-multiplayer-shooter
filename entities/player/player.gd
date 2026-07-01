@@ -13,6 +13,7 @@ const REVIVE_HEALTH: int = 1
 const BASE_MOVE_SPEED: float = 100
 const BASE_FIRE_RATE: float = 0.5
 const BASE_BULLET_DAMAGE: int = 1
+const BASE_HEALTH_LIMIT: float = 5
 const BULLET_SPREAD_ANGLE: float = deg_to_rad(30.0)
 const BULLET_SPAWN_OFFSET: float = 4.0
 
@@ -108,7 +109,7 @@ func _get_bullet_count() -> int:
 
 
 func _get_health_limit() -> float:
-	return UpgradeComponent.calc_health_limit(input_peer_id, health_component.max_health)
+	return UpgradeComponent.calc_health_limit(input_peer_id, BASE_HEALTH_LIMIT)
 
 
 ## 刷新血量上限, 升级时调用(authority only)

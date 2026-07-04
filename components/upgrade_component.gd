@@ -164,12 +164,9 @@ func select_upgrade_option(index: int) -> void:
 	var peer_passive_count_dic: Dictionary = peer_selected_passives.get_or_add(peer_id, {})
 	var count: int = peer_passive_count_dic.get_or_add(selected_resource.id, 0)
 	peer_passive_count_dic[selected_resource.id] = count + 1
-	print("[peer %s] peer %s selected passive item id: %s, total count: %s" % [
-		multiplayer.get_unique_id(),
-		peer_id,
-		selected_resource.id,
-		count + 1,
-	])
+	var selected_name := tr(selected_resource.name_key)
+	KLogger.info("[UpgradeLog] peer %s selected upgrade: %s" % [peer_id, selected_name])
+	_log_peer_upgrades(peer_id, peer_selected_passives)
 	if selected_resource.id == ITEM_ID_DEFENCE_UP:
 		_on_defence_upgraded(peer_id)
 	elif selected_resource.id == ITEM_ID_HEALTH_LIMIT_UP:
@@ -206,6 +203,23 @@ func _on_peer_disconnected(peer_id: int) -> void:
 		avaiable_peer_resources.erase(peer_id)
 		_check_upgrade_finished()
 	peer_selected_passives.erase(peer_id)
+
+
+## 打印玩家当前拥有的完整升级清单 (authority 端).
+## 格式: [升级名称1x升级数量1, 升级名称2x升级数量2, ...]
+static func _log_peer_upgrades(peer_id: int, peer_selected_passives: Dictionary) -> void:
+	if not is_instance_valid(instance):
+		return
+	var passive_count_dic: Dictionary = peer_selected_passives.get(peer_id, {})
+	if passive_count_dic.is_empty():
+		KLogger.info("[UpgradeLog] peer %s has no upgrades" % peer_id)
+		return
+	var items: Array[String] = []
+	for passive_id in passive_count_dic:
+		var res: PassiveItemResource = instance.resources_id_dict.get(passive_id as String)
+		var name := tr(res.name_key) if res else passive_id
+		items.append("%sx%s" % [name, passive_count_dic[passive_id]])
+	KLogger.info("[UpgradeLog] peer %s got upgrades: [%s]" % [peer_id, ", ".join(items)])
 
 
 func _refresh_passive_resources() -> void:
@@ -283,7 +297,10 @@ func _apply_passive_upgrade(peer_id: int, passive_id: String) -> void:
 	var peer_passive_count_dic: Dictionary = peer_selected_passives.get_or_add(peer_id, {})
 	var count: int = peer_passive_count_dic.get_or_add(passive_id, 0)
 	peer_passive_count_dic[passive_id] = count + 1
-	KLogger.info("[FreeUpgrade] peer %s got %s (count: %s)" % [peer_id, passive_id, count + 1])
+	var res: PassiveItemResource = resources_id_dict.get(passive_id)
+	var upgrade_name := tr(res.name_key) if res else passive_id
+	KLogger.info("[UpgradeLog] peer %s picked up upgrade: %s" % [peer_id, upgrade_name])
+	_log_peer_upgrades(peer_id, peer_selected_passives)
 	var players := get_tree().get_nodes_in_group("player")
 	for p in players:
 		if p is Player and p.input_peer_id == peer_id:

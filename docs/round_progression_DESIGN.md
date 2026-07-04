@@ -27,8 +27,8 @@
   │╱    ╲       ╰─╯        ╰─╯ │
  ├────┬──┬───┬──┬────┬──┬───┬──▶ 关卡
   1  2  3  4  5  6  7  8  9  10
-           ↑              ↑
-         奖励(低谷)      BOSS(终峰)
+		   ↑              ↑
+		 奖励(低谷)      BOSS(终峰)
 ```
 
 ### 2.2 关卡配置表
@@ -86,15 +86,15 @@ var spawn_count := randi_range(peers, int((peers + round_count * peers))) if is_
 # group_min / group_max 界定方差上界, 不爆量
 # 多人每人 +1 只, 线性增长
 func _spawn_enemy() -> void:
-    if not is_multiplayer_authority():
-        return
-    var group_size := randi_range(current_group_min, current_group_max)
-    var peers := Tools.get_game_peers_count()
-    if peers > 1:
-        group_size += (peers - 1)
-    for i in range(group_size):
-        _spawn_one_enemy()
-    spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
+	if not is_multiplayer_authority():
+		return
+	var group_size := randi_range(current_group_min, current_group_max)
+	var peers := Tools.get_game_peers_count()
+	if peers > 1:
+		group_size += (peers - 1)
+	for i in range(group_size):
+		_spawn_one_enemy()
+	spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
 ```
 
 **组内同型机制**: 同一 tick 内的组，所有敌人取自**同一种敌人类型**（按 round 配置的权重随机选一种）。
@@ -161,10 +161,10 @@ final_size = randi_range(group_min, group_max) + max(0, peers - 1)
 ```gdscript
 # Enemy1/2/3.gd
 func apply_enemy_config(config: EnemyResource, hp_scale: float = 1.0, dmg_scale: float = 1.0) -> void:
-    var health := _random_value_from_range(config.health_range) * hp_scale
-    health_component.max_health = health
-    health_component.reset(health)
-    hitbox_component.damage = _random_value_from_range(config.damage_range) * dmg_scale
+	var health := _random_value_from_range(config.health_range) * hp_scale
+	health_component.max_health = health
+	health_component.reset(health)
+	hitbox_component.damage = _random_value_from_range(config.damage_range) * dmg_scale
 ```
 
 ### 3.3 敌人类型权重选择
@@ -173,16 +173,16 @@ func apply_enemy_config(config: EnemyResource, hp_scale: float = 1.0, dmg_scale:
 
 ```gdscript
 func _select_enemy_config(weights: Dictionary) -> EnemyResource:
-    var total := 0.0
-    for w in weights.values():
-        total += w
-    var roll := randf() * total
-    var acc := 0.0
-    for id in weights:
-        acc += weights[id]
-        if roll <= acc:
-            return _enemy_dict[id]  # 需建立 id->config 字典
-    return enemy_configs[0]  # fallback
+	var total := 0.0
+	for w in weights.values():
+		total += w
+	var roll := randf() * total
+	var acc := 0.0
+	for id in weights:
+		acc += weights[id]
+		if roll <= acc:
+			return _enemy_dict[id]  # 需建立 id->config 字典
+	return enemy_configs[0]  # fallback
 ```
 
 或更 GDScript-idiomatic: 直接构建加权数组 `Array[EnemyResource]` 并按权重重复 `append`，然后 `pick_random`。
@@ -247,16 +247,16 @@ layer_9 = bullet
 
 ```
 _on_upgrade_finished() (通关前) or round_completed
-    ↓
+	↓
 _start_round() → 判断 is_bonus
-    ↓ (is_bonus = true)
+	↓ (is_bonus = true)
 停止 spawn_timer
 启动 round_timer (20s)
 在 spawn_rect 范围内随机生成 5-7 个 pickup_area 实例
-    ↓
+	↓
 pickup_area 进入视野: 显示气泡 + 物品图标 (药瓶/医疗包/升级随机)
 player 进入拾取范围 → 拾取消耗
-    ↓
+	↓
 收集完毕 OR 时间到 → round_completed.emit() → upgrade_component.generate_options() → 下一关
 ```
 
@@ -329,41 +329,41 @@ Boss (CharacterBody2D, layer_2)
 
 ```
 [ ] Phase 0: 配置基础设施
-    [ ] 任务 0.1: 添加物理层 layer_5 = pickup
-    [ ] 任务 0.2: 在 enemy_spawn_component 中定义 ROUND_CONFIGS 常量
+	[ ] 任务 0.1: 添加物理层 layer_5 = pickup
+	[ ] 任务 0.2: 在 enemy_spawn_component 中定义 ROUND_CONFIGS 常量
 
 [ ] Phase 1: 刷怪系统重构
-    [ ] 任务 1.1: 实现敌人类型加权选择
-    [ ] 任务 1.2: 实现敌人属性缩放
-    [ ] 任务 1.3: 实现配置化群组刷怪 (替换旧爆量逻辑)
-    [ ] 任务 1.4: 集成: _start_round 读取 ROUND_CONFIGS
-    [ ] 任务 1.5 (可选): 召唤波机制
+	[ ] 任务 1.1: 实现敌人类型加权选择
+	[ ] 任务 1.2: 实现敌人属性缩放
+	[ ] 任务 1.3: 实现配置化群组刷怪 (替换旧爆量逻辑)
+	[ ] 任务 1.4: 集成: _start_round 读取 ROUND_CONFIGS
+	[ ] 任务 1.5 (可选): 召唤波机制
 
 [ ] Phase 2: 拾取物系统
-    [ ] 任务 2.1: 创建 pickup_area 场景 + 动画 (气泡浮动)
-    [ ] 任务 2.2: 实现拾取逻辑 (authority area_entered 检测)
-    [ ] 任务 2.3: 实现拾取效果 (药品治疗 / 免费升级)
-    [ ] 任务 2.4: 拾取物 multiplayer 同步 (server 验证 + broadcast 拾取)
+	[ ] 任务 2.1: 创建 pickup_area 场景 + 动画 (气泡浮动)
+	[ ] 任务 2.2: 实现拾取逻辑 (authority area_entered 检测)
+	[ ] 任务 2.3: 实现拾取效果 (药品治疗 / 免费升级)
+	[ ] 任务 2.4: 拾取物 multiplayer 同步 (server 验证 + broadcast 拾取)
 
 [ ] Phase 3: 奖励关
-    [ ] 任务 3.1: EnemySpawnComponent 奖励关分支 (停止刷怪、启动拾取物生成)
-    [ ] 任务 3.2: 关卡完成逻辑适配 (时间到或全部拾取完)
-    [ ] 任务 3.3: 奖励关 UI 提示 ("BONUS ROUND")
+	[ ] 任务 3.1: EnemySpawnComponent 奖励关分支 (停止刷怪、启动拾取物生成)
+	[ ] 任务 3.2: 关卡完成逻辑适配 (时间到或全部拾取完)
+	[ ] 任务 3.3: 奖励关 UI 提示 ("BONUS ROUND")
 
 [ ] Phase 4: Boss
-    [ ] 任务 4.1: Boss 基础场景 + 节点结构搭建
-    [ ] 任务 4.2: 状态机 + Spawn/Phase1Normal/Phase1Charge/Phase1Attack/Died
-    [ ] 任务 4.3: Phase2Normal/Phase2Charge + PhaseTransition 状态
-    [ ] 任务 4.4: Phase2Slam (AOE 重击)
-    [ ] 任务 4.5: Phase2SpikeRing (尖刺圆环弹道)
-    [ ] 任务 4.6: 阶段切换逻辑 (HP 触发 + 短暂无敌)
-    [ ] 任务 4.7: BOSS UI (特殊血条 / 阶段提示)
+	[ ] 任务 4.1: Boss 基础场景 + 节点结构搭建
+	[ ] 任务 4.2: 状态机 + Spawn/Phase1Normal/Phase1Charge/Phase1Attack/Died
+	[ ] 任务 4.3: Phase2Normal/Phase2Charge + PhaseTransition 状态
+	[ ] 任务 4.4: Phase2Slam (AOE 重击)
+	[ ] 任务 4.5: Phase2SpikeRing (尖刺圆环弹道)
+	[ ] 任务 4.6: 阶段切换逻辑 (HP 触发 + 短暂无敌)
+	[ ] 任务 4.7: BOSS UI (特殊血条 / 阶段提示)
 
 [ ] Phase 5: 整合与收尾
-    [ ] 任务 5.1: main.gd 适配 BOSS 死亡 → 游戏通关
-    [ ] 任务 5.2: 物理层/碰撞修复 (确保拾取物交互正常)
-    ] 任务 5.3: 单机 + 多人联调测试
-    [ ] 任务 5.4: 平衡性数值调优
+	[ ] 任务 5.1: main.gd 适配 BOSS 死亡 → 游戏通关
+	[ ] 任务 5.2: 物理层/碰撞修复 (确保拾取物交互正常)
+	] 任务 5.3: 单机 + 多人联调测试
+	[ ] 任务 5.4: 平衡性数值调优
 ```
 
 ---
@@ -387,26 +387,26 @@ Boss (CharacterBody2D, layer_2)
 - **设计常量结构**:
   ```gdscript
   const ROUND_CONFIGS: Array[Dictionary] = [
-      # [1] 热身 - 组小(1~2), 低频(3.0s), 低属性
-      { "slime": 1.0, "poppy": 0.0, "stone_poke": 0.0, "round_time": 15.0, "hp_scale": 0.6, "dmg_scale": 0.5, "spawn_interval": Vector2(3.0, 3.0), "group_min": 1, "group_max": 2, "is_bonus": false, "is_boss": false },
-      # [2] 引入 - 出现气球, 组1~3
-      { "slime": 0.8, "poppy": 0.2, "stone_poke": 0.0, "round_time": 18.0, "hp_scale": 0.7, "dmg_scale": 0.6, "spawn_interval": Vector2(2.8, 2.8), "group_min": 1, "group_max": 3, "is_bonus": false, "is_boss": false },
-      # [3] 熟悉 - 混编, 组2~4
-      { "slime": 0.6, "poppy": 0.4, "stone_poke": 0.0, "round_time": 20.0, "hp_scale": 0.9, "dmg_scale": 0.8, "spawn_interval": Vector2(2.5, 2.5), "group_min": 2, "group_max": 4, "is_bonus": false, "is_boss": false },
-      # [4] 预压 - 石刺入场, 组2~5, 间隔收紧
-      { "slime": 0.45, "poppy": 0.35, "stone_poke": 0.20, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.4, 2.4), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
-      # [5] 奖励关 - 无敌人, 拾取物
-      { "is_bonus": true, "round_time": 20.0, "pickup_count": 6 },
-      # [6] 二阶启动 - 组3~5, 后半段正式起手
-      { "slime": 0.35, "poppy": 0.40, "stone_poke": 0.25, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.2, 2.2), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
-      # [7] 坦克潮 - 石刺主导, 组3~6
-      { "slime": 0.25, "poppy": 0.30, "stone_poke": 0.45, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(2.0, 2.0), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
-      # [8] 气球暴 - 大量爆炸, 组4~7, 间隔压缩
-      { "slime": 0.10, "poppy": 0.80, "stone_poke": 0.10, "round_time": 28.0, "hp_scale": 1.0, "dmg_scale": 1.2, "spawn_interval": Vector2(1.6, 1.6), "group_min": 4, "group_max": 7, "is_bonus": false, "is_boss": false },
-      # [9] 终极测试 - 均衡混编, 高属性, 组4~8
-      { "slime": 0.30, "poppy": 0.30, "stone_poke": 0.40, "round_time": 35.0, "hp_scale": 1.6, "dmg_scale": 1.4, "spawn_interval": Vector2(1.9, 1.9), "group_min": 4, "group_max": 8, "is_bonus": false, "is_boss": false },
-      # [10] BOSS - 单敌人, 多阶段
-      { "is_boss": true, "round_time": 45.0 },
+	  # [1] 热身 - 组小(1~2), 低频(3.0s), 低属性
+	  { "slime": 1.0, "poppy": 0.0, "stone_poke": 0.0, "round_time": 15.0, "hp_scale": 0.6, "dmg_scale": 0.5, "spawn_interval": Vector2(3.0, 3.0), "group_min": 1, "group_max": 2, "is_bonus": false, "is_boss": false },
+	  # [2] 引入 - 出现气球, 组1~3
+	  { "slime": 0.8, "poppy": 0.2, "stone_poke": 0.0, "round_time": 18.0, "hp_scale": 0.7, "dmg_scale": 0.6, "spawn_interval": Vector2(2.8, 2.8), "group_min": 1, "group_max": 3, "is_bonus": false, "is_boss": false },
+	  # [3] 熟悉 - 混编, 组2~4
+	  { "slime": 0.6, "poppy": 0.4, "stone_poke": 0.0, "round_time": 20.0, "hp_scale": 0.9, "dmg_scale": 0.8, "spawn_interval": Vector2(2.5, 2.5), "group_min": 2, "group_max": 4, "is_bonus": false, "is_boss": false },
+	  # [4] 预压 - 石刺入场, 组2~5, 间隔收紧
+	  { "slime": 0.45, "poppy": 0.35, "stone_poke": 0.20, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.4, 2.4), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
+	  # [5] 奖励关 - 无敌人, 拾取物
+	  { "is_bonus": true, "round_time": 20.0, "pickup_count": 6 },
+	  # [6] 二阶启动 - 组3~5, 后半段正式起手
+	  { "slime": 0.35, "poppy": 0.40, "stone_poke": 0.25, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.2, 2.2), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
+	  # [7] 坦克潮 - 石刺主导, 组3~6
+	  { "slime": 0.25, "poppy": 0.30, "stone_poke": 0.45, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(2.0, 2.0), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
+	  # [8] 气球暴 - 大量爆炸, 组4~7, 间隔压缩
+	  { "slime": 0.10, "poppy": 0.80, "stone_poke": 0.10, "round_time": 28.0, "hp_scale": 1.0, "dmg_scale": 1.2, "spawn_interval": Vector2(1.6, 1.6), "group_min": 4, "group_max": 7, "is_bonus": false, "is_boss": false },
+	  # [9] 终极测试 - 均衡混编, 高属性, 组4~8
+	  { "slime": 0.30, "poppy": 0.30, "stone_poke": 0.40, "round_time": 35.0, "hp_scale": 1.6, "dmg_scale": 1.4, "spawn_interval": Vector2(1.9, 1.9), "group_min": 4, "group_max": 8, "is_bonus": false, "is_boss": false },
+	  # [10] BOSS - 单敌人, 多阶段
+	  { "is_boss": true, "round_time": 45.0 },
   ]
   ```
 - **索引**: 数组索引 0-9 对应关卡 1-10 (或添加 `{ }` 占位 index 0 让索引对齐)
@@ -422,17 +422,17 @@ Boss (CharacterBody2D, layer_2)
 - **实现**:
   ```gdscript
   func _select_enemy_config(weights: Dictionary) -> EnemyResource:
-      var weighted_list: Array[EnemyResource] = []
-      for config in enemy_configs:
-          var w: float = weights.get(config.id, 0.0)
-          if w <= 0.0:
-              continue
-          var count := max(1, int(w * 10))  # 精度放大
-          for i in count:
-              weighted_list.append(config)
-      if weighted_list.is_empty():
-          return enemy_configs.pick_random()
-      return weighted_list.pick_random()
+	  var weighted_list: Array[EnemyResource] = []
+	  for config in enemy_configs:
+		  var w: float = weights.get(config.id, 0.0)
+		  if w <= 0.0:
+			  continue
+		  var count := max(1, int(w * 10))  # 精度放大
+		  for i in count:
+			  weighted_list.append(config)
+	  if weighted_list.is_empty():
+		  return enemy_configs.pick_random()
+	  return weighted_list.pick_random()
   ```
 - **或者** 经典的 "累积概率" 实现 (性能更优)
 
@@ -446,10 +446,10 @@ Boss (CharacterBody2D, layer_2)
 - **具体改动** (以 enemy1.gd 为例):
   ```gdscript
   func apply_enemy_config(config: EnemyResource, hp_scale: float = 1.0, dmg_scale: float = 1.0) -> void:
-      var health := _random_value_from_range(config.health_range) * hp_scale
-      health_component.max_health = health
-      health_component.reset(health)
-      hitbox_component.damage = _random_value_from_range(config.damage_range) * dmg_scale
+	  var health := _random_value_from_range(config.health_range) * hp_scale
+	  health_component.max_health = health
+	  health_component.reset(health)
+	  hitbox_component.damage = _random_value_from_range(config.damage_range) * dmg_scale
   ```
 - 修改调用方: `enemy_spawn_component.gd` 的 `_spawn_one_enemy()` 传入 hp_scale / dmg_scale
 
@@ -460,26 +460,26 @@ Boss (CharacterBody2D, layer_2)
 - **实现**:
   ```gdscript
   func _spawn_enemy() -> void:
-      if not is_multiplayer_authority():
-          return
-      var group_size := randi_range(current_group_min, current_group_max)
-      var peers := Tools.get_game_peers_count()
-      if peers > 1:
-          group_size += (peers - 1)
-      # 同组同型: 只选一次类型
-      var config := _select_enemy_config(_current_round_config)
-      if config == null:
-          push_error("[EnemySpawn] No enemy config selected")
-          spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
-          return
-      for i in range(group_size):
-          var enemy := config.scene.instantiate() as Node2D
-          spawn_root.add_child(enemy, true)
-          if enemy.has_method("apply_enemy_config"):
-              enemy.apply_enemy_config(config, current_hp_scale, current_dmg_scale)
-          enemy.global_position = _get_random_position()
-          enemy_count += 1
-      spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
+	  if not is_multiplayer_authority():
+		  return
+	  var group_size := randi_range(current_group_min, current_group_max)
+	  var peers := Tools.get_game_peers_count()
+	  if peers > 1:
+		  group_size += (peers - 1)
+	  # 同组同型: 只选一次类型
+	  var config := _select_enemy_config(_current_round_config)
+	  if config == null:
+		  push_error("[EnemySpawn] No enemy config selected")
+		  spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
+		  return
+	  for i in range(group_size):
+		  var enemy := config.scene.instantiate() as Node2D
+		  spawn_root.add_child(enemy, true)
+		  if enemy.has_method("apply_enemy_config"):
+			  enemy.apply_enemy_config(config, current_hp_scale, current_dmg_scale)
+		  enemy.global_position = _get_random_position()
+		  enemy_count += 1
+	  spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
   ```
 - **组内同型机制**: 同一 tick 内全部敌人使用同一个 `EnemyResource` 配置 (同类型)
 - **独立属性**: 每个敌人各自调用 `apply_enemy_config` → 在health/damage_range 内独立随机
@@ -498,27 +498,27 @@ Boss (CharacterBody2D, layer_2)
 - **将常量换成配置表读值**:
   ```gdscript
   func _start_round() -> void:
-      round_count += 1
-      print("Round %s start" % round_count)
-      var config: Dictionary = ROUND_CONFIGS[round_count - 1]  # index 对齐
-      _current_round_config = config
-      if config.get("is_bonus", false):
-          _start_bonus_round(config)
-          return
-      if config.get("is_boss", false):
-          _start_boss_round(config)
-          return
-      # 普通关
-      var interval: Vector2 = config["spawn_interval"]
-      round_min_spawn_interval = interval.x
-      round_max_spawn_interval = interval.y
-      current_group_min = config.get("group_min", 1)
-      current_group_max = config.get("group_max", 2)
-      current_hp_scale = config["hp_scale"]
-      current_dmg_scale = config["dmg_scale"]
-      round_timer.start(config["round_time"])
-      spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
-      synchronize()
+	  round_count += 1
+	  print("Round %s start" % round_count)
+	  var config: Dictionary = ROUND_CONFIGS[round_count - 1]  # index 对齐
+	  _current_round_config = config
+	  if config.get("is_bonus", false):
+		  _start_bonus_round(config)
+		  return
+	  if config.get("is_boss", false):
+		  _start_boss_round(config)
+		  return
+	  # 普通关
+	  var interval: Vector2 = config["spawn_interval"]
+	  round_min_spawn_interval = interval.x
+	  round_max_spawn_interval = interval.y
+	  current_group_min = config.get("group_min", 1)
+	  current_group_max = config.get("group_max", 2)
+	  current_hp_scale = config["hp_scale"]
+	  current_dmg_scale = config["dmg_scale"]
+	  round_timer.start(config["round_time"])
+	  spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
+	  synchronize()
   ```
 - **需新增实例变量** (添加到 EnemySpawnComponent 顶部原常量区):
   ```gdscript
@@ -569,55 +569,55 @@ Boss (CharacterBody2D, layer_2)
   @onready var icon_sprite: Sprite2D = $IconSprite
 
   func _ready() -> void:
-      if is_multiplayer_authority():
-          area_entered.connect(_on_area_entered)
-      _setup_appearance()
-      _play_idle_animation()
+	  if is_multiplayer_authority():
+		  area_entered.connect(_on_area_entered)
+	  _setup_appearance()
+	  _play_idle_animation()
 
   func _setup_appearance() -> void:
-      match pickup_type:
-          HEALING_POTION:
-              icon_sprite.texture = load("res://assets/healing_potion.tres")
-          MEDKIT:
-              icon_sprite.texture = load("res://assets/medkit.tres")
-          UPGRADE:
-              # 随机选一个升级图标 (暂用 basic_damage_up)
-              icon_sprite.texture = load("res://assets/basic_damage_up.tres")
+	  match pickup_type:
+		  HEALING_POTION:
+			  icon_sprite.texture = load("res://assets/healing_potion.tres")
+		  MEDKIT:
+			  icon_sprite.texture = load("res://assets/medkit.tres")
+		  UPGRADE:
+			  # 随机选一个升级图标 (暂用 basic_damage_up)
+			  icon_sprite.texture = load("res://assets/basic_damage_up.tres")
 
   func _on_area_entered(area: Area2D) -> void:
-      if not is_multiplayer_authority() or _collected:
-          return
-      # 寻找所有者是 player 的 hurtbox
-      var player_node := _find_player_from_area(area)
-      if player_node == null or player_node.is_dead:
-          return
-      _collect(player_node)
+	  if not is_multiplayer_authority() or _collected:
+		  return
+	  # 寻找所有者是 player 的 hurtbox
+	  var player_node := _find_player_from_area(area)
+	  if player_node == null or player_node.is_dead:
+		  return
+	  _collect(player_node)
 
   func _collect(player: Player) -> void:
-      _collected = true
-      rpc("_sync_collect")  # 通知所有 peer 播放消失动画
-      _apply_effect(player)
-      queue_free()
+	  _collected = true
+	  rpc("_sync_collect")  # 通知所有 peer 播放消失动画
+	  _apply_effect(player)
+	  queue_free()
 
   @rpc("authority", "call_local")
   func _sync_collect() -> void:
-      # 播放消失特效 (缩放消失 + 粒子)
-      var tween := create_tween()
-      tween.tween_property(bubble_sprite, "scale", Vector2.ZERO, 0.15)
-      tween.tween_callback(queue_free)
+	  # 播放消失特效 (缩放消失 + 粒子)
+	  var tween := create_tween()
+	  tween.tween_property(bubble_sprite, "scale", Vector2.ZERO, 0.15)
+	  tween.tween_callback(queue_free)
 
   func _apply_effect(player: Player) -> void:
-      match pickup_type:
-          HEALING_POTION:
-              player.healing(1)
-          MEDKIT:
-              player.healing(999)  # 满血
-          UPGRADE:
-              _apply_random_upgrade(player)
+	  match pickup_type:
+		  HEALING_POTION:
+			  player.healing(1)
+		  MEDKIT:
+			  player.healing(999)  # 满血
+		  UPGRADE:
+			  _apply_random_upgrade(player)
 
   func _apply_random_upgrade(player: Player) -> void:
-      # 通过 UpgradeComponent 单人次免费升级
-      UpgradeComponent.apply_free_upgrade(player.input_peer_id)
+	  # 通过 UpgradeComponent 单人次免费升级
+	  UpgradeComponent.apply_free_upgrade(player.input_peer_id)
   ```
 
 #### ☐ 任务 2.3: 拾取物效果 - 免费升级 (UpgradeComponent 改动)
@@ -626,31 +626,31 @@ Boss (CharacterBody2D, layer_2)
 - **新增 static 方法**:
   ```gdscript
   static func apply_free_upgrade(peer_id: int) -> void:
-      if not is_instance_valid(instance):
-          return
-      # 随机选择一个 passive id (不含已满的如果要做的话, 这里简化全部参与随机)
-      var all_passives := instance.resources_id_dict.keys()
-      var chosen: String = all_passives[randi() % all_passives.size()]
-      var peer_passive_count_dic: Dictionary = instance.peer_selected_passives.get_or_add(peer_id, {})
-      var count: int = peer_passive_count_dic.get_or_add(chosen, 0)
-      peer_passive_count_dic[chosen] = count + 1
-      print("[FreeUpgrade] peer %s got %s (count: %s)" % [peer_id, chosen, count + 1])
-      # 找到对应 player 并触发属性刷新
-      var players := get_tree().get_nodes_in_group("player")
-      for p in players:
-          if p is Player and p.input_peer_id == peer_id:
-              p._on_free_upgrade_applied(chosen)
-              return
+	  if not is_instance_valid(instance):
+		  return
+	  # 随机选择一个 passive id (不含已满的如果要做的话, 这里简化全部参与随机)
+	  var all_passives := instance.resources_id_dict.keys()
+	  var chosen: String = all_passives[randi() % all_passives.size()]
+	  var peer_passive_count_dic: Dictionary = instance.peer_selected_passives.get_or_add(peer_id, {})
+	  var count: int = peer_passive_count_dic.get_or_add(chosen, 0)
+	  peer_passive_count_dic[chosen] = count + 1
+	  print("[FreeUpgrade] peer %s got %s (count: %s)" % [peer_id, chosen, count + 1])
+	  # 找到对应 player 并触发属性刷新
+	  var players := get_tree().get_nodes_in_group("player")
+	  for p in players:
+		  if p is Player and p.input_peer_id == peer_id:
+			  p._on_free_upgrade_applied(chosen)
+			  return
   ```
 
 - **Player.gd 新增方法**:
   ```gdscript
   func _on_free_upgrade_applied(item_id: String) -> void:
-      if item_id == UpgradeComponent.ITEM_ID_HEALTH_LIMIT_UP:
-          _refresh_health_limit()
-      elif item_id == UpgradeComponent.ITEM_ID_DEFENCE_UP:
-          _notify_defense_changed.rpc_id(input_peer_id, _get_defense_percent())
-      # 其他属性无需实时刷新 (攻击/移速等在下一次 _get_xxx 时自动生效)
+	  if item_id == UpgradeComponent.ITEM_ID_HEALTH_LIMIT_UP:
+		  _refresh_health_limit()
+	  elif item_id == UpgradeComponent.ITEM_ID_DEFENCE_UP:
+		  _notify_defense_changed.rpc_id(input_peer_id, _get_defense_percent())
+	  # 其他属性无需实时刷新 (攻击/移速等在下一次 _get_xxx 时自动生效)
   ```
 
 #### ☐ 任务 2.4: 拾取物 multiplayer 同步
@@ -670,47 +670,47 @@ Boss (CharacterBody2D, layer_2)
 - **新增方法**:
   ```gdscript
   func _start_bonus_round(config: Dictionary) -> void:
-      _is_bonus_round = true
-      _is_boss_round = false
-      _bonus_pickups_remaining = 0
-      var pickup_count: int = config.get("pickup_count", 6)
-      round_timer.start(config["round_time"])
-      # 在 spawn_rect 范围内随机生成 pickup
-      for i in range(pickup_count):
-          var ptype := _roll_pickup_type()
-          var pos := _get_random_position()
-          _spawn_pickup(ptype, pos)
-      synchronize()
+	  _is_bonus_round = true
+	  _is_boss_round = false
+	  _bonus_pickups_remaining = 0
+	  var pickup_count: int = config.get("pickup_count", 6)
+	  round_timer.start(config["round_time"])
+	  # 在 spawn_rect 范围内随机生成 pickup
+	  for i in range(pickup_count):
+		  var ptype := _roll_pickup_type()
+		  var pos := _get_random_position()
+		  _spawn_pickup(ptype, pos)
+	  synchronize()
 
   func _roll_pickup_type() -> int:
-      var roll := randf()
-      if roll < 0.30:
-          return PickupArea.HEALING_POTION
-      elif roll < 0.60:
-          return PickupArea.MEDKIT
-      else:
-          return PickupArea.UPGRADE
+	  var roll := randf()
+	  if roll < 0.30:
+		  return PickupArea.HEALING_POTION
+	  elif roll < 0.60:
+		  return PickupArea.MEDKIT
+	  else:
+		  return PickupArea.UPGRADE
 
   func _spawn_pickup(pickup_type: int, pos: Vector2) -> void:
-      if not is_multiplayer_authority():
-          return
-      var scene := preload("res://entities/pickup/pickup_area.tscn")
-      var pickup := scene.instantiate()
-      pickup.pickup_type = pickup_type
-      pickup.global_position = pos
-      pickup.tree_exited.connect(func(): _on_pickup_removed())
-      spawn_root.add_child(pickup)
-      _bonus_pickups_remaining += 1
+	  if not is_multiplayer_authority():
+		  return
+	  var scene := preload("res://entities/pickup/pickup_area.tscn")
+	  var pickup := scene.instantiate()
+	  pickup.pickup_type = pickup_type
+	  pickup.global_position = pos
+	  pickup.tree_exited.connect(func(): _on_pickup_removed())
+	  spawn_root.add_child(pickup)
+	  _bonus_pickups_remaining += 1
 
   func _on_pickup_removed() -> void:
-      _bonus_pickups_remaining -= 1
-      if _bonus_pickups_remaining <= 0:
-          _check_round_completed()
+	  _bonus_pickups_remaining -= 1
+	  if _bonus_pickups_remaining <= 0:
+		  _check_round_completed()
 
   @rpc("authority", "call_remote", "reliable")
   func _sync_bonus_pickups() -> void:
-      # 向新加入的 peer 同步当前拾取物状态
-      pass
+	  # 向新加入的 peer 同步当前拾取物状态
+	  pass
   ```
 - **新增实例变量**:
   ```gdscript
@@ -725,30 +725,30 @@ Boss (CharacterBody2D, layer_2)
 - **改动**:
   ```gdscript
   func _check_round_completed() -> void:
-      if _is_bonus_round:
-          # 奖励关仅需 timer 到即可
-          if round_timer.is_stopped():
-              print("Bonus Round %s completed!" % round_count)
-              _is_bonus_round = false
-              if round_count < MAX_ROUND:
-                  round_completed.emit()
-              else:
-                  max_round_end.emit()
-          return
-      if _is_boss_round:
-          # BOSS 关: BOSS 死亡由 enemy_count==0 判定 (BOSS 也是 enemy)
-          if round_timer.is_stopped() and enemy_count == 0:
-              _is_boss_round = false
-              if round_count < MAX_ROUND:
-                  round_completed.emit()
-              else:
-                  max_round_end.emit()
-          return
-      # 普通关: 保持原逻辑
-      if !round_timer.is_stopped():
-          return
-      if enemy_count == 0:
-          ...
+	  if _is_bonus_round:
+		  # 奖励关仅需 timer 到即可
+		  if round_timer.is_stopped():
+			  print("Bonus Round %s completed!" % round_count)
+			  _is_bonus_round = false
+			  if round_count < MAX_ROUND:
+				  round_completed.emit()
+			  else:
+				  max_round_end.emit()
+		  return
+	  if _is_boss_round:
+		  # BOSS 关: BOSS 死亡由 enemy_count==0 判定 (BOSS 也是 enemy)
+		  if round_timer.is_stopped() and enemy_count == 0:
+			  _is_boss_round = false
+			  if round_count < MAX_ROUND:
+				  round_completed.emit()
+			  else:
+				  max_round_end.emit()
+		  return
+	  # 普通关: 保持原逻辑
+	  if !round_timer.is_stopped():
+		  return
+	  if enemy_count == 0:
+		  ...
   ```
 
 #### ☐ 任务 3.3: 奖励关 UI 提示
@@ -819,10 +819,10 @@ Boss (CharacterBody2D, layer_2)
   var has_track_target: bool = false
   var charge_tip_tween: Tween
   var current_phase: int = 1:
-      get: return current_phase
-      set(v):
-          current_phase = v
-          phase_changed.emit(v)
+	  get: return current_phase
+	  set(v):
+		  current_phase = v
+		  phase_changed.emit(v)
 
   signal phase_changed(new_phase: int)
 
@@ -832,22 +832,22 @@ Boss (CharacterBody2D, layer_2)
   ...
 
   func _ready() -> void:
-      if is_multiplayer_authority():
-          health_component.health_depleted.connect(_on_health_depleted)
-          health_component.health_changed.connect(_on_health_changed)
-          ...
+	  if is_multiplayer_authority():
+		  health_component.health_depleted.connect(_on_health_depleted)
+		  health_component.health_changed.connect(_on_health_changed)
+		  ...
 
   func _on_health_changed(_max: float, _current: float) -> void:
-      if current_phase == 1 and health_component.current_health <= health_component.max_health * 0.5:
-          # 触发阶段转换
-          if state_machine.current_state != "phase_transition":
-              state_machine.current_state = "phase_transition"
+	  if current_phase == 1 and health_component.current_health <= health_component.max_health * 0.5:
+		  # 触发阶段转换
+		  if state_machine.current_state != "phase_transition":
+			  state_machine.current_state = "phase_transition"
 
   func apply_enemy_config(config: EnemyResource, hp_scale: float = 1.0, dmg_scale: float = 1.0) -> void:
-      # 覆盖 hp 为 BOSS 专用值 (忽略 config 范围的随机)
-      health_component.max_health = 80 * hp_scale  # 或写死 80
-      health_component.reset()
-      hitbox_component.damage = 2.0 * dmg_scale  # BOSS 基础接触伤害
+	  # 覆盖 hp 为 BOSS 专用值 (忽略 config 范围的随机)
+	  health_component.max_health = 80 * hp_scale  # 或写死 80
+	  health_component.reset()
+	  hitbox_component.damage = 2.0 * dmg_scale  # BOSS 基础接触伤害
   ```
 
 - **Phase1 状态** 可参考现有 enemy1 实现 (追踪 + 蓄力 + 冲撞):
@@ -872,20 +872,20 @@ Boss (CharacterBody2D, layer_2)
   var boss: Boss
 
   func enter() -> void:
-      boss = owner
-      if is_multiplayer_authority():
-          boss.velocity = Vector2.ZERO
-          # 短暂无敌 (禁用所有 hitbox 接收 hurtbox 伤害的反向：玩家无法被 Boss 伤害) -- 实际上是禁止 Boss 受伤
-          boss.hurtbox_component.get_child(0).disabled = true  # hurt collision
-          boss.hitbox_component.get_child(0).disabled = false  # boss 身体伤害保留或取消
-      # 镜头抖动 + 咆哮效果
-      GameCamera.shake()
-      # 2s 后转 Phase2
-      await get_tree().create_timer(TRANSITION_DURATION).timeout
-      if is_multiplayer_authority():
-          boss.hurtbox_component.get_child(0).disabled = false
-          boss.current_phase = 2
-      transitioned.emit("phase2_normal")
+	  boss = owner
+	  if is_multiplayer_authority():
+		  boss.velocity = Vector2.ZERO
+		  # 短暂无敌 (禁用所有 hitbox 接收 hurtbox 伤害的反向：玩家无法被 Boss 伤害) -- 实际上是禁止 Boss 受伤
+		  boss.hurtbox_component.get_child(0).disabled = true  # hurt collision
+		  boss.hitbox_component.get_child(0).disabled = false  # boss 身体伤害保留或取消
+	  # 镜头抖动 + 咆哮效果
+	  GameCamera.shake()
+	  # 2s 后转 Phase2
+	  await get_tree().create_timer(TRANSITION_DURATION).timeout
+	  if is_multiplayer_authority():
+		  boss.hurtbox_component.get_child(0).disabled = false
+		  boss.current_phase = 2
+	  transitioned.emit("phase2_normal")
   ```
 
 #### ☐ 任务 4.4: Phase2Slam (AOE 重击)
@@ -898,17 +898,17 @@ Boss (CharacterBody2D, layer_2)
   - 参考代码:
   ```gdscript
   func enter() -> void:
-      boss = owner
-      if is_multiplayer_authority():
-          boss.velocity = Vector2.ZERO
-          # 蓄力
-          await get_tree().create_timer(0.8).timeout
-          # 砸地 - 启用 AOE hitbox
-          boss.enable_slam_hitbox.rpc(true)
-          GameCamera.shake()
-          await get_tree().create_timer(0.2).timeout
-          boss.enable_slam_hitbox.rpc(false)
-      transitioned.emit("phase2_normal")
+	  boss = owner
+	  if is_multiplayer_authority():
+		  boss.velocity = Vector2.ZERO
+		  # 蓄力
+		  await get_tree().create_timer(0.8).timeout
+		  # 砸地 - 启用 AOE hitbox
+		  boss.enable_slam_hitbox.rpc(true)
+		  GameCamera.shake()
+		  await get_tree().create_timer(0.2).timeout
+		  boss.enable_slam_hitbox.rpc(false)
+	  transitioned.emit("phase2_normal")
   ```
 
 #### ☐ 任务 4.5: Phase2SpikeRing (尖刺圆环)
@@ -920,16 +920,16 @@ Boss (CharacterBody2D, layer_2)
   ```gdscript
   @export var spike_scene: PackedScene = preload("res://entities/boss/spike_projectile.tscn")
   func spawn_spike_ring() -> void:
-      if not is_multiplayer_authority():
-          return
-      const dirs := 12
-      for i in range(dirs):
-          var angle := TAU * i / dirs
-          var proj = spike_scene.instantiate()
-          proj.global_position = global_position
-          proj.direction = Vector2.RIGHT.rotated(angle)
-          proj.damage = 1.5 * current_dmg_scale
-          get_parent().add_child(proj)
+	  if not is_multiplayer_authority():
+		  return
+	  const dirs := 12
+	  for i in range(dirs):
+		  var angle := TAU * i / dirs
+		  var proj = spike_scene.instantiate()
+		  proj.global_position = global_position
+		  proj.direction = Vector2.RIGHT.rotated(angle)
+		  proj.damage = 1.5 * current_dmg_scale
+		  get_parent().add_child(proj)
   ```
 
 #### ☐ 任务 4.6: 阶段切换逻辑 (HP 触发 + 短暂无敌)

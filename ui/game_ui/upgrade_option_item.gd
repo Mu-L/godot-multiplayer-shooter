@@ -25,7 +25,8 @@ func _ready() -> void:
 
 func _init_with_resource() -> void:
 	title_label.text = tr(resource.name_key)
-	description_label.text = tr(resource.description_key)
+	# 描述模板位于翻译文件 *.po 中,占位符 {0} {1} ... 代入 CSV 配置的实际数值
+	description_label.text = UpgradeComponent.formatted_description(resource)
 	icon_texture.texture = resource.icon
 
 

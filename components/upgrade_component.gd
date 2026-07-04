@@ -214,6 +214,53 @@ func _refresh_passive_resources() -> void:
 		resources_id_dict[res.id] = res
 
 
+## 获取本地化文本(在 static 上下文中替代 tr()).
+static func _tr(msgid: String) -> String:
+	if not is_instance_valid(instance):
+		return TranslationServer.translate(msgid)
+	return instance.tr(msgid)
+
+
+## 根据 effect_params 代入翻译模板生成最终描述.
+## 翻译文件中的模板使用 {0} {1} ... 占位符,此处用 effect_params 的实际数值代入.
+static func formatted_description(resource: PassiveItemResource) -> String:
+	if resource == null:
+		return ""
+	var res: PassiveItemResource = resource
+	if is_instance_valid(instance):
+		var cached: PassiveItemResource = instance.resources_id_dict.get(resource.id)
+		if cached != null:
+			res = cached
+	var template: String = _tr(res.description_key)
+	var display_params: Array = []
+	for param in res.effect_params:
+		display_params.append(_format_effect_param(param))
+	for i in range(display_params.size()):
+		template = template.replace("{%d}" % i, str(display_params[i]))
+	return template
+
+
+static func _format_effect_param(param) -> String:
+	match typeof(param):
+		TYPE_FLOAT:
+			# 0~1 范围内的小数视为比例,显示为百分比 (如 0.1 -> "10%", 0.8 -> "80%")
+			# 排除整数值的浮点数 (如 1.0)
+			if param > 0.0 and param < 1.0 and not is_equal_approx(param, snappedf(param, 1.0)):
+				return "%.0f%%" % (param * 100.0)
+			return _format_number(param)
+		TYPE_INT:
+			return str(param)
+		_:
+			return str(param)
+
+
+static func _format_number(value: float) -> String:
+	if is_equal_approx(value, snappedf(value, 1.0)):
+		return str(int(value))
+	# 最多保留 2 位小数,去掉末尾无意义的 0
+	return ("%.2f" % value).rstrip("0").rstrip(".")
+
+
 ## 免费升级: 奖励关拾取物触发. 不走全玩家同步流程, 单人次直接应用 (instance method)
 func apply_free_upgrade(peer_id: int) -> void:
 	if resources_id_dict.is_empty():

@@ -221,7 +221,7 @@ msgstr "伤害提升"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BASIC_DAMAGE_UP_DESCRIPTION"
-msgstr "子弹基础伤害增加1"
+msgstr "子弹基础伤害增加{0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_NAME"
@@ -229,7 +229,7 @@ msgstr "血上限提升"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_DESCRIPTION"
-msgstr "血量上限增加"
+msgstr "血量上限增加{0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_NAME"
@@ -237,7 +237,7 @@ msgstr "子弹分裂"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_DESCRIPTION"
-msgstr "弹道增加2,但基础伤害总体降低20%"
+msgstr "增加{0}条弹道,但单发伤害降低至{1}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_NAME"
@@ -245,7 +245,7 @@ msgstr "攻速提升"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_DESCRIPTION"
-msgstr "攻速提升10%"
+msgstr "攻速提升{0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_NAME"
@@ -253,7 +253,7 @@ msgstr "移速提升"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_DESCRIPTION"
-msgstr "移动速度提升10%"
+msgstr "移动速度提升{0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_NAME"
@@ -261,7 +261,7 @@ msgstr "护甲提升"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_DESCRIPTION"
-msgstr "承受的伤害降低15%,伤害降低上限为60%"
+msgstr "每次升级使承受伤害降低至{0}(无上限)"
 
 #: config/pickup_item_config.csv
 msgid "PICKUP_ITEM_HEALING_POTION_NAME"

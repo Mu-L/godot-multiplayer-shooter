@@ -221,7 +221,7 @@ msgstr "Basic Damage Up"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BASIC_DAMAGE_UP_DESCRIPTION"
-msgstr "Basic bullet damage increased by 1."
+msgstr "Basic bullet damage increased by {0}."
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_NAME"
@@ -229,7 +229,7 @@ msgstr "Health Limit Up"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_DESCRIPTION"
-msgstr "Increase health limit"
+msgstr "Health limit increased by {0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_NAME"
@@ -237,7 +237,7 @@ msgstr "Bullet Split"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_DESCRIPTION"
-msgstr "Two new projectiles are added, but the basic damage is reduced by 20%"
+msgstr "{0} new projectiles are added, but single-bullet damage is reduced to {1}."
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_NAME"
@@ -245,7 +245,7 @@ msgstr "Attack Speed Up"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_DESCRIPTION"
-msgstr "Attack speed increased by 10%"
+msgstr "Attack speed increased by {0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_NAME"
@@ -253,7 +253,7 @@ msgstr "Move Speed Up"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_DESCRIPTION"
-msgstr "Movement speed increased by 10%"
+msgstr "Movement speed increased by {0}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_NAME"
@@ -261,7 +261,7 @@ msgstr "Shield Defence"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_DESCRIPTION"
-msgstr "Damage taken is reduced by 15%, up to 60%"
+msgstr "Each upgrade reduces damage taken to {0} (no cap)"
 
 #: config/pickup_item_config.csv
 msgid "PICKUP_ITEM_HEALING_POTION_NAME"

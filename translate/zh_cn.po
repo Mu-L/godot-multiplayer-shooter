@@ -237,7 +237,7 @@ msgstr "子弹分裂"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_DESCRIPTION"
-msgstr "增加{0}条弹道,但单发伤害降低至{1}"
+msgstr "增加{0}条弹道,但基础伤害降低至{1}"
 
 #: config/passive_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_NAME"

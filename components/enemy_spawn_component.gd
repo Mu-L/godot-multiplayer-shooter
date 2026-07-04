@@ -115,13 +115,14 @@ func _start_bonus_round(config: Dictionary) -> void:
 	_is_bonus_round = true
 	_is_boss_round = false
 	_bonus_pickups_remaining = 0
+	_roll_pickup_pool()
 	var pickup_count: int = config.get("pickup_count", 6)
 	round_timer.start(config["round_time"])
 	spawn_timer.stop()
 	for i in range(pickup_count):
-		var ptype := _roll_pickup_type()
+		var pickup_res := _roll_pickup_resource()
 		var pos := _get_random_position()
-		_spawn_pickup(ptype, pos)
+		_spawn_pickup(pickup_res, pos)
 	synchronize()
 	bonus_round_started.emit()
 	print("[EnemySpawn] Bonus Round %s started, %s pickups" % [round_count, pickup_count])
@@ -138,21 +139,48 @@ func _start_boss_round(config: Dictionary) -> void:
 	print("[EnemySpawn] Boss Round %s started" % round_count)
 
 
-func _roll_pickup_type() -> int:
-	var roll := randf()
-	if roll < 0.30:
-		return PICKUP_AREA.HEALING_POTION
-	elif roll < 0.60:
-		return PICKUP_AREA.MEDKIT
-	else:
-		return PICKUP_AREA.UPGRADE
+## 一次性构建奖励关可拾取物品的随机池 (运行期只执行一次,避免每帧重复构造)
+const _heal_chance: float = 0.25
+const _medkit_chance: float = 0.20
+const _upgrade_chance: float = 0.55
+
+var _pickup_pool: Array[PickupItemResource] = []
+
+func _roll_pickup_pool() -> void:
+	_pickup_pool.clear()
+	for res: PickupItemResource in CSVResourceCache.get_all_pickups():
+		var w: float = 0.0
+		if res.id == "healing_potion":
+			w = _heal_chance
+		elif res.id == "medkit":
+			w = _medkit_chance
+		elif res.effect_type == "passive_upgrade":
+			# 6 种被动升级均分 upgrade_chance
+			w = _upgrade_chance / maxi(1, _passive_pickup_count())
+		if w <= 0.0:
+			continue
+		_pickup_pool.append(res)
+
+func _passive_pickup_count() -> int:
+	var n: int = 0
+	for res: PickupItemResource in CSVResourceCache.get_all_pickups():
+		if res.effect_type == "passive_upgrade":
+			n += 1
+	return n if n > 0 else 1
 
 
-func _spawn_pickup(pickup_type: int, pos: Vector2) -> void:
+func _roll_pickup_resource() -> PickupItemResource:
+	if _pickup_pool.is_empty():
+		# 若池为空 (未调用 _roll_pickup_pool), 回退到单个 healing_potion
+		return CSVResourceCache.get_pickup("healing_potion")
+	return _pickup_pool.pick_random()
+
+
+func _spawn_pickup(pickup_res: PickupItemResource, pos: Vector2) -> void:
 	if not is_multiplayer_authority():
 		return
 	var pickup := PICKUP_AREA_SCENE.instantiate()
-	pickup.pickup_type = pickup_type
+	pickup.resource = pickup_res
 	pickup.global_position = pos
 	pickup.tree_exited.connect(_on_pickup_removed)
 	spawn_root.add_child(pickup, true)

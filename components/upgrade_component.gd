@@ -267,12 +267,25 @@ func apply_free_upgrade(peer_id: int) -> void:
 		return
 	var all_passives := resources_id_dict.keys()
 	var chosen: String = all_passives[randi() % all_passives.size()]
+	_apply_passive_upgrade(peer_id, chosen)
+
+
+## 奖励关中指定被动物品的升级 (泡泡中已展示具体升级类型)
+func apply_specific_upgrade(peer_id: int, passive_id: String) -> void:
+	if not resources_id_dict.has(passive_id):
+		push_warning("[UpgradeComponent] apply_specific_upgrade: unknown passive_id %s" % passive_id)
+		return
+	_apply_passive_upgrade(peer_id, passive_id)
+
+
+## 内部实现: 记录被动次数并通知对应玩家
+func _apply_passive_upgrade(peer_id: int, passive_id: String) -> void:
 	var peer_passive_count_dic: Dictionary = peer_selected_passives.get_or_add(peer_id, {})
-	var count: int = peer_passive_count_dic.get_or_add(chosen, 0)
-	peer_passive_count_dic[chosen] = count + 1
-	KLogger.info("[FreeUpgrade] peer %s got %s (count: %s)" % [peer_id, chosen, count + 1])
+	var count: int = peer_passive_count_dic.get_or_add(passive_id, 0)
+	peer_passive_count_dic[passive_id] = count + 1
+	KLogger.info("[FreeUpgrade] peer %s got %s (count: %s)" % [peer_id, passive_id, count + 1])
 	var players := get_tree().get_nodes_in_group("player")
 	for p in players:
 		if p is Player and p.input_peer_id == peer_id:
-			p._on_free_upgrade_applied(chosen)
+			p._on_free_upgrade_applied(passive_id)
 			return

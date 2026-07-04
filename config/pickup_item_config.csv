@@ -1,3 +1,9 @@
 comment_description,id,icon,name_key,description_key,effect_type,effect_params
 "小血瓶, 回复固定血量",healing_potion,res://assets/healing_potion.tres,PICKUP_ITEM_HEALING_POTION_NAME,PICKUP_ITEM_HEALING_POTION_DESCRIPTION,,1.0
-"医疗包, 回复全部血量",medkit,res://assets/medkit.tres,PICKUP_ITEM_MEDKIT_NAME,PICKUP_ITEM_MEDKIT_DESCRIPTION,,
+"医疗包, 回复全部血量",medkit,res://assets/medkit.tres,PICKUP_ITEM_MEDKIT_NAME,PICKUP_ITEM_MEDKIT_DESCRIPTION,,999
+"被动升级: 子弹基础伤害增加",passive_basic_damage_up,,PASSIVE_ITEM_BASIC_DAMAGE_UP_NAME,PASSIVE_ITEM_BASIC_DAMAGE_UP_DESCRIPTION,passive_upgrade,basic_damage_up
+"被动升级: 血量上限提升",passive_health_limit_up,,PASSIVE_ITEM_HEALTH_LIMIT_UP_NAME,PASSIVE_ITEM_HEALTH_LIMIT_UP_DESCRIPTION,passive_upgrade,health_limit_up
+"被动升级: 子弹分裂",passive_bullet_split,,PASSIVE_ITEM_BULLET_SPLIT_NAME,PASSIVE_ITEM_BULLET_SPLIT_DESCRIPTION,passive_upgrade,bullet_split
+"被动升级: 攻速提升",passive_attack_speed_up,,PASSIVE_ITEM_ATTACK_SPEED_UP_NAME,PASSIVE_ITEM_ATTACK_SPEED_UP_DESCRIPTION,passive_upgrade,attack_speed_up
+"被动升级: 移速提升",passive_move_speed_up,,PASSIVE_ITEM_MOVE_SPEED_UP_NAME,PASSIVE_ITEM_MOVE_SPEED_UP_DESCRIPTION,passive_upgrade,move_speed_up
+"被动升级: 防御提升",passive_defence_up,,PASSIVE_ITEM_DEFENCE_UP_NAME,PASSIVE_ITEM_DEFENCE_UP_DESCRIPTION,passive_upgrade,defence_up

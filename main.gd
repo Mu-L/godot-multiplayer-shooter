@@ -42,7 +42,12 @@ func _ready() -> void:
 		player.input_display_name = data.display_name
 		player.player_look_index = randi_range(0, 3)
 		if is_multiplayer_authority():
-			_peer_look_changed.rpc(data.peer_id, player.player_look_index)
+			# (fix bug1) 延迟到 Player 真正进入场景树再广播, 避免客户端在节点不存在时收到 RPC 报 "Node not found: Main/YSortRoot/Player..."
+			var _peer_id: int = data.peer_id
+			var _look: int = player.player_look_index
+			player.tree_entered.connect(func():
+				_peer_look_changed.rpc(_peer_id, _look)
+			, CONNECT_ONE_SHOT)
 			player.player_hurt.connect(_on_player_hurt.bind(data.peer_id))
 			player.died.connect(_on_player_died.bind(data.peer_id))
 			player_dict[data.peer_id] = player

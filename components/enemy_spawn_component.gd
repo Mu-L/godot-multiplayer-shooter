@@ -180,7 +180,8 @@ func _spawn_pickup(pickup_res: PickupItemResource, pos: Vector2) -> void:
 	if not is_multiplayer_authority():
 		return
 	var pickup := PICKUP_AREA_SCENE.instantiate()
-	pickup.resource = pickup_res
+	pickup.resource = pickup_res  # 仅 authority 需要保留, 用于拾取时查 effect_type/params
+	pickup.resource_id = pickup_res.id  # 字符串 id, 由 MultiplayerSynchronizer 同步给客户端
 	pickup.global_position = pos
 	pickup.tree_exited.connect(_on_pickup_removed)
 	spawn_root.add_child(pickup, true)

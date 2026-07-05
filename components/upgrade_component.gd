@@ -217,8 +217,8 @@ static func _log_peer_upgrades(peer_id: int, peer_selected_passives: Dictionary)
 	var items: Array[String] = []
 	for passive_id in passive_count_dic:
 		var res: PassiveItemResource = instance.resources_id_dict.get(passive_id as String)
-		var name := tr(res.name_key) if res else passive_id
-		items.append("%sx%s" % [name, passive_count_dic[passive_id]])
+		var res_name: String = _tr(res.name_key) if res else passive_id
+		items.append("%sx%s" % [res_name, passive_count_dic[passive_id]])
 	KLogger.info("[UpgradeLog] peer %s got upgrades: [%s]" % [peer_id, ", ".join(items)])
 
 
@@ -298,11 +298,23 @@ func _apply_passive_upgrade(peer_id: int, passive_id: String) -> void:
 	var count: int = peer_passive_count_dic.get_or_add(passive_id, 0)
 	peer_passive_count_dic[passive_id] = count + 1
 	var res: PassiveItemResource = resources_id_dict.get(passive_id)
-	var upgrade_name := tr(res.name_key) if res else passive_id
+	var upgrade_name := _tr(res.name_key) if res else passive_id
 	KLogger.info("[UpgradeLog] peer %s picked up upgrade: %s" % [peer_id, upgrade_name])
 	_log_peer_upgrades(peer_id, peer_selected_passives)
-	var players := get_tree().get_nodes_in_group("player")
-	for p in players:
+	# 通知拾取的玩家 (客户端 + 主控玩家节点), 触发 HUD / 音效反馈
+	_notify_peer_pickup_bonus.rpc(peer_id, passive_id)
+
+@rpc("authority", "call_remote", "reliable")
+func _notify_peer_pickup_bonus(peer_id: int, passive_id: String) -> void:
+	# 在拾取者所在的客户端本地触发 HUD / 音效反馈
+	if multiplayer.get_unique_id() != peer_id:
+		return
+	# 播放拾取升级音效 (仅在玩家自己客户端本地)
+	SoundManager.play_select()
+	var self_player: Player = null
+	for p in get_tree().get_nodes_in_group("player"):
 		if p is Player and p.input_peer_id == peer_id:
-			p._on_free_upgrade_applied(passive_id)
-			return
+			self_player = p
+			break
+	if self_player:
+		self_player._on_free_upgrade_applied(passive_id)

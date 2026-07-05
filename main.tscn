@@ -29,7 +29,7 @@ script = ExtResource("1_0xm2m")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=147750579]
 unique_name_in_owner = true
-_spawnable_scenes = PackedStringArray("uid://clvtit5mibwed")
+_spawnable_scenes = PackedStringArray("uid://clvtit5mibwed", "uid://b63s2k5ytleq7")
 spawn_path = NodePath("../YSortRoot")
 
 [node name="EnemySpawnComponent" parent="." unique_id=1168245383 node_paths=PackedStringArray("spawn_root", "spawn_rect", "uprade_component", "multiplayer_spawner") instance=ExtResource("3_h2yge")]

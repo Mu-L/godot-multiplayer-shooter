@@ -29,6 +29,21 @@ const UPGRADE_TEX := preload("res://assets/basic_damage_up.tres")
 		if is_inside_tree():
 			_setup_appearance()
 
+## 网络同步用的 PickupItemResource id 字符串, 由 authority 在 spawn 时写入;
+## MultiplayerSynchronizer 同步该字段, 客户端收到后填充 resource 并更新图标;
+## (必须在 @export var resource 之后声明, 避免 setter 竞态)
+@export var resource_id: String = "":
+	set(value):
+		resource_id = value
+		# 客户端路径: 从 value 反查 CSVResourceCache, 重建 resource 并更新图标
+		# is_inside_tree 必须放前面 — is_multiplayer_authority 不在树内调用会报错;
+		# authority 端走 resource.setter + _ready()._setup_appearance(), 无需这里重复刷新
+		if is_inside_tree() and not is_multiplayer_authority():
+			resource = CSVResourceCache.get_pickup(value)
+			if resource == null:
+				push_warning("[PickupArea] client: unknown pickup id: %s" % value)
+			_setup_appearance()
+
 ## 缓存的被动升级物品 resource, 由 _resolve_passive_resource 填充
 var _passive_resource: PassiveItemResource = null
 
@@ -60,12 +75,13 @@ func _setup_appearance() -> void:
 	# 优先使用 resource (新接口), 否则回退到旧枚举接口
 	if resource != null:
 		var passive_res := _resolve_passive_resource()
-		if passive_res != null:
-			# passive_upgrade 类型: 使用对应被动物品的 icon
-			icon_sprite.texture = passive_res.icon
-		elif resource.icon != null:
-			# 普通类型: 使用 csv 中配置的 icon
-			icon_sprite.texture = resource.icon
+		if is_instance_valid(icon_sprite):
+			if passive_res != null:
+				# passive_upgrade 类型: 使用对应被动物品的 icon
+				icon_sprite.texture = passive_res.icon
+			elif resource.icon != null:
+				# 普通类型: 使用 csv 中配置的 icon
+				icon_sprite.texture = resource.icon
 		return
 	# 旧接口回退 (仅作兼容)
 	match pickup_type:
@@ -97,18 +113,24 @@ func _on_body_entered(body: Node) -> void:
 
 func _collect(player: Player) -> void:
 	_collected = true
-	rpc("_sync_collect")
+	# 先广播同步给所有客户端 (包括自己), 让客户端也播放消失动画
+	_sync_collect.rpc()
 	_apply_effect(player)
-	# 延迟一帧, 让同步 RPC 先发送
+	# 延迟一帧, 让同步 RPC 先发送完毕
 	await get_tree().process_frame
 	queue_free()
 
 
 @rpc("authority", "call_local", "reliable")
 func _sync_collect() -> void:
-	# 播放消失动画 (缩放消失), bubble 仍可见但 icon 消失
+	# 仅在非 authority 端播放消失动画 (authority 端已经在 _collect 后 queue_free)
 	if is_multiplayer_authority():
 		return
+	# 客户端: 播放拾取消失动画
+	_play_collected_animation()
+
+
+func _play_collected_animation() -> void:
 	var tween := create_tween()
 	tween.tween_property(bubble_sprite, "scale", Vector2.ZERO, 0.15)
 	tween.tween_callback(queue_free)

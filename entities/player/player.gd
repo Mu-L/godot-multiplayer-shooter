@@ -53,7 +53,8 @@ func _ready() -> void:
 	player_info.visible = not is_peer_authority
 	flash_sprite_component.frame = player_look_index
 	if is_multiplayer_authority():
-		_notify_defense_changed.rpc_id(input_peer_id, _get_defense_percent())
+		# (fix bug1) 延迟到本帧末尾再通知客户端, 避免客户端场景树尚未完全同步时收到 RPC
+		_notify_defense_changed.rpc_id.call_deferred(input_peer_id, _get_defense_percent())
 	GameEvents.player_look_changed.connect(_on_player_look_changed)
 	if is_peer_authority:
 		var remote_transform2d: RemoteTransform2D = RemoteTransform2D.new()

@@ -39,7 +39,7 @@ const PICKUP_AREA := preload("res://entities/pickup/pickup_area.gd")
 
 @export var spawn_root: Node2D
 @export var spawn_rect: ReferenceRect
-@export var uprade_component: UpgradeComponent
+@export var upgrade_component: UpgradeComponent
 @export var multiplayer_spawner: MultiplayerSpawner
 
 var round_count: int = 0:
@@ -74,7 +74,7 @@ func _ready() -> void:
 		spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 		round_timer.timeout.connect(_on_round_timer_timeout)
 		GameEvents.enemy_died.connect(_on_enemy_died)
-		uprade_component.upgrade_finished.connect(_on_upgrade_finished)
+		upgrade_component.upgrade_finished.connect(_on_upgrade_finished)
 
 
 func start() -> void:

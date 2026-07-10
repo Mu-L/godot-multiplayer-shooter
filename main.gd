@@ -28,6 +28,27 @@ var is_game_over: bool = false
 @onready var game_win_ui: GameWinUI = %GameWinUI
 @onready var round_win_ui: RoundWinUI = %RoundWinUI
 @onready var upgrade_component: UpgradeComponent = %UpgradeComponent
+@onready var player_stats_panel: Node = %PlayerStatsPanel
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	# 仅本地主控玩家可操作, 暂停/游戏结束时无响应
+	if get_tree().paused or is_game_over:
+		return
+	var my_id: int = multiplayer.get_unique_id()
+	var has_local_player: bool = false
+	for p in get_tree().get_nodes_in_group("player"):
+		if p is Player and p.input_peer_id == my_id:
+			has_local_player = true
+			break
+	if not has_local_player:
+		return
+	if event.is_action_pressed("toggle_stats"):
+		player_stats_panel.toggle(true)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_released("toggle_stats"):
+		player_stats_panel.toggle(false)
+		get_viewport().set_input_as_handled()
 
 
 func _ready() -> void:
@@ -67,7 +88,11 @@ func _ready() -> void:
 		multiplayer.server_disconnected.connect(_on_server_disconnected)
 	round_timer_ui.visible = false
 	ready_state_ui.visible = true
-	if not Tools.is_headless_server():
+	if Tools.is_headless_server():
+		# 服务器无 UI, 隐藏
+		player_stats_panel.visible = false
+		upgrade_component.upgrade_options_ui.visible = false
+	else:
 		_create_player.rpc_id(1, { "display_name": MultiplayerConfig.display_name })
 
 

@@ -555,3 +555,59 @@ msgstr "Select Your Look"
 
 msgid "01-multi-player"
 msgstr "Godot Shooter"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STATS_PANEL_TITLE"
+msgstr "Stats"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STATS_PANEL_FOOTER"
+msgstr "Hold TAB to open, release to close"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_BULLET_DAMAGE"
+msgstr "Bullet Damage"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_FIRE_RATE"
+msgstr "Fire Rate"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_MOVE_SPEED"
+msgstr "Move Speed"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_HEALTH_LIMIT"
+msgstr "Health Limit"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_DAMAGE_REDUCTION"
+msgstr "Dmg Reduction"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_BULLET_COUNT"
+msgstr "Projectiles"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_DAMAGE_UP"
+msgstr "Damage +{0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
+msgstr "Health +{0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
+msgstr "Attack Speed {0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
+msgstr "Move Speed {0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_DEFENCE_UP"
+msgstr "Dmg Reduction {0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_BULLET_SPLIT"
+msgstr "{0} new projectiles, single-shot damage reduced to {1}"

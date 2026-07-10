@@ -555,3 +555,59 @@ msgstr "选择你的皮肤"
 
 msgid "01-multi-player"
 msgstr "戈多枪手"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STATS_PANEL_TITLE"
+msgstr "属性详情"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STATS_PANEL_FOOTER"
+msgstr "按住 TAB 松开关闭"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_BULLET_DAMAGE"
+msgstr "子弹伤害"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_FIRE_RATE"
+msgstr "射速"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_MOVE_SPEED"
+msgstr "移速"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_HEALTH_LIMIT"
+msgstr "血量上限"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_DAMAGE_REDUCTION"
+msgstr "减伤"
+
+#: ui/game_ui/player_stats_panel.gd
+msgid "STAT_BULLET_COUNT"
+msgstr "弹道数"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_DAMAGE_UP"
+msgstr "基础伤害 +{0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
+msgstr "血量上限 +{0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
+msgstr "攻速提升 {0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
+msgstr "移速提升 {0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_DEFENCE_UP"
+msgstr "减伤 {0}"
+
+#: components/upgrade_component.gd
+msgid "PASSIVE_STACKED_BULLET_SPLIT"
+msgstr "新增 {0} 条弹道, 单发伤害降至 {1}"

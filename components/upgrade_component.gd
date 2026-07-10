@@ -19,6 +19,10 @@ var resources_id_dict: Dictionary[String, PassiveItemResource] = {}
 var avaiable_peer_resources: Dictionary[int, Array] = {}
 var peer_selected_passives: Dictionary[int, Dictionary] = {}
 
+## 客户端缓存的所有 peer 被动持有数 (通过 _notify_passive_changed RPC 同步)
+var client_passive_counts: Dictionary = {} # {peer_id: {passive_id: count}}
+ ## 后续其他需求(如观察队友 build)的基础数据
+
 
 static func get_peer_upgrade_count(peer_id: int, resource_id: String) -> int:
 	return get_peer_passive_count(peer_id, resource_id)
@@ -27,10 +31,16 @@ static func get_peer_upgrade_count(peer_id: int, resource_id: String) -> int:
 static func get_peer_passive_count(peer_id: int, passive_id: String) -> int:
 	if not is_instance_valid(instance):
 		return 0
-	if peer_id not in instance.peer_selected_passives:
-		return 0
-	var selected_passives: Dictionary = instance.peer_selected_passives[peer_id]
-	return selected_passives.get(passive_id, 0)
+	if instance.is_multiplayer_authority():
+		# 权威端: 从权威字典读取
+		if peer_id not in instance.peer_selected_passives:
+			return 0
+		var selected_passives: Dictionary = instance.peer_selected_passives[peer_id]
+		return selected_passives.get(passive_id, 0)
+	else:
+		# 客户端: 从同步缓存读取 (由 _notify_passive_changed RPC 填充)
+		var client_dic: Dictionary = instance.client_passive_counts.get(peer_id, {})
+		return client_dic.get(passive_id, 0)
 
 
 static func calc_health_limit(peer_id: int, base_value: float) -> float:
@@ -171,6 +181,8 @@ func select_upgrade_option(index: int) -> void:
 		_on_defence_upgraded(peer_id)
 	elif selected_resource.id == ITEM_ID_HEALTH_LIMIT_UP:
 		_on_health_limit_upgraded(peer_id)
+	# 广播被动数量变化给所有 peer (客户端缓存)
+	_notify_passive_changed.rpc(peer_id, selected_resource.id, count + 1)
 	_check_upgrade_finished()
 
 
@@ -275,6 +287,51 @@ static func _format_number(value: float) -> String:
 	return ("%.2f" % value).rstrip("0").rstrip(".")
 
 
+## 生成叠加后数值的描述. 用于 PassiveInventoryBar 的 Tooltip "叠加效果" 区段.
+## 单参数道具: 倍率/数值直接 param * count (如攻击速度 +30%).
+## 多参数道具(bullet_split): 按各自语义分别计算叠加后表现.
+static func formatted_description_stacked(resource: PassiveItemResource, count: int) -> String:
+	if resource == null or count <= 0:
+		return ""
+	var res: PassiveItemResource = resource
+	if is_instance_valid(instance):
+		var cached: PassiveItemResource = instance.resources_id_dict.get(resource.id)
+		if cached != null:
+			res = cached
+	match res.id:
+		ITEM_ID_BASIC_DAMAGE_UP:
+			# effect_params[0] = 1.0, 每级 +1基础伤害
+			var total_damage: float = res.effect_params[0] * count
+			return _tr("PASSIVE_STACKED_DAMAGE_UP") % _format_effect_param(total_damage)
+		ITEM_ID_HEALTH_LIMIT_UP:
+			# effect_params[0] = 1.0, 每级 +1血量上限
+			var total_health: float = res.effect_params[0] * count
+			return _tr("PASSIVE_STACKED_HEALTH_LIMIT_UP") % _format_effect_param(total_health)
+		ITEM_ID_ATTACK_SPEED_UP:
+			# effect_params[0] = 0.1, 每级 +10% 攻速
+			var total_attack: float = res.effect_params[0] * count
+			return _tr("PASSIVE_STACKED_ATTACK_SPEED_UP") % _format_effect_param(total_attack)
+		ITEM_ID_MOVE_SPEED_UP:
+			# effect_params[0] = 0.1, 每级 +10% 移速
+			var total_move: float = res.effect_params[0] * count
+			return _tr("PASSIVE_STACKED_MOVE_SPEED_UP") % _format_effect_param(total_move)
+		ITEM_ID_DEFENCE_UP:
+			# effect_params[0] = 0.8, 每级承受伤害乘 0.8, 即减伤加深
+			var final_ratio: float = res.effect_params[0] ** count
+			var reduce_percent: float = (1.0 - final_ratio) * 100.0
+			return _tr("PASSIVE_STACKED_DEFENCE_UP") % _format_effect_param(reduce_percent)
+		ITEM_ID_BULLET_SPLIT:
+			# effect_params[0] = 2(每级新增弹道数), effect_params[1] = 0.7(单发伤害系数)
+			if res.effect_params.size() > 1:
+				var bullets_per_level: int = int(res.effect_params[0])
+				var dmg_factor: float = res.effect_params[1]
+				var added_bullets: int = bullets_per_level * count
+				var dmg_ratio: float = dmg_factor ** count
+				return _tr("PASSIVE_STACKED_BULLET_SPLIT") % [added_bullets, _format_effect_param(dmg_ratio)]
+	# 回退: 用单级描述
+	return formatted_description(res)
+
+
 ## 免费升级: 奖励关拾取物触发. 不走全玩家同步流程, 单人次直接应用 (instance method)
 func apply_free_upgrade(peer_id: int) -> void:
 	if resources_id_dict.is_empty():
@@ -303,6 +360,8 @@ func _apply_passive_upgrade(peer_id: int, passive_id: String) -> void:
 	_log_peer_upgrades(peer_id, peer_selected_passives)
 	# 通知拾取的玩家 (客户端 + 主控玩家节点), 触发 HUD / 音效反馈
 	_notify_peer_pickup_bonus.rpc(peer_id, passive_id)
+	# 广播被动数量变化给所有 peer (客户端缓存)
+	_notify_passive_changed.rpc(peer_id, passive_id, count + 1)
 
 @rpc("authority", "call_remote", "reliable")
 func _notify_peer_pickup_bonus(peer_id: int, passive_id: String) -> void:
@@ -318,3 +377,57 @@ func _notify_peer_pickup_bonus(peer_id: int, passive_id: String) -> void:
 			break
 	if self_player:
 		self_player._on_free_upgrade_applied(passive_id)
+
+
+## 广播被动道具数量变化给所有 peer, 客户端缓存到 client_passive_counts
+@rpc("authority", "call_local", "reliable")
+func _notify_passive_changed(peer_id: int, passive_id: String, new_count: int) -> void:
+	if peer_id not in client_passive_counts:
+		client_passive_counts[peer_id] = {}
+	if new_count <= 0:
+		client_passive_counts[peer_id].erase(passive_id)
+		if client_passive_counts[peer_id].is_empty():
+			client_passive_counts.erase(peer_id)
+	else:
+		client_passive_counts[peer_id][passive_id] = new_count
+	# 通知 UI 刷新
+	_emit_passive_changed_signals(peer_id)
+
+
+## 客户端根据缓存的被动数量, 触发 GameEvents 信号驱动 UI 刷新
+func _emit_passive_changed_signals(peer_id: int) -> void:
+	var my_id: int = multiplayer.get_unique_id()
+	if peer_id != my_id:
+		return
+	# 仅本地主控玩家刷新 UI
+	if not client_passive_counts.has(my_id):
+		return
+	var my_passives: Dictionary = client_passive_counts[my_id]
+	# 刷新被动持有横栏
+	GameEvents.emit_local_player_passives_changed(my_passives)
+	# 刷新属性详情面板(如果可见)
+	if _stats_panel_instance and is_instance_valid(_stats_panel_instance):
+		_stats_panel_instance.refresh(my_passives)
+
+
+## 客户端缓存查询接口 (供 UI 读取)
+static func get_client_passive_counts() -> Dictionary:
+	if not is_instance_valid(instance):
+		return {}
+	return instance.client_passive_counts
+
+
+func get_my_passive_counts() -> Dictionary:
+	var my_id: int = multiplayer.get_unique_id()
+	return client_passive_counts.get(my_id, {})
+
+
+## 属性详情面板实例引用 (由面板 _ready 时注册)
+var _stats_panel_instance: Node = null
+
+func register_stats_panel(panel: Node) -> void:
+	_stats_panel_instance = panel
+
+func unregister_stats_panel(panel: Node) -> void:
+	if _stats_panel_instance == panel:
+		_stats_panel_instance = null

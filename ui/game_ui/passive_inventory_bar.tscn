@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/game_ui/passive_inventory_bar.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://ui/game_ui/passive_item_entry.tscn" id="2_entry"]
+
+[node name="PassiveInventoryBar" type="HBoxContainer"]
+alignment = 0
+script = ExtResource("1_script")

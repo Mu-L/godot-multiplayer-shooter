@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://rnho2a824a3g" path="res://assets/defence_up.tres" id="2_ea265"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sn0t7"]
+resource_local_to_scene = true
 shader = ExtResource("1_au7g5")
 shader_parameter/shield_color = Color(0.45, 0.7, 1, 1)
 shader_parameter/intensity = 0.0

@@ -569,8 +569,8 @@ msgid "STAT_BULLET_DAMAGE"
 msgstr "子弹伤害"
 
 #: ui/game_ui/player_stats_panel.gd
-msgid "STAT_FIRE_RATE"
-msgstr "射速"
+msgid "STAT_ATTACK_INTERVAL"
+msgstr "攻击间隔"
 
 #: ui/game_ui/player_stats_panel.gd
 msgid "STAT_MOVE_SPEED"

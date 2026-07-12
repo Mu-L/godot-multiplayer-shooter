@@ -111,6 +111,44 @@ static func calc_bullet_damage(peer_id: int, base_damage: float) -> float:
 	return base_damage
 
 
+## 计算子弹伤害的逐段拆解, 供属性面板多段显示.
+## 返回字典: final(最终伤害), base(原始基础值), bonus(基础伤害加成,绿色),
+## pre_split(加成后/减伤前), split_factor(分裂总系数,红色), is_split_active(是否发生分裂减伤)
+static func calc_bullet_damage_breakdown(peer_id: int, base_damage: float) -> Dictionary:
+	var res := {
+		"final": base_damage,
+		"base": base_damage,
+		"bonus": 0.0,
+		"pre_split": base_damage,
+		"split_factor": 1.0,
+		"is_split_active": false,
+	}
+	if not is_instance_valid(instance):
+		return res
+	# 基础攻击加成
+	var damage_up_count: int = get_peer_passive_count(peer_id, ITEM_ID_BASIC_DAMAGE_UP)
+	var damage_up_res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_BASIC_DAMAGE_UP)
+	var damage_param: float = 1.0
+	if damage_up_res and not damage_up_res.effect_params.is_empty():
+		damage_param = damage_up_res.effect_params[0]
+	var bonus: float = damage_up_count * damage_param
+	var pre_split: float = base_damage + bonus
+	# 弹道分裂减伤
+	var split_item_count: int = get_peer_passive_count(peer_id, ITEM_ID_BULLET_SPLIT)
+	var split_item_res: PassiveItemResource = instance.resources_id_dict.get(ITEM_ID_BULLET_SPLIT)
+	var split_param: float = 0.7
+	if split_item_res and split_item_res.effect_params.size() > 1:
+		split_param = split_item_res.effect_params[1]
+	var factor: float = split_param ** split_item_count
+	res["final"] = pre_split * factor
+	res["base"] = base_damage
+	res["bonus"] = bonus
+	res["pre_split"] = pre_split
+	res["split_factor"] = factor
+	res["is_split_active"] = split_item_count > 0
+	return res
+
+
 static func calc_bullet_count(peer_id: int) -> int:
 	if not is_instance_valid(instance):
 		return 1

@@ -13,11 +13,16 @@ class StatRow:
 	var base_format: String = "%.0f"
 	var current_format: String = "%.0f"
 	var unit: String = ""
+	## 为 true 时 diff 越小(负)越绿, 越大(正)越红. 用于"间隔"类属性(攻击间隔: 变小=变快=好)
+	var invert_diff_color: bool = false
 	var node: HBoxContainer
 	var name_label: Label
 	var base_label: Label
+	var arrow_label: Label
 	var current_label: Label
 	var diff_label: Label
+	## 动态段标签(基础伤害多段显示), 每次 set_values 重置
+	var _segment_labels: Array[Label] = []
 
 	func _init() -> void:
 		node = HBoxContainer.new()
@@ -26,7 +31,7 @@ class StatRow:
 		base_label = Label.new()
 		base_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		base_label.add_theme_font_size_override("font_size", 14)
-		var arrow_label := Label.new()
+		arrow_label = Label.new()
 		arrow_label.text = "→"
 		arrow_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		arrow_label.add_theme_font_size_override("font_size", 14)
@@ -42,21 +47,43 @@ class StatRow:
 		node.add_child(current_label)
 		node.add_child(diff_label)
 
-	func set_values(base_val: float, current_val: float) -> void:
+	## segments: 在 base 与 current 之间插入的中间段. 每项 { "text": String, "color": Color }.
+	## 用于子弹伤害多段显示: base →(+bonus 绿)→ pre_split →(×factor 红)→ final.
+	func set_values(base_val: float, current_val: float, segments: Array[Dictionary] = []) -> void:
 		name_label.text = tr(name_key)
 		var unit_str: String = (" " + unit) if unit != "" else ""
 		base_label.text = (base_format % base_val) + unit_str
-		current_label.text = (current_format % current_val) + unit_str
+		# 有中间段时当前值也带前导箭头, 保持链式连贯: ... → final
+		var chain_prefix: String = "→ " if segments.size() > 0 else ""
+		current_label.text = chain_prefix + (current_format % current_val) + unit_str
+		# 清理旧段
+		for seg_label in _segment_labels:
+			seg_label.queue_free()
+		_segment_labels.clear()
+		# 有中间段时隐藏父级箭头 (段与段之间靠每段自带前缀箭头连接)
+		arrow_label.visible = segments.size() == 0
+		# 在 arrow 之后插入中间段 (arrow 位于子节点 index 2)
+		for i in range(segments.size()):
+			var seg: Dictionary = segments[i]
+			var seg_label := Label.new()
+			seg_label.add_theme_font_size_override("font_size", 12)
+			seg_label.text = seg.get("text", "")
+			seg_label.add_theme_color_override("font_color", seg.get("color", PlayerStatsPanel.COLOR_NEUTRAL))
+			node.add_child(seg_label)
+			node.move_child(seg_label, 2 + i)
+			_segment_labels.append(seg_label)
+		# diff 颜色: invert_diff_color 时符号取反(间隔类属性)
 		var diff: float = current_val - base_val
+		var positive_good: bool = not invert_diff_color
 		if is_equal_approx(diff, 0.0):
 			diff_label.text = "±0"
 			diff_label.add_theme_color_override("font_color", PlayerStatsPanel.COLOR_NEUTRAL)
 		elif diff > 0.0:
 			diff_label.text = ("+" + _format_diff(diff, current_format)) + unit_str
-			diff_label.add_theme_color_override("font_color", PlayerStatsPanel.COLOR_POSITIVE)
+			diff_label.add_theme_color_override("font_color", PlayerStatsPanel.COLOR_POSITIVE if positive_good else PlayerStatsPanel.COLOR_NEGATIVE)
 		else:
 			diff_label.text = (_format_diff(diff, current_format)) + unit_str
-			diff_label.add_theme_color_override("font_color", PlayerStatsPanel.COLOR_NEGATIVE)
+			diff_label.add_theme_color_override("font_color", PlayerStatsPanel.COLOR_NEGATIVE if positive_good else PlayerStatsPanel.COLOR_POSITIVE)
 
 	static func _format_diff(value: float, fmt: String) -> String:
 		var s: String = (fmt % abs(value)).lstrip("-")
@@ -111,10 +138,10 @@ func toggle(visible_: bool) -> void:
 
 
 func _build_stat_rows() -> void:
-	# 6 行: 子弹伤害 / 射速 / 移速 / 血量上限 / 伤害承受 / 弹道数
+	# 6 行: 子弹伤害 / 攻击间隔 / 移速 / 血量上限 / 减伤 / 弹道数
 	var rows: Array[Dictionary] = [
 		{"name_key": "STAT_BULLET_DAMAGE", "base_format": "%.0f", "current_format": "%.2f", "unit": ""},
-		{"name_key": "STAT_FIRE_RATE", "base_format": "%.2f", "current_format": "%.2f", "unit": "s"},
+		{"name_key": "STAT_ATTACK_INTERVAL", "base_format": "%.2f", "current_format": "%.2f", "unit": "s", "invert_diff_color": true},
 		{"name_key": "STAT_MOVE_SPEED", "base_format": "%.0f", "current_format": "%.0f", "unit": ""},
 		{"name_key": "STAT_HEALTH_LIMIT", "base_format": "%.0f", "current_format": "%.0f", "unit": ""},
 		{"name_key": "STAT_DAMAGE_REDUCTION", "base_format": "%.0f", "current_format": "%.0f", "unit": "%"},
@@ -126,6 +153,7 @@ func _build_stat_rows() -> void:
 		row.base_format = r["base_format"]
 		row.current_format = r["current_format"]
 		row.unit = r["unit"]
+		row.invert_diff_color = r.get("invert_diff_color", false)
 		stat_rows_container.add_child(row.node)
 		_stat_rows.append(row)
 	_refresh_stat_rows()
@@ -139,8 +167,9 @@ func _refresh_stat_rows() -> void:
 	var base_move_speed: float = Player.BASE_MOVE_SPEED
 	var base_health_limit: float = Player.BASE_HEALTH_LIMIT
 	var base_bullet_count: int = 1
-	# 当前值
-	var cur_damage: float = UpgradeComponent.calc_bullet_damage(my_id, base_damage)
+	# 当前值 (子弹伤害使用逐段拆解)
+	var damage_breakdown: Dictionary = UpgradeComponent.calc_bullet_damage_breakdown(my_id, base_damage)
+	var cur_damage: float = damage_breakdown["final"]
 	var cur_fire_rate: float = UpgradeComponent.calc_fire_rate(my_id, base_fire_rate)
 	var cur_move_speed: float = UpgradeComponent.calc_move_speed(my_id, base_move_speed)
 	var cur_health_limit: float = UpgradeComponent.calc_health_limit(my_id, base_health_limit)
@@ -149,10 +178,33 @@ func _refresh_stat_rows() -> void:
 	# 防御以"减伤百分比"显示
 	var base_def_display: float = 0.0
 	var cur_def_display: float = (1.0 - cur_defence) * 100.0
+	# 子弹伤害多段链: base →(+bonus 绿)→ pre_split →(×factor 红)→ final
+	var segments: Array[Dictionary] = _format_bullet_damage_segments(damage_breakdown)
 	# 更新各行
-	_stat_rows[0].set_values(base_damage, cur_damage)
+	_stat_rows[0].set_values(damage_breakdown["base"], cur_damage, segments)
 	_stat_rows[1].set_values(base_fire_rate, cur_fire_rate)
 	_stat_rows[2].set_values(base_move_speed, cur_move_speed)
 	_stat_rows[3].set_values(base_health_limit, cur_health_limit)
 	_stat_rows[4].set_values(base_def_display, cur_def_display)
 	_stat_rows[5].set_values(float(base_bullet_count), float(cur_bullet_count))
+
+
+## 根据子弹伤害逐段拆解, 生成 base 与 current 之间的多段标签.
+## 链: base → (+bonus 绿色) → pre_split → (×factor 红色) → final
+## 每段自带前导箭头(父级箭头已隐藏); 无分裂时仅显示加成段(若有), 避免空渲染.
+static func _format_bullet_damage_segments(breakdown: Dictionary) -> Array[Dictionary]:
+	var segments: Array[Dictionary] = []
+	if breakdown["bonus"] > 0.0:
+		var bonus_text: String = ("+%s" % PlayerStatsPanel._format_damage_value(breakdown["bonus"])) if breakdown["bonus"] >= 0.0 else ("-%s" % PlayerStatsPanel._format_damage_value(abs(breakdown["bonus"])))
+		segments.append({"text": ("→ %s" % bonus_text), "color": PlayerStatsPanel.COLOR_POSITIVE})
+		segments.append({"text": ("→ %s" % PlayerStatsPanel._format_damage_value(breakdown["pre_split"])), "color": PlayerStatsPanel.COLOR_NEUTRAL})
+	if breakdown["is_split_active"]:
+		segments.append({"text": ("→ ×%s" % PlayerStatsPanel._format_damage_value(breakdown["split_factor"])), "color": PlayerStatsPanel.COLOR_NEGATIVE})
+	return segments
+
+
+static func _format_damage_value(value: float) -> String:
+	# 整数显示整数, 否则最多 2 位小数去尾零
+	if is_equal_approx(value, snappedf(value, 1.0)):
+		return str(int(value))
+	return ("%.2f" % value).rstrip("0").rstrip(".")

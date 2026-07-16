@@ -186,10 +186,76 @@ msgstr ""
 msgid "AI Instructions"
 msgstr ""
 
-#: autoload/tools.gd:5 ui/game_ui/player_health_ui.gd:13
+#: addons/script-ide/override/override_popup.tscn
+msgid "Select Functions to Override/Implement"
+msgstr ""
+
+#: addons/script-ide/override/override_popup.tscn
+msgid "Filter Methods"
+msgstr ""
+
+#: addons/script-ide/override/override_popup.tscn
+msgid "Ok"
+msgstr ""
+
+#: addons/script-ide/override/override_popup.tscn
+msgid "Cancel"
+msgstr ""
+
+#: addons/script-ide/quickopen/quick_open_popup.tscn
+msgid "Project"
+msgstr ""
+
+#: addons/script-ide/quickopen/quick_open_popup.tscn
+msgid "Project+Addons"
+msgstr ""
+
+#: addons/script-ide/quickopen/quick_open_popup.tscn
+msgid "Filter files"
+msgstr ""
+
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:264
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:266
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:415
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:422
+msgid "    "
+msgstr ""
+
+#: autoload/tools.gd:5 ui/game_ui/player_health_ui.gd:15
 #: ui/game_ui/player_health_ui.tscn
 msgid "DEFAULT_PLAYER_NAME"
 msgstr "玩家"
+
+# # 被动道具叠加效果描述. 翻译者只决定纯文本形式(措辞/量词), 占位符的具体数值由代码按该道具的数值语义算好后注入, 彼此独立.
+# # {0} = 总基础伤害增加值 (整数).
+#: components/upgrade_component.gd:316
+msgid "PASSIVE_STACKED_BASIC_DAMAGE_UP"
+msgstr "基础伤害 +{0}"
+
+# # {0} = 总血量上限增加值 (整数).
+#: components/upgrade_component.gd:320
+msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
+msgstr "血量上限 +{0}"
+
+# # {0} = 总攻速百分比 (整数, 如 10 表示 +10%).
+#: components/upgrade_component.gd:324
+msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
+msgstr "攻速 +{0}%"
+
+# # {0} = 总移速百分比 (整数).
+#: components/upgrade_component.gd:328
+msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
+msgstr "移速 +{0}%"
+
+# # {0} = 总减伤百分比 (整数). 代码计算 = (1 - effect_params[0]^count) * 100.
+#: components/upgrade_component.gd:333
+msgid "PASSIVE_STACKED_DEFENCE_UP"
+msgstr "减伤 {0}%"
+
+# # {0} = 总新增弹道数 (整数); {1} = 单发伤害百分比 (整数).
+#: components/upgrade_component.gd:340
+msgid "PASSIVE_STACKED_BULLET_SPLIT"
+msgstr "新增 {0} 条弹道, 单发伤害 {1}%"
 
 #: config/enemy_config.csv
 msgid "ENEMY_SLIME_NAME"
@@ -215,51 +281,51 @@ msgstr "石刺"
 msgid "ENEMY_STONE_POKE_DESCRIPTION"
 msgstr "它的皮很厚很硬,扎得很疼,对靠近的玩家造成高伤害"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BASIC_DAMAGE_UP_NAME"
 msgstr "伤害提升"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BASIC_DAMAGE_UP_DESCRIPTION"
 msgstr "子弹基础伤害增加{0}"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_NAME"
 msgstr "血上限提升"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_DESCRIPTION"
 msgstr "血量上限增加{0}"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_NAME"
 msgstr "子弹分裂"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_DESCRIPTION"
 msgstr "增加{0}条弹道,但基础伤害降低至{1}"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_NAME"
 msgstr "攻速提升"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_DESCRIPTION"
 msgstr "攻速提升{0}"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_NAME"
 msgstr "移速提升"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_DESCRIPTION"
 msgstr "移动速度提升{0}"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_NAME"
 msgstr "护甲提升"
 
-#: config/passive_item_config.csv
+#: config/passive_item_config.csv config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_DESCRIPTION"
 msgstr "每次升级使承受伤害降低至{0}(无上限)"
 
@@ -307,6 +373,26 @@ msgstr "移速提升"
 msgid "UPGRADE_MOVE_SPEED_DESCRIPTION"
 msgstr "移动速度提升10%"
 
+#: ui/components/tooltip_panel.gd:20
+msgid "SINGLE_TOOL_TIP_HEADER"
+msgstr "物品说明"
+
+#: ui/components/tooltip_panel.gd:21
+msgid "STACKED_TOOL_TIP_HEADER"
+msgstr "叠加效果"
+
+#: ui/components/tooltip_panel.tscn
+msgid "TITLE"
+msgstr ""
+
+#: ui/components/tooltip_panel.tscn
+msgid "物品说明"
+msgstr ""
+
+#: ui/components/tooltip_panel.tscn
+msgid "叠加效果"
+msgstr ""
+
 #: ui/confirm_dialog.gd:7 ui/confirm_dialog.tscn
 msgid "DEFAULT_CONFIRM_DIALOG_TITLE"
 msgstr "提示"
@@ -351,13 +437,89 @@ msgstr "返回主菜单"
 msgid "DEFAULT_GAME_WIN_TIP"
 msgstr "舞台是你的了!"
 
+#: ui/game_ui/passive_item_entry.tscn
+msgid "1"
+msgstr ""
+
+#: ui/game_ui/passive_item_entry.tscn
+msgid "2"
+msgstr ""
+
 #: ui/game_ui/player_died_ui.tscn
 msgid "DEFAULT_PLAYER_DIED_TIP"
 msgstr "归于星辰"
 
-#: ui/game_ui/player_health_ui.gd
+#: ui/game_ui/player_health_ui.gd:30
 msgid "DEFENSE_TEXT"
 msgstr "减伤 %s%%"
+
+#: ui/game_ui/player_health_ui.tscn
+msgid "DEF 0%"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:35 ui/game_ui/player_stats_panel.tscn
+msgid "→"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:79
+msgid "±0"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:113
+msgid "STATS_PANEL_TITLE"
+msgstr "属性详情"
+
+#: ui/game_ui/player_stats_panel.gd:114
+msgid "STATS_PANEL_FOOTER"
+msgstr "按住 TAB 松开关闭"
+
+#: ui/game_ui/player_stats_panel.gd:143
+msgid "STAT_BULLET_DAMAGE"
+msgstr "子弹伤害"
+
+#: ui/game_ui/player_stats_panel.gd:144
+msgid "STAT_ATTACK_INTERVAL"
+msgstr "攻击间隔"
+
+#: ui/game_ui/player_stats_panel.gd:145
+msgid "STAT_MOVE_SPEED"
+msgstr "移速"
+
+#: ui/game_ui/player_stats_panel.gd:146
+msgid "STAT_HEALTH_LIMIT"
+msgstr "血量上限"
+
+#: ui/game_ui/player_stats_panel.gd:147
+msgid "STAT_DAMAGE_REDUCTION"
+msgstr "减伤"
+
+#: ui/game_ui/player_stats_panel.gd:148
+msgid "STAT_BULLET_COUNT"
+msgstr "弹道数"
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "属性详情"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "属性"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "基础"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "当前"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "差值"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "按住 TAB 松开关闭"
+msgstr ""
 
 #: ui/game_ui/ready_state_ui.gd:41
 msgid "READY_COUNT_INFO"
@@ -379,9 +541,17 @@ msgstr "皮肤"
 msgid "DEFAULT_READY_COUNT_TIP"
 msgstr "1/4 已准备"
 
-#: ui/game_ui/round_timer_ui.gd:18
+#: ui/game_ui/round_timer_ui.gd:20
 msgid "ROUND_COUNT_INFO"
 msgstr "回合 %s"
+
+#: ui/game_ui/round_timer_ui.gd:24
+msgid "BONUS ROUND"
+msgstr "奖励关卡"
+
+#: ui/game_ui/round_timer_ui.gd:29
+msgid "BOSS"
+msgstr ""
 
 #: ui/game_ui/round_timer_ui.tscn
 msgid "DEFAULT_ROUND_NUMBER_TIP"
@@ -555,67 +725,3 @@ msgstr "选择你的皮肤"
 
 msgid "01-multi-player"
 msgstr "戈多枪手"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STATS_PANEL_TITLE"
-msgstr "属性详情"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STATS_PANEL_FOOTER"
-msgstr "按住 TAB 松开关闭"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STAT_BULLET_DAMAGE"
-msgstr "子弹伤害"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STAT_ATTACK_INTERVAL"
-msgstr "攻击间隔"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STAT_MOVE_SPEED"
-msgstr "移速"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STAT_HEALTH_LIMIT"
-msgstr "血量上限"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STAT_DAMAGE_REDUCTION"
-msgstr "减伤"
-
-#: ui/game_ui/player_stats_panel.gd
-msgid "STAT_BULLET_COUNT"
-msgstr "弹道数"
-
-#: components/upgrade_component.gd
-## 被动道具叠加效果描述. 翻译者只决定纯文本形式(措辞/量词), 占位符的具体数值由代码按该道具的数值语义算好后注入, 彼此独立.
-#: components/upgrade_component.gd
-## {0} = 总基础伤害增加值 (整数).
-msgid "PASSIVE_STACKED_BASIC_DAMAGE_UP"
-msgstr "基础伤害 +{0}"
-
-#: components/upgrade_component.gd
-## {0} = 总血量上限增加值 (整数).
-msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
-msgstr "血量上限 +{0}"
-
-#: components/upgrade_component.gd
-## {0} = 总攻速百分比 (整数, 如 10 表示 +10%).
-msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
-msgstr "攻速 +{0}%"
-
-#: components/upgrade_component.gd
-## {0} = 总移速百分比 (整数).
-msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
-msgstr "移速 +{0}%"
-
-#: components/upgrade_component.gd
-## {0} = 总减伤百分比 (整数). 代码计算 = (1 - effect_params[0]^count) * 100.
-msgid "PASSIVE_STACKED_DEFENCE_UP"
-msgstr "减伤 {0}%"
-
-#: components/upgrade_component.gd
-## {0} = 总新增弹道数 (整数); {1} = 单发伤害百分比 (整数).
-msgid "PASSIVE_STACKED_BULLET_SPLIT"
-msgstr "新增 {0} 条弹道, 单发伤害 {1}%"

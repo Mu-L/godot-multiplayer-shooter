@@ -15,6 +15,18 @@
 # res://addons/godot_mcp_enhanced/script_operations.gd
 # res://addons/godot_mcp_enhanced/ui/bottom_panel.gd
 # res://addons/godot_mcp_enhanced/ui/bottom_panel.tscn
+# res://addons/script-ide/outline/outline_button.gd
+# res://addons/script-ide/outline/outline_container.gd
+# res://addons/script-ide/outline/outline_container.tscn
+# res://addons/script-ide/override/override_popup.gd
+# res://addons/script-ide/override/override_popup.tscn
+# res://addons/script-ide/plugin.gd
+# res://addons/script-ide/quickopen/quick_open_popup.gd
+# res://addons/script-ide/quickopen/quick_open_popup.tscn
+# res://addons/script-ide/split/split_code_edit.gd
+# res://addons/script-ide/tabbar/custom_tab.gd
+# res://addons/script-ide/tabbar/multiline_tab_bar.gd
+# res://addons/script-ide/tabbar/multiline_tab_bar.tscn
 # res://assets/attack_speed_up.tres
 # res://assets/basic_damage_up.tres
 # res://assets/bubble.tres
@@ -27,7 +39,10 @@
 # res://assets/health_limit_up.tres
 # res://assets/medkit.tres
 # res://assets/move_speed_up.tres
+# res://assets/stone-slime-attack.tres
+# res://assets/stone-slime-normal.tres
 # res://autoload/background.tscn
+# res://autoload/csv_resource_cache.gd
 # res://autoload/game_cursor.gd
 # res://autoload/game_cursor.tscn
 # res://autoload/game_events.gd
@@ -54,6 +69,8 @@
 # res://components/player_detect_component.tscn
 # res://components/player_input_multiplayer_synchronizer_component.gd
 # res://components/player_input_multiplayer_synchronizer_component.tscn
+# res://components/shield_ghost_component.gd
+# res://components/shield_ghost_component.tscn
 # res://components/upgrade_component.gd
 # res://components/upgrade_component.tscn
 # res://config/enemy_config.csv
@@ -83,6 +100,15 @@
 # res://entities/enemy/enemy2/state_died.gd
 # res://entities/enemy/enemy2/state_normal.gd
 # res://entities/enemy/enemy2/state_spawn.gd
+# res://entities/enemy/enemy3/enemy3.gd
+# res://entities/enemy/enemy3/enemy3.tscn
+# res://entities/enemy/enemy3/state_attack.gd
+# res://entities/enemy/enemy3/state_charge.gd
+# res://entities/enemy/enemy3/state_died.gd
+# res://entities/enemy/enemy3/state_normal.gd
+# res://entities/enemy/enemy3/state_spawn.gd
+# res://entities/pickup/pickup_area.gd
+# res://entities/pickup/pickup_area.tscn
 # res://entities/player/player.gd
 # res://entities/player/player.tscn
 # res://game_camera.gd
@@ -90,6 +116,9 @@
 # res://main.gd
 # res://main.tscn
 # res://resources/default.tres
+# res://resources/enemy_resource.gd
+# res://resources/passive_item_resource.gd
+# res://resources/pickup_item_resource.gd
 # res://resources/upgrade_resource/damage.tres
 # res://resources/upgrade_resource/fire_rate.tres
 # res://resources/upgrade_resource/move_speed.tres
@@ -99,6 +128,10 @@
 # res://scripts/state.gd
 # res://scripts/state_machine.gd
 # res://scripts/state_machine.tscn
+# res://scripts/test_runner/formatted_description_stacked_test.gd
+# res://scripts/test_runner/formatted_description_test.gd
+# res://ui/components/tooltip_panel.gd
+# res://ui/components/tooltip_panel.tscn
 # res://ui/confirm_dialog.gd
 # res://ui/confirm_dialog.tscn
 # res://ui/game_end/game_end_menu.gd
@@ -107,10 +140,16 @@
 # res://ui/game_ui/game_win_ui.tscn
 # res://ui/game_ui/hurt_notify_ui.gd
 # res://ui/game_ui/hurt_notify_ui.tscn
+# res://ui/game_ui/passive_inventory_bar.gd
+# res://ui/game_ui/passive_inventory_bar.tscn
+# res://ui/game_ui/passive_item_entry.gd
+# res://ui/game_ui/passive_item_entry.tscn
 # res://ui/game_ui/player_died_ui.gd
 # res://ui/game_ui/player_died_ui.tscn
 # res://ui/game_ui/player_health_ui.gd
 # res://ui/game_ui/player_health_ui.tscn
+# res://ui/game_ui/player_stats_panel.gd
+# res://ui/game_ui/player_stats_panel.tscn
 # res://ui/game_ui/ready_state_ui.gd
 # res://ui/game_ui/ready_state_ui.tscn
 # res://ui/game_ui/round_timer_ui.gd
@@ -231,10 +270,69 @@ msgstr ""
 msgid "AI Instructions"
 msgstr ""
 
+#: addons/script-ide/override/override_popup.tscn
+msgid "Select Functions to Override/Implement"
+msgstr ""
+
+#: addons/script-ide/override/override_popup.tscn
+msgid "Filter Methods"
+msgstr ""
+
+#: addons/script-ide/override/override_popup.tscn
+msgid "Ok"
+msgstr ""
+
+#: addons/script-ide/override/override_popup.tscn
+msgid "Cancel"
+msgstr ""
+
+#: addons/script-ide/quickopen/quick_open_popup.tscn
+msgid "Project"
+msgstr ""
+
+#: addons/script-ide/quickopen/quick_open_popup.tscn
+msgid "Project+Addons"
+msgstr ""
+
+#: addons/script-ide/quickopen/quick_open_popup.tscn
+msgid "Filter files"
+msgstr ""
+
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:264
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:266
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:415
+#: addons/script-ide/tabbar/multiline_tab_bar.gd:422
+msgid "    "
+msgstr ""
+
 #: autoload/tools.gd:5
-#: ui/game_ui/player_health_ui.gd:13
+#: ui/game_ui/player_health_ui.gd:15
 #: ui/game_ui/player_health_ui.tscn
 msgid "DEFAULT_PLAYER_NAME"
+msgstr ""
+
+#: components/upgrade_component.gd:316
+msgid "PASSIVE_STACKED_BASIC_DAMAGE_UP"
+msgstr ""
+
+#: components/upgrade_component.gd:320
+msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
+msgstr ""
+
+#: components/upgrade_component.gd:324
+msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
+msgstr ""
+
+#: components/upgrade_component.gd:328
+msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
+msgstr ""
+
+#: components/upgrade_component.gd:333
+msgid "PASSIVE_STACKED_DEFENCE_UP"
+msgstr ""
+
+#: components/upgrade_component.gd:340
+msgid "PASSIVE_STACKED_BULLET_SPLIT"
 msgstr ""
 
 #: config/enemy_config.csv
@@ -262,50 +360,62 @@ msgid "ENEMY_STONE_POKE_DESCRIPTION"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BASIC_DAMAGE_UP_NAME"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BASIC_DAMAGE_UP_DESCRIPTION"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_NAME"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_HEALTH_LIMIT_UP_DESCRIPTION"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_NAME"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_BULLET_SPLIT_DESCRIPTION"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_NAME"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_ATTACK_SPEED_UP_DESCRIPTION"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_NAME"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_MOVE_SPEED_UP_DESCRIPTION"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_NAME"
 msgstr ""
 
 #: config/passive_item_config.csv
+#: config/pickup_item_config.csv
 msgid "PASSIVE_ITEM_DEFENCE_UP_DESCRIPTION"
 msgstr ""
 
@@ -351,6 +461,26 @@ msgstr ""
 
 #: resources/upgrade_resource/move_speed.tres
 msgid "UPGRADE_MOVE_SPEED_DESCRIPTION"
+msgstr ""
+
+#: ui/components/tooltip_panel.gd:20
+msgid "SINGLE_TOOL_TIP_HEADER"
+msgstr ""
+
+#: ui/components/tooltip_panel.gd:21
+msgid "STACKED_TOOL_TIP_HEADER"
+msgstr ""
+
+#: ui/components/tooltip_panel.tscn
+msgid "TITLE"
+msgstr ""
+
+#: ui/components/tooltip_panel.tscn
+msgid "物品说明"
+msgstr ""
+
+#: ui/components/tooltip_panel.tscn
+msgid "叠加效果"
 msgstr ""
 
 #: ui/confirm_dialog.gd:7
@@ -401,8 +531,89 @@ msgstr ""
 msgid "DEFAULT_GAME_WIN_TIP"
 msgstr ""
 
+#: ui/game_ui/passive_item_entry.tscn
+msgid "1"
+msgstr ""
+
+#: ui/game_ui/passive_item_entry.tscn
+msgid "2"
+msgstr ""
+
 #: ui/game_ui/player_died_ui.tscn
 msgid "DEFAULT_PLAYER_DIED_TIP"
+msgstr ""
+
+#: ui/game_ui/player_health_ui.gd:30
+msgid "DEFENSE_TEXT"
+msgstr ""
+
+#: ui/game_ui/player_health_ui.tscn
+msgid "DEF 0%"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:35
+#: ui/game_ui/player_stats_panel.tscn
+msgid "→"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:79
+msgid "±0"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:113
+msgid "STATS_PANEL_TITLE"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:114
+msgid "STATS_PANEL_FOOTER"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:143
+msgid "STAT_BULLET_DAMAGE"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:144
+msgid "STAT_ATTACK_INTERVAL"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:145
+msgid "STAT_MOVE_SPEED"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:146
+msgid "STAT_HEALTH_LIMIT"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:147
+msgid "STAT_DAMAGE_REDUCTION"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.gd:148
+msgid "STAT_BULLET_COUNT"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "属性详情"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "属性"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "基础"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "当前"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "差值"
+msgstr ""
+
+#: ui/game_ui/player_stats_panel.tscn
+msgid "按住 TAB 松开关闭"
 msgstr ""
 
 #: ui/game_ui/ready_state_ui.gd:41
@@ -425,8 +636,16 @@ msgstr ""
 msgid "DEFAULT_READY_COUNT_TIP"
 msgstr ""
 
-#: ui/game_ui/round_timer_ui.gd:18
+#: ui/game_ui/round_timer_ui.gd:20
 msgid "ROUND_COUNT_INFO"
+msgstr ""
+
+#: ui/game_ui/round_timer_ui.gd:24
+msgid "BONUS ROUND"
+msgstr ""
+
+#: ui/game_ui/round_timer_ui.gd:29
+msgid "BOSS"
 msgstr ""
 
 #: ui/game_ui/round_timer_ui.tscn

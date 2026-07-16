@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://dup7pxm4vk4q3" path="res://entities/pickup/pickup_area.gd" id="2_script"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_pickup"]
-radius = 12.0
+radius = 17.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pickup"]
 properties/0/path = NodePath(".:global_position")

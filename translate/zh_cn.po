@@ -589,25 +589,33 @@ msgid "STAT_BULLET_COUNT"
 msgstr "弹道数"
 
 #: components/upgrade_component.gd
-msgid "PASSIVE_STACKED_DAMAGE_UP"
+## 被动道具叠加效果描述. 翻译者只决定纯文本形式(措辞/量词), 占位符的具体数值由代码按该道具的数值语义算好后注入, 彼此独立.
+#: components/upgrade_component.gd
+## {0} = 总基础伤害增加值 (整数).
+msgid "PASSIVE_STACKED_BASIC_DAMAGE_UP"
 msgstr "基础伤害 +{0}"
 
 #: components/upgrade_component.gd
+## {0} = 总血量上限增加值 (整数).
 msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
 msgstr "血量上限 +{0}"
 
 #: components/upgrade_component.gd
+## {0} = 总攻速百分比 (整数, 如 10 表示 +10%).
 msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
-msgstr "攻速提升 {0}"
+msgstr "攻速 +{0}%"
 
 #: components/upgrade_component.gd
+## {0} = 总移速百分比 (整数).
 msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
-msgstr "移速提升 {0}"
+msgstr "移速 +{0}%"
 
 #: components/upgrade_component.gd
+## {0} = 总减伤百分比 (整数). 代码计算 = (1 - effect_params[0]^count) * 100.
 msgid "PASSIVE_STACKED_DEFENCE_UP"
-msgstr "减伤 {0}"
+msgstr "减伤 {0}%"
 
 #: components/upgrade_component.gd
+## {0} = 总新增弹道数 (整数); {1} = 单发伤害百分比 (整数).
 msgid "PASSIVE_STACKED_BULLET_SPLIT"
-msgstr "新增 {0} 条弹道, 单发伤害降至 {1}"
+msgstr "新增 {0} 条弹道, 单发伤害 {1}%"

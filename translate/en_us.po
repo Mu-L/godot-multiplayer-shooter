@@ -589,25 +589,33 @@ msgid "STAT_BULLET_COUNT"
 msgstr "Projectiles"
 
 #: components/upgrade_component.gd
-msgid "PASSIVE_STACKED_DAMAGE_UP"
+## Stacked description for passive items. The translator controls only the plain-text form (wording / units); the code calculates the actual numeric value per item's semantic and injects via {0} {1}, independently for each item type.
+#: components/upgrade_component.gd
+## {0} = total base-damage increase (integer).
+msgid "PASSIVE_STACKED_BASIC_DAMAGE_UP"
 msgstr "Damage +{0}"
 
 #: components/upgrade_component.gd
+## {0} = total health-limit increase (integer).
 msgid "PASSIVE_STACKED_HEALTH_LIMIT_UP"
 msgstr "Health +{0}"
 
 #: components/upgrade_component.gd
+## {0} = total attack-speed percent increase (integer, e.g. 10 means +10%).
 msgid "PASSIVE_STACKED_ATTACK_SPEED_UP"
-msgstr "Attack Speed {0}"
+msgstr "Attack Speed +{0}%"
 
 #: components/upgrade_component.gd
+## {0} = total move-speed percent increase (integer).
 msgid "PASSIVE_STACKED_MOVE_SPEED_UP"
-msgstr "Move Speed {0}"
+msgstr "Move Speed +{0}%"
 
 #: components/upgrade_component.gd
+## {0} = total damage-reduction percent (integer). Code computes = (1 - effect_params[0]^count) * 100.
 msgid "PASSIVE_STACKED_DEFENCE_UP"
-msgstr "Dmg Reduction {0}"
+msgstr "Dmg Reduction {0}%"
 
 #: components/upgrade_component.gd
+## {0} = total added projectiles (integer); {1} = single-shot damage percent (integer).
 msgid "PASSIVE_STACKED_BULLET_SPLIT"
-msgstr "{0} new projectiles, single-shot damage reduced to {1}"
+msgstr "{0} new projectiles, single-shot damage {1}%"

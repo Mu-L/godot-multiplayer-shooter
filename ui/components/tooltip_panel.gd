@@ -37,13 +37,11 @@ func show_tooltip(passive_id: String, count: int) -> void:
 		return
 	title_label.text = tr(res.name_key)
 	icon_texture.texture = res.icon
-	# 单级效果
+	# 单级效果: 使用翻译模板 PASSIVE_ITEM_*_DESCRIPTION, 代入 effect_params 原始数值.
 	single_description.text = UpgradeComponent.formatted_description(res)
-	# 叠加效果 (count == 1 时与单级相同, 但仍显示)
-	if count <= 1:
-		stacked_description.text = single_description.text
-	else:
-		stacked_description.text = UpgradeComponent.formatted_description_stacked(res, count)
+	# 叠加效果: 每种道具的叠加语义独立(整数累加 / 比例累加 / 累乘 / 混合).
+	# 当 count == 1 时 formatted_description_stacked() 内部回退到单级描述, 因此直接统一调用.
+	stacked_description.text = UpgradeComponent.formatted_description_stacked(res, count)
 	# 当 count == 1 时隐藏叠加区段分隔线和标题
 	var show_stacked: bool = count > 1
 	separator_2.visible = show_stacked

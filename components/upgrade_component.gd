@@ -175,7 +175,7 @@ func generate_options() -> void:
 		push_warning("No passive item resources loaded for upgrade options.")
 		upgrade_finished.emit()
 		return
-	var all_peers := Tools.get_game_peers()
+	var all_peers: Array = Tools.get_game_peers()
 	avaiable_peer_resources.clear()
 	for peer in all_peers:
 		var copy_resources := Array(resources_id_dict.values())
@@ -285,8 +285,8 @@ static func _tr(msgid: String) -> String:
 	return instance.tr(msgid)
 
 
-## 根据 effect_params 代入翻译模板生成最终描述.
-## 翻译文件中的模板使用 {0} {1} ... 占位符,此处用 effect_params 的实际数值代入.
+## 单级被动物品效果描述.
+## 使用 PASSIVE_ITEM_*_DESCRIPTION 翻译模板,占位符 {0} {1} 直接代入 effect_params 原始数值(保留"比例"还是"数值"语义由 CSV 决定).
 static func formatted_description(resource: PassiveItemResource) -> String:
 	if resource == null:
 		return ""
@@ -296,41 +296,21 @@ static func formatted_description(resource: PassiveItemResource) -> String:
 		if cached != null:
 			res = cached
 	var template: String = _tr(res.description_key)
-	var display_params: Array = []
-	for param in res.effect_params:
-		display_params.append(_format_effect_param(param))
-	for i in range(display_params.size()):
-		template = template.replace("{%d}" % i, str(display_params[i]))
+	# 用 replace 着色,避免 % 运算符把占位符里的裸 %" 当成格式化 token 解析.
+	for i in range(res.effect_params.size()):
+		template = template.replace("{%d}" % i, _format_value(res.effect_params[i]))
 	return template
 
 
-static func _format_effect_param(param) -> String:
-	match typeof(param):
-		TYPE_FLOAT:
-			# 0~1 范围内的小数视为比例,显示为百分比 (如 0.1 -> "10%", 0.8 -> "80%")
-			# 排除整数值的浮点数 (如 1.0)
-			if param > 0.0 and param < 1.0 and not is_equal_approx(param, snappedf(param, 1.0)):
-				return "%.0f%%" % (param * 100.0)
-			return _format_number(param)
-		TYPE_INT:
-			return str(param)
-		_:
-			return str(param)
-
-
-static func _format_number(value: float) -> String:
-	if is_equal_approx(value, snappedf(value, 1.0)):
-		return str(int(value))
-	# 最多保留 2 位小数,去掉末尾无意义的 0
-	return ("%.2f" % value).rstrip("0").rstrip(".")
-
-
-## 生成叠加后数值的描述. 用于 PassiveInventoryBar 的 Tooltip "叠加效果" 区段.
-## 单参数道具: 倍率/数值直接 param * count (如攻击速度 +30%).
-## 多参数道具(bullet_split): 按各自语义分别计算叠加后表现.
+## 叠加后被动物品效果描述 (count >= 2 时由调用方决定是否回退到单级描述).
+## 每种道具的数值语义各不相同(整数累加 / 比例累加 / 累乘 / 混合),因此按 match case 各自独立格式化,
+## 再通过独立的翻译模板 PASSIVE_STACKED_* 输出供外部本地化,不做统一模板.
 static func formatted_description_stacked(resource: PassiveItemResource, count: int) -> String:
 	if resource == null or count <= 0:
 		return ""
+	if count == 1:
+		# 叠加数 = 1 时走单级描述,与"叠加效果"区段隐藏逻辑一致.
+		return formatted_description(resource)
 	var res: PassiveItemResource = resource
 	if is_instance_valid(instance):
 		var cached: PassiveItemResource = instance.resources_id_dict.get(resource.id)
@@ -338,36 +318,58 @@ static func formatted_description_stacked(resource: PassiveItemResource, count: 
 			res = cached
 	match res.id:
 		ITEM_ID_BASIC_DAMAGE_UP:
-			# effect_params[0] = 1.0, 每级 +1基础伤害
-			var total_damage: float = res.effect_params[0] * count
-			return _tr("PASSIVE_STACKED_DAMAGE_UP") % _format_effect_param(total_damage)
+			# effect_params[0] = 1.0, 每级 +1 基础伤害 (整数加法).
+			var total: int = int(float(res.effect_params[0]) * count)
+			return _tr("PASSIVE_STACKED_BASIC_DAMAGE_UP") % total
 		ITEM_ID_HEALTH_LIMIT_UP:
-			# effect_params[0] = 1.0, 每级 +1血量上限
-			var total_health: float = res.effect_params[0] * count
-			return _tr("PASSIVE_STACKED_HEALTH_LIMIT_UP") % _format_effect_param(total_health)
+			# effect_params[0] = 1.0, 每级 +1 血量上限 (整数加法).
+			var total: int = int(float(res.effect_params[0]) * count)
+			return _tr("PASSIVE_STACKED_HEALTH_LIMIT_UP") % total
 		ITEM_ID_ATTACK_SPEED_UP:
-			# effect_params[0] = 0.1, 每级 +10% 攻速
-			var total_attack: float = res.effect_params[0] * count
-			return _tr("PASSIVE_STACKED_ATTACK_SPEED_UP") % _format_effect_param(total_attack)
+			# effect_params[0] = 0.1, 每级 +10% 攻速 (比例累加,显示整数百分比).
+			var total_pct: int = _pct(res.effect_params[0], count)
+			return _tr("PASSIVE_STACKED_ATTACK_SPEED_UP") % total_pct
 		ITEM_ID_MOVE_SPEED_UP:
-			# effect_params[0] = 0.1, 每级 +10% 移速
-			var total_move: float = res.effect_params[0] * count
-			return _tr("PASSIVE_STACKED_MOVE_SPEED_UP") % _format_effect_param(total_move)
+			# effect_params[0] = 0.1, 每级 +10% 移速 (比例累加,显示整数百分比).
+			var total_pct: int = _pct(res.effect_params[0], count)
+			return _tr("PASSIVE_STACKED_MOVE_SPEED_UP") % total_pct
 		ITEM_ID_DEFENCE_UP:
-			# effect_params[0] = 0.8, 每级承受伤害乘 0.8, 即减伤加深
-			var final_ratio: float = res.effect_params[0] ** count
-			var reduce_percent: float = (1.0 - final_ratio) * 100.0
-			return _tr("PASSIVE_STACKED_DEFENCE_UP") % _format_effect_param(reduce_percent)
+			# effect_params[0] = 0.8, 每级承受伤害乘 0.8; 显示总减伤百分比 = (1 - 0.8^count) * 100.
+			var final_ratio: float = float(res.effect_params[0]) ** count
+			var reduce_pct: int = snappedi((1.0 - final_ratio) * 100.0, 1)
+			return _tr("PASSIVE_STACKED_DEFENCE_UP") % reduce_pct
 		ITEM_ID_BULLET_SPLIT:
-			# effect_params[0] = 2(每级新增弹道数), effect_params[1] = 0.7(单发伤害系数)
+			# effect_params[0] = 2(每档新增弹道数); effect_params[1] = 0.7(单发伤害系数,累乘).
 			if res.effect_params.size() > 1:
-				var bullets_per_level: int = int(res.effect_params[0])
-				var dmg_factor: float = res.effect_params[1]
-				var added_bullets: int = bullets_per_level * count
-				var dmg_ratio: float = dmg_factor ** count
-				return _tr("PASSIVE_STACKED_BULLET_SPLIT") % [added_bullets, _format_effect_param(dmg_ratio)]
-	# 回退: 用单级描述
+				var added_bullets: int = int(float(res.effect_params[0]) * count)
+				var dmg_ratio: float = float(res.effect_params[1]) ** count
+				var dmg_pct: int = snappedi(dmg_ratio * 100.0, 1)
+				return _tr("PASSIVE_STACKED_BULLET_SPLIT") % [added_bullets, dmg_pct]
+	# 回退: 用单级描述.
 	return formatted_description(res)
+
+
+## 格式化单个 effect_params 值(用于模板着色). 保留"比例"还是"数值"的语义决策在 CSV / 翻译模板,这里只做转字符串显示.
+static func _format_value(param) -> String:
+	match typeof(param):
+		TYPE_FLOAT:
+			# 0~1 范围内且不是整数 的小数视为比例 -> 显示整数百分比 (如 0.1 -> "10%").
+			# 其他浮点保持最多 2 位小数.
+			if param > 0.0 and param < 1.0 and not is_equal_approx(param, snappedf(param, 1.0)):
+				return "%d%%" % snappedi(param * 100.0, 1)
+			if is_equal_approx(param, snappedf(param, 1.0)):
+				return str(int(param))
+			return ("%.2f" % param).rstrip("0").rstrip(".")
+		TYPE_INT:
+			return str(param)
+		_:
+			return str(param)
+
+
+## 辅助: 把 per_level_rate(浮点比例,如 0.1)累加 count 次后投射为整数百分比 (10, 20, 30...).
+## 先用 snappedi 处理浮点精度后再取整, 避免 0.1*3*100=29.99... 取到 29.
+static func _pct(per_level_rate, count: int) -> int:
+	return snappedi(per_level_rate * count * 100.0, 1)
 
 
 ## 免费升级: 奖励关拾取物触发. 不走全玩家同步流程, 单人次直接应用 (instance method)

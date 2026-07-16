@@ -4,12 +4,10 @@ extends Control
 @onready var player_name_label: Label = %PlayerNameLabel
 @onready var health_bar: ProgressBar = %HealthBar
 @onready var player_sprite: Sprite2D = %PlayerSprite
-@onready var defense_label: Label = %DefenseLabel
 
 
 func _ready() -> void:
 	GameEvents.local_player_health_changed.connect(_on_local_player_health_changed)
-	GameEvents.local_player_defense_changed.connect(_on_local_player_defense_changed)
 	GameEvents.player_look_changed.connect(_on_player_look_changed)
 	if multiplayer.multiplayer_peer is OfflineMultiplayerPeer:
 		player_name_label.text = tr("DEFAULT_PLAYER_NAME")
@@ -20,14 +18,6 @@ func _ready() -> void:
 
 func _on_local_player_health_changed(rate: float) -> void:
 	health_bar.value = rate
-
-
-func _on_local_player_defense_changed(percent: float) -> void:
-	if percent < 0.5:
-		defense_label.visible = false
-	else:
-		defense_label.visible = true
-		defense_label.text = tr("DEFENSE_TEXT") % int(percent)
 
 
 func _on_player_look_changed(peer_id: int, index: int) -> void:

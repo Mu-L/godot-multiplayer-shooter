@@ -87,16 +87,6 @@ max_value = 1.0
 value = 0.3
 show_percentage = false
 
-[node name="DefenseLabel" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1603004321]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_colors/font_outline_color = Color(0.45, 0.7, 1, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 12
-text = "DEF 0%"
-horizontal_alignment = 1
-
 [node name="PassiveInventoryBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=514852527]
 unique_name_in_owner = true
 layout_mode = 2

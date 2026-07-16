@@ -1,41 +1,39 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://hjulam5hjssk"]
 
-[ext_resource type="Script" path="res://ui/components/tooltip_panel.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://iku6idnc75p8" path="res://ui/components/tooltip_panel.gd" id="1_script"]
 
 [sub_resource type="StyleBoxFlat" id="tooltip_bg"]
 bg_color = Color(0.094, 0.098, 0.122, 0.96)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
-corner_radius_bottom_left = 6
 corner_radius_bottom_right = 6
-expand_margin_left = 6
-expand_margin_top = 6
-expand_margin_right = 6
-expand_margin_bottom = 6
+corner_radius_bottom_left = 6
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
 
-[node name="TooltipPanel" type="PopupPanel"]
-mode = 0
-transient = true
-clear_enabled = true
+[node name="TooltipPanel" type="PanelContainer" unique_id=1869724284]
+custom_minimum_size = Vector2(150, 50)
+offset_right = 100.0
+offset_bottom = 198.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_override_styles/panel = SubResource("tooltip_bg")
 script = ExtResource("1_script")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1829253789]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=387463113]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=323332348]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.85, 0.45, 1)
@@ -43,45 +41,47 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 15
 text = "TITLE"
 
-[node name="IconTexture" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+[node name="IconTexture" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=767109754]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Separator1" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="Separator1" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=12892677]
 layout_mode = 2
 
-[node name="SingleHeader" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="SingleHeader" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1774741684]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.78, 1.0, 1)
+theme_override_colors/font_color = Color(0.65, 0.78, 1, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 11
-text = "一级效果"
+text = "物品说明"
 
-[node name="SingleDescription" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="SingleDescription" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1449375202]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(126, 0)
 layout_mode = 2
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 13
 autowrap_mode = 3
 
-[node name="Separator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+[node name="Separator2" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=64919266]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="StackedHeader" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="StackedHeader" type="Label" parent="MarginContainer/VBoxContainer" unique_id=623124612]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.78, 1.0, 1)
+theme_override_colors/font_color = Color(0.65, 0.78, 1, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 11
 text = "叠加效果"
 
-[node name="StackedDescription" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="StackedDescription" type="Label" parent="MarginContainer/VBoxContainer" unique_id=93366655]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(126, 0)
 layout_mode = 2
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 13

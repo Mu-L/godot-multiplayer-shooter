@@ -50,7 +50,7 @@ class StatRow:
 	## segments: 在 base 与 current 之间插入的中间段. 每项 { "text": String, "color": Color }.
 	## 用于子弹伤害多段显示: base →(+bonus 绿)→ pre_split →(×factor 红)→ final.
 	func set_values(base_val: float, current_val: float, segments: Array[Dictionary] = []) -> void:
-		name_label.text = tr(name_key)
+		name_label.text = name_key
 		var unit_str: String = (" " + unit) if unit != "" else ""
 		base_label.text = (base_format % base_val) + unit_str
 		# 有中间段时当前值也带前导箭头, 保持链式连贯: ... → final
@@ -140,12 +140,12 @@ func toggle(visible_: bool) -> void:
 func _build_stat_rows() -> void:
 	# 6 行: 子弹伤害 / 攻击间隔 / 移速 / 血量上限 / 减伤 / 弹道数
 	var rows: Array[Dictionary] = [
-		{"name_key": "STAT_BULLET_DAMAGE", "base_format": "%.0f", "current_format": "%.2f", "unit": ""},
-		{"name_key": "STAT_ATTACK_INTERVAL", "base_format": "%.2f", "current_format": "%.2f", "unit": "s", "invert_diff_color": true},
-		{"name_key": "STAT_MOVE_SPEED", "base_format": "%.0f", "current_format": "%.0f", "unit": ""},
-		{"name_key": "STAT_HEALTH_LIMIT", "base_format": "%.0f", "current_format": "%.0f", "unit": ""},
-		{"name_key": "STAT_DAMAGE_REDUCTION", "base_format": "%.0f", "current_format": "%.0f", "unit": "%"},
-		{"name_key": "STAT_BULLET_COUNT", "base_format": "%d", "current_format": "%d", "unit": ""},
+		{"name_key": tr("STAT_BULLET_DAMAGE"), "base_format": "%.0f", "current_format": "%.2f", "unit": ""},
+		{"name_key": tr("STAT_ATTACK_INTERVAL"), "base_format": "%.2f", "current_format": "%.2f", "unit": "s", "invert_diff_color": true},
+		{"name_key": tr("STAT_MOVE_SPEED"), "base_format": "%.0f", "current_format": "%.0f", "unit": ""},
+		{"name_key": tr("STAT_HEALTH_LIMIT"), "base_format": "%.0f", "current_format": "%.0f", "unit": ""},
+		{"name_key": tr("STAT_DAMAGE_REDUCTION"), "base_format": "%.0f", "current_format": "%.0f", "unit": "%"},
+		{"name_key": tr("STAT_BULLET_COUNT"), "base_format": "%d", "current_format": "%d", "unit": ""},
 	]
 	for r in rows:
 		var row = StatRow.new()

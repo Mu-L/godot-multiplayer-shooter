@@ -79,6 +79,8 @@ texture_margin_right = 7.0
 texture_margin_bottom = 7.0
 region_rect = Rect2(0, 0, 32, 32)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wg833"]
+
 [resource]
 default_font = ExtResource("1_nixot")
 default_font_size = 20
@@ -93,3 +95,4 @@ SelectablePanelContainer/base_type = &"PanelContainer"
 SelectablePanelContainer/styles/panel = SubResource("StyleBoxTexture_eqc3b")
 TexturePanelContainer/base_type = &"SelectablePanelContainer"
 TexturePanelContainer/styles/panel = SubResource("StyleBoxTexture_ir6w1")
+TooltipPanel/styles/panel = SubResource("StyleBoxFlat_wg833")

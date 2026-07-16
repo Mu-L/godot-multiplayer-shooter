@@ -7,11 +7,11 @@ signal max_round_end
 signal bonus_round_started
 signal boss_round_started
 
-const MAX_ROUND: int = 10
-
 ## 关卡配置表, 数组索引 0-9 对应关卡 1-10
 ## weights: slime / poppy / stone_poke; spawn_interval 为 Vector2(min, max)
 const ROUND_CONFIGS: Array[Dictionary] = [
+	# [5] 奖励关 - 无敌人, 拾取物
+	{ "is_bonus": true, "round_time": 20.0, "pickup_count": 6 },
 	# [1] 热身 - 史莱姆专场, 组小(1~2), 低频
 	{ "slime": 1.0, "poppy": 0.0, "stone_poke": 0.0, "round_time": 15.0, "hp_scale": 0.6, "dmg_scale": 0.5, "spawn_interval": Vector2(2.5, 3.5), "group_min": 1, "group_max": 2, "is_bonus": false, "is_boss": false },
 	# [2] 引入 - 首次气球
@@ -33,6 +33,7 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [10] BOSS - 多阶段
 	{ "is_boss": true, "round_time": 45.0 },
 ]
+
 
 const PICKUP_AREA_SCENE := preload("res://entities/pickup/pickup_area.tscn")
 const PICKUP_AREA := preload("res://entities/pickup/pickup_area.gd")
@@ -198,7 +199,7 @@ func _check_round_completed() -> void:
 		if round_timer.is_stopped():
 			print("Bonus Round %s completed!" % round_count)
 			_is_bonus_round = false
-			if round_count < MAX_ROUND:
+			if round_count < ROUND_CONFIGS.size():
 				round_completed.emit()
 			else:
 				max_round_end.emit()
@@ -207,7 +208,7 @@ func _check_round_completed() -> void:
 		# BOSS 关: 时间到且敌人清空 → 完成
 		if round_timer.is_stopped() and enemy_count == 0:
 			_is_boss_round = false
-			if round_count < MAX_ROUND:
+			if round_count < ROUND_CONFIGS.size():
 				round_completed.emit()
 			else:
 				max_round_end.emit()
@@ -217,7 +218,7 @@ func _check_round_completed() -> void:
 		return
 	if enemy_count == 0:
 		print("Round %s completed!" % round_count)
-		if round_count < MAX_ROUND:
+		if round_count < ROUND_CONFIGS.size():
 			round_completed.emit()
 		else:
 			await get_tree().create_timer(1.0).timeout

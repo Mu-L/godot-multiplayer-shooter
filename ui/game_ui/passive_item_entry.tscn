@@ -9,6 +9,7 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 18.0
 offset_bottom = 18.0
+tooltip_text = "1"
 script = ExtResource("1_script")
 
 [node name="IconTexture" type="TextureRect" parent="." unique_id=322708433]
@@ -43,12 +44,3 @@ theme_override_font_sizes/font_size = 11
 text = "2"
 horizontal_alignment = 2
 vertical_alignment = 1
-
-[node name="HoverDetector" type="Control" parent="." unique_id=1093371886]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2

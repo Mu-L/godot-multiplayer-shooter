@@ -8,24 +8,14 @@ const PASSIVE_ITEM_ENTRY = preload("res://ui/game_ui/passive_item_entry.tscn")
 const TOOLTIP_PANEL = preload("res://ui/components/tooltip_panel.tscn")
 
 var _entries: Array = []
-var _tooltip
 
 
 func _ready() -> void:
-	# 创建 Tooltip 实例
-	_tooltip = TOOLTIP_PANEL.instantiate()
-	get_tree().root.add_child(_tooltip)
 	# 监听被动变化
 	GameEvents.local_player_passives_changed.connect(_on_local_player_passives_changed)
 	# 初始刷新
 	if is_instance_valid(UpgradeComponent.instance):
 		_refresh(UpgradeComponent.instance.get_my_passive_counts())
-
-
-func _exit_tree() -> void:
-	if _tooltip and is_instance_valid(_tooltip):
-		_tooltip.queue_free()
-		_tooltip = null
 
 
 func _on_local_player_passives_changed(passives: Dictionary) -> void:
@@ -60,7 +50,6 @@ func _refresh(passives: Dictionary) -> void:
 		var entry = PASSIVE_ITEM_ENTRY.instantiate()
 		add_child(entry)
 		entry.setup(passive_id, count, res.icon)
-		entry.tooltip_requested.connect(_on_tooltip_requested)
 		_entries.append(entry)
 
 
@@ -73,9 +62,3 @@ func _get_resource(passive_id: String) -> PassiveItemResource:
 		if r.id == passive_id:
 			return r
 	return null
-
-
-func _on_tooltip_requested(passive_id: String, count: int, _entry) -> void:
-	if _tooltip == null or not is_instance_valid(_tooltip):
-		return
-	_tooltip.show_tooltip(passive_id, count)

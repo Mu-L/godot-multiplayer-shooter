@@ -257,17 +257,17 @@ func _on_peer_disconnected(peer_id: int) -> void:
 
 ## 打印玩家当前拥有的完整升级清单 (authority 端).
 ## 格式: [升级名称1x升级数量1, 升级名称2x升级数量2, ...]
-static func _log_peer_upgrades(peer_id: int, peer_selected_passives: Dictionary) -> void:
+static func _log_peer_upgrades(peer_id: int, _peer_selected_passives: Dictionary) -> void:
 	if not is_instance_valid(instance):
 		return
-	var passive_count_dic: Dictionary = peer_selected_passives.get(peer_id, {})
+	var passive_count_dic: Dictionary = _peer_selected_passives.get(peer_id, {})
 	if passive_count_dic.is_empty():
 		KLogger.info("[UpgradeLog] peer %s has no upgrades" % peer_id)
 		return
 	var items: Array[String] = []
 	for passive_id in passive_count_dic:
 		var res: PassiveItemResource = instance.resources_id_dict.get(passive_id as String)
-		var res_name: String = _tr(res.name_key) if res else passive_id
+		var res_name: String = instance.tr(res.name_key) if res else passive_id
 		items.append("%sx%s" % [res_name, passive_count_dic[passive_id]])
 	KLogger.info("[UpgradeLog] peer %s got upgrades: [%s]" % [peer_id, ", ".join(items)])
 
@@ -276,13 +276,6 @@ func _refresh_passive_resources() -> void:
 	resources_id_dict.clear()
 	for res: PassiveItemResource in CSVResourceCache.get_all_passives():
 		resources_id_dict[res.id] = res
-
-
-## 获取本地化文本(在 static 上下文中替代 tr()).
-static func _tr(msgid: String) -> String:
-	if not is_instance_valid(instance):
-		return TranslationServer.translate(msgid)
-	return instance.tr(msgid)
 
 
 ## 单级被动物品效果描述.
@@ -295,7 +288,7 @@ static func formatted_description(resource: PassiveItemResource) -> String:
 		var cached: PassiveItemResource = instance.resources_id_dict.get(resource.id)
 		if cached != null:
 			res = cached
-	var template: String = _tr(res.description_key)
+	var template: String = instance.tr(res.description_key)
 	# 用 replace 着色,避免 % 运算符把占位符里的裸 %" 当成格式化 token 解析.
 	for i in range(res.effect_params.size()):
 		template = template.replace("{%d}" % i, _format_value(res.effect_params[i]))
@@ -320,31 +313,31 @@ static func formatted_description_stacked(resource: PassiveItemResource, count: 
 		ITEM_ID_BASIC_DAMAGE_UP:
 			# effect_params[0] = 1.0, 每级 +1 基础伤害 (整数加法).
 			var total: int = int(float(res.effect_params[0]) * count)
-			return _tr("PASSIVE_STACKED_BASIC_DAMAGE_UP") % total
+			return instance.tr("PASSIVE_STACKED_BASIC_DAMAGE_UP").format([total], "{_}")
 		ITEM_ID_HEALTH_LIMIT_UP:
 			# effect_params[0] = 1.0, 每级 +1 血量上限 (整数加法).
 			var total: int = int(float(res.effect_params[0]) * count)
-			return _tr("PASSIVE_STACKED_HEALTH_LIMIT_UP") % total
+			return instance.tr("PASSIVE_STACKED_HEALTH_LIMIT_UP").format([total], "{_}")
 		ITEM_ID_ATTACK_SPEED_UP:
 			# effect_params[0] = 0.1, 每级 +10% 攻速 (比例累加,显示整数百分比).
 			var total_pct: int = _pct(res.effect_params[0], count)
-			return _tr("PASSIVE_STACKED_ATTACK_SPEED_UP") % total_pct
+			return instance.tr("PASSIVE_STACKED_ATTACK_SPEED_UP").format([total_pct], "{_}")
 		ITEM_ID_MOVE_SPEED_UP:
 			# effect_params[0] = 0.1, 每级 +10% 移速 (比例累加,显示整数百分比).
 			var total_pct: int = _pct(res.effect_params[0], count)
-			return _tr("PASSIVE_STACKED_MOVE_SPEED_UP") % total_pct
+			return instance.tr("PASSIVE_STACKED_MOVE_SPEED_UP").format([total_pct], "{_}")
 		ITEM_ID_DEFENCE_UP:
 			# effect_params[0] = 0.8, 每级承受伤害乘 0.8; 显示总减伤百分比 = (1 - 0.8^count) * 100.
 			var final_ratio: float = float(res.effect_params[0]) ** count
 			var reduce_pct: int = snappedi((1.0 - final_ratio) * 100.0, 1)
-			return _tr("PASSIVE_STACKED_DEFENCE_UP") % reduce_pct
+			return instance.tr("PASSIVE_STACKED_DEFENCE_UP").format([reduce_pct], "{_}")
 		ITEM_ID_BULLET_SPLIT:
 			# effect_params[0] = 2(每档新增弹道数); effect_params[1] = 0.7(单发伤害系数,累乘).
 			if res.effect_params.size() > 1:
 				var added_bullets: int = int(float(res.effect_params[0]) * count)
 				var dmg_ratio: float = float(res.effect_params[1]) ** count
 				var dmg_pct: int = snappedi(dmg_ratio * 100.0, 1)
-				return _tr("PASSIVE_STACKED_BULLET_SPLIT") % [added_bullets, dmg_pct]
+				return instance.tr("PASSIVE_STACKED_BULLET_SPLIT").format([added_bullets, dmg_pct], "{_}")
 	# 回退: 用单级描述.
 	return formatted_description(res)
 
@@ -395,7 +388,7 @@ func _apply_passive_upgrade(peer_id: int, passive_id: String) -> void:
 	var count: int = peer_passive_count_dic.get_or_add(passive_id, 0)
 	peer_passive_count_dic[passive_id] = count + 1
 	var res: PassiveItemResource = resources_id_dict.get(passive_id)
-	var upgrade_name := _tr(res.name_key) if res else passive_id
+	var upgrade_name: String = instance.tr(res.name_key)
 	KLogger.info("[UpgradeLog] peer %s picked up upgrade: %s" % [peer_id, upgrade_name])
 	_log_peer_upgrades(peer_id, peer_selected_passives)
 	# 通知拾取的玩家 (客户端 + 主控玩家节点), 触发 HUD / 音效反馈

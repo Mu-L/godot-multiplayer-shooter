@@ -17,13 +17,13 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [3] 熟悉 - 混编
 	{ "slime": 0.6, "poppy": 0.4, "stone_poke": 0.0, "round_time": 20.0, "hp_scale": 0.9, "dmg_scale": 0.8, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 4, "is_bonus": false, "is_boss": false },
 	# [4] 预压 - 石刺入场, 前半段高峰
-	{ "slime": 0.5, "poppy": 0.35, "stone_poke": 0.15, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
+	{ "slime": 0.5, "poppy": 0.4, "stone_poke": 0.1, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [5] 奖励关 - 无敌人, 拾取物
 	{ "is_bonus": true, "round_time": 20.0, "pickup_count": 6 },
 	# [6] 二阶启动 - 后半段起手
-	{ "slime": 0.35, "poppy": 0.40, "stone_poke": 0.25, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
+	{ "slime": 0.4, "poppy": 0.40, "stone_poke": 0.2, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [7] 坦克潮 - 石刺主导
-	{ "slime": 0.25, "poppy": 0.30, "stone_poke": 0.45, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
+	{ "slime": 0.45, "poppy": 0.35, "stone_poke": 0.25, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
 	# [8] 气球暴 - 密集爆炸
 	{ "slime": 0.10, "poppy": 0.80, "stone_poke": 0.10, "round_time": 28.0, "hp_scale": 1.0, "dmg_scale": 1.2, "spawn_interval": Vector2(2.5, 3.5), "group_min": 4, "group_max": 7, "is_bonus": false, "is_boss": false },
 	# [9] 终极测试 - 全方位高压

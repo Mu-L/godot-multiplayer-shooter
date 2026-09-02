@@ -694,6 +694,10 @@ disabled = true
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1894438848]
 replication_config = SubResource("SceneReplicationConfig_3mv0g")
 
+[node name="AttackMultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2044862521]
+_spawnable_scenes = PackedStringArray("uid://c1qfdncimokyn")
+spawn_path = NodePath("..")
+
 [connection signal="area_entered" from="DetectAreas/BigCheckArea" to="." method="_on_big_check_area_area_entered"]
 [connection signal="area_exited" from="DetectAreas/BigCheckArea" to="." method="_on_big_check_area_area_exited"]
 [connection signal="area_entered" from="DetectAreas/SmallCheckArea" to="." method="_on_small_check_area_area_entered"]

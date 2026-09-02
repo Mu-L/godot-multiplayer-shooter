@@ -21,24 +21,36 @@ var state: int = LOOK
 
 
 func _ready() -> void:
-	state = LOOK
-	animation_player.animation_finished.connect(_on_animation_finished)
 	animation_player.play(&"look")
-	hitbox_component.damage = init_damage
-	hitbox_component.attacker = owner
+	if multiplayer.is_server():
+		state = LOOK
+		animation_player.animation_finished.connect(_on_animation_finished)
+		hitbox_component.damage = init_damage
+		hitbox_component.attacker = owner
 
 
 func _process(_delta: float) -> void:
-	match state:
-		LOOK:
-			if boss and boss.target:
-				look_at(boss.target.global_position)
+	if multiplayer.is_server():
+		match state:
+			LOOK:
+				if boss and boss.target:
+					rpc_look_at.rpc(boss.target.global_position)
+
+
+@rpc("authority", "call_local", "unreliable")
+func rpc_look_at(pos: Vector2) -> void:
+	look_at(pos)
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_play_animation(anim_name: StringName) -> void:
+	animation_player.play(anim_name)
 
 
 func _on_animation_finished(anim_name: StringName) -> void:
 	if anim_name == &"look":
 		state = ATTACK
-		animation_player.play(&"attack")
+		rpc_play_animation.rpc(&"attack")
 	else:
 		await get_tree().physics_frame
 		attack_ended.emit()

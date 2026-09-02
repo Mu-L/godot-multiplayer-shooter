@@ -8,17 +8,18 @@ extends AtomicState
 
 func _ready() -> void:
 	super()
-	state_entered.connect(_on_state_entered)
-	state_exited.connect(_on_state_exited)
-	state_processing.connect(_on_state_processing)
-	state_physics_processing.connect(_on_state_physics_processing)
+	if multiplayer.is_server():
+		state_entered.connect(_on_state_entered)
+		state_exited.connect(_on_state_exited)
+		state_processing.connect(_on_state_processing)
+		state_physics_processing.connect(_on_state_physics_processing)
 
 
 func _on_state_entered() -> void:
 	KLogger.info("phase state: 'rage translation' entered")
 	boss.phase = boss.Phase.RAGE_TRANSLATION
 	boss.velocity = Vector2.ZERO
-	boss.animation_player.play("rage_transform")
+	boss.rpc_play_animation.rpc(&"rage_transform")
 	# 动画播放完毕后触发切入 Rage
 	await boss.animation_player.animation_finished
 	boss.state_chart.send_event("to_rage_phase")

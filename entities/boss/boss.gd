@@ -75,34 +75,36 @@ var threat_target: Node2D = null
 var animation_tween: Tween
 
 func _ready() -> void:
-	normal_attack_timer.wait_time = normal_attack_cooldown
-	rush_timer.wait_time = rush_cooldown
-	shoot_timer.wait_time = shoot_cooldown
-	jump_timer.wait_time = jump_cooldown
-	health_component.health_changed_with_attacker.connect(_on_health_changed)
 	animation_tween = create_tween().set_loops()
 	animation_tween.tween_property(animation, "scale", Vector2(1.1, 0.9), 0.5)
 	animation_tween.tween_property(animation, "scale", Vector2(0.9, 1.1), 0.5)
 	animation_tween.stop()
+	if multiplayer.is_server():
+		normal_attack_timer.wait_time = normal_attack_cooldown
+		rush_timer.wait_time = rush_cooldown
+		shoot_timer.wait_time = shoot_cooldown
+		jump_timer.wait_time = jump_cooldown
+		health_component.health_changed_with_attacker.connect(_on_health_changed)
 
 
 func _physics_process(_delta: float) -> void:
-	if not move_direction.is_zero_approx():
-		velocity = move_direction * (current_speed + speed_offset)
-	else:
-		velocity = Vector2.ZERO
-	move_and_slide()
-	# 目标更新
-	if threat_target:
-		target = threat_target
-	if not target:
-		var dis_sq: float = -1.0
-		for player: Player in get_tree().get_nodes_in_group("player"):
-			if dis_sq < 0:
-				dis_sq = global_position.distance_squared_to(player.global_position)
-				target = player
-			elif dis_sq < global_position.distance_squared_to(player.global_position):
-				target = player
+	if multiplayer.is_server():
+		if not move_direction.is_zero_approx():
+			velocity = move_direction * (current_speed + speed_offset)
+		else:
+			velocity = Vector2.ZERO
+		move_and_slide()
+		# 目标更新
+		if threat_target:
+			target = threat_target
+		if not target:
+			var dis_sq: float = -1.0
+			for player: Player in get_tree().get_nodes_in_group("player"):
+				if dis_sq < 0:
+					dis_sq = global_position.distance_squared_to(player.global_position)
+					target = player
+				elif dis_sq < global_position.distance_squared_to(player.global_position):
+					target = player
 
 
 func _process(_delta: float) -> void:
@@ -113,41 +115,56 @@ func _process(_delta: float) -> void:
 func check_flip() -> void:
 	if target:
 		var flip: bool = target.global_position.x < self.global_position.x
-		visual.scale = Vector2(-1.0, 1.0) if flip else Vector2.ONE
+		_rpc_flip.rpc(flip)
+
+
+@rpc("authority", "call_local", "unreliable")
+func _rpc_flip(flip: bool) -> void:
+	visual.scale = Vector2(-1.0, 1.0) if flip else Vector2.ONE
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_play_animation(animation_name: StringName) -> void:
+	animation_player.play(animation_name)
+
 
 func _on_big_check_area_area_entered(area: Area2D) -> void:
-	if area.owner == null:
-		KLogger.info("boss skip big area obj with null owner: %s" % area)
-		return
-	if area.owner.is_in_group("player"):
-		big_area_players.append(area.owner)
-	elif area.owner.is_in_group("bullet"):
-		big_area_bullets.append(area.owner)
-	else:
-		KLogger.warn("boss skip big area obj with owner: %s" % area.owner)
+	if multiplayer.is_server():
+		if area.owner == null:
+			KLogger.info("boss skip big area obj with null owner: %s" % area)
+			return
+		if area.owner.is_in_group("player"):
+			big_area_players.append(area.owner)
+		elif area.owner.is_in_group("bullet"):
+			big_area_bullets.append(area.owner)
+		else:
+			KLogger.warn("boss skip big area obj with owner: %s" % area.owner)
 
 
 func _on_big_check_area_area_exited(area: Area2D) -> void:
-	if area.owner == null:
-		return
-	if area.owner.is_in_group("player"):
-		big_area_players.erase(area.owner)
-	elif area.owner.is_in_group("bullet"):
-		big_area_bullets.erase(area.owner)
+	if multiplayer.is_server():
+		if area.owner == null:
+			return
+		if area.owner.is_in_group("player"):
+			big_area_players.erase(area.owner)
+		elif area.owner.is_in_group("bullet"):
+			big_area_bullets.erase(area.owner)
 
 
 func _on_small_check_area_area_entered(area: Area2D) -> void:
-	if area.owner == null:
-		return
-	if area.owner.is_in_group("player"):
-		small_area_players.append(area.owner)
+	if multiplayer.is_server():
+		if area.owner == null:
+			return
+		if area.owner.is_in_group("player"):
+			small_area_players.append(area.owner)
 
 
 func _on_small_check_area_area_exited(area: Area2D) -> void:
-	if area.owner == null:
-		return
-	if area.owner.is_in_group("player"):
-		small_area_players.erase(area.owner)
+	if multiplayer.is_server():
+		if area.owner == null:
+			return
+		if area.owner.is_in_group("player"):
+			small_area_players.erase(area.owner)
 
 
 func _on_health_changed(max_value: float, current_value: float, damage: float, attacker: Node2D) -> void:

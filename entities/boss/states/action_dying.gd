@@ -6,10 +6,11 @@ extends AtomicState
 
 func _ready() -> void:
 	super()
-	state_entered.connect(_on_state_entered)
-	state_exited.connect(_on_state_exited)
-	state_processing.connect(_on_state_processing)
-	state_physics_processing.connect(_on_state_physics_processing)
+	if multiplayer.is_server():
+		state_entered.connect(_on_state_entered)
+		state_exited.connect(_on_state_exited)
+		state_processing.connect(_on_state_processing)
+		state_physics_processing.connect(_on_state_physics_processing)
 
 
 func _on_state_entered() -> void:
@@ -18,7 +19,7 @@ func _on_state_entered() -> void:
 	boss.hurtbox_shape.disabled = true
 	boss.collision_shape.disabled = true
 	boss.move_direction = Vector2.ZERO
-	boss.animation_player.play("dying")
+	boss.rpc_play_animation.rpc(&"dying")
 	boss.is_check_flip = false
 	await boss.animation_player.animation_finished
 	await get_tree().create_timer(2.0).timeout

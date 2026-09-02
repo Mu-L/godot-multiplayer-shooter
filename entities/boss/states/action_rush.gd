@@ -15,10 +15,11 @@ var target_fresh: float = 0.0
 
 func _ready() -> void:
 	super()
-	state_entered.connect(_on_state_entered)
-	state_exited.connect(_on_state_exited)
-	state_processing.connect(_on_state_processing)
-	state_physics_processing.connect(_on_state_physics_processing)
+	if multiplayer.is_server():
+		state_entered.connect(_on_state_entered)
+		state_exited.connect(_on_state_exited)
+		state_processing.connect(_on_state_processing)
+		state_physics_processing.connect(_on_state_physics_processing)
 
 
 func _on_state_entered() -> void:
@@ -33,7 +34,7 @@ func _on_state_entered() -> void:
 		# 	rush_direction = -rush_direction # 逃跑冲刺
 
 	KLogger.debug("start rush charge")
-	boss.animation_player.play("normal_rush_charge" if boss.phase != boss.Phase.RAGE else "rage_rush_charge")
+	boss.rpc_play_animation.rpc(&"normal_rush_charge" if boss.phase != boss.Phase.RAGE else &"rage_rush_charge")
 	charge_tween = create_tween()
 	charge_tween.tween_property(boss, "speed_offset", 0, 1.0).from(-boss.current_speed)
 
@@ -63,7 +64,7 @@ func _on_state_physics_processing(delta: float) -> void:
 		rush_hit_collision_shape.disabled = false
 		KLogger.debug("rushing!")
 		boss.speed_offset = boss.current_speed * 2.0
-		boss.animation_player.play("normal_rush" if boss.phase != boss.Phase.RAGE else "rage_rush")
+		boss.rpc_play_animation.rpc(&"normal_rush" if boss.phase != boss.Phase.RAGE else &"rage_rush")
 		return
 	if rushing:
 		rushing_time += delta

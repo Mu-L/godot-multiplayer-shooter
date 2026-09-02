@@ -6,10 +6,11 @@ extends AtomicState
 
 func _ready() -> void:
 	super()
-	state_entered.connect(_on_state_entered)
-	state_exited.connect(_on_state_exited)
-	state_processing.connect(_on_state_processing)
-	state_physics_processing.connect(_on_state_physics_processing)
+	if multiplayer.is_server():
+		state_entered.connect(_on_state_entered)
+		state_exited.connect(_on_state_exited)
+		state_processing.connect(_on_state_processing)
+		state_physics_processing.connect(_on_state_physics_processing)
 
 
 # 多人远离合力计算 (排斥向量叠加)

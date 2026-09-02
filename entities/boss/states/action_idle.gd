@@ -6,10 +6,11 @@ extends AtomicState
 
 func _ready() -> void:
 	super()
-	state_entered.connect(_on_state_entered)
-	state_exited.connect(_on_state_exited)
-	state_processing.connect(_on_state_processing)
-	state_physics_processing.connect(_on_state_physics_processing)
+	if multiplayer.is_server():
+		state_entered.connect(_on_state_entered)
+		state_exited.connect(_on_state_exited)
+		state_processing.connect(_on_state_processing)
+		state_physics_processing.connect(_on_state_physics_processing)
 
 
 # 清理无效引用 (防止子弹在 Area 销毁未触发 exited)
@@ -58,7 +59,7 @@ func _fear_idle_decide() -> void:
 
 func _on_state_entered() -> void:
 	KLogger.info("action state: 'idle' entered")
-	boss.animation_player.play("normal_idle")
+	boss.rpc_play_animation.rpc(&"normal_idle")
 	boss.move_direction = Vector2.ZERO
 	boss.speed_offset = 0
 

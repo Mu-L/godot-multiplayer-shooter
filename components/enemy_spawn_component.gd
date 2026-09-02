@@ -25,7 +25,7 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [7] 气球暴 - 密集爆炸
 	{ "slime": 0.15, "poppy": 0.80, "stone_poke": 0.05, "round_time": 28.0, "hp_scale": 1.0, "dmg_scale": 1.2, "spawn_interval": Vector2(1.5, 2.5), "group_min": 4, "group_max": 7, "is_bonus": false, "is_boss": false },
 	# [8] 怪物潮 - 密集刷新
-	{ "slime": 0.5, "poppy": 0.45, "stone_poke": 0.05, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(1.0, 2.0), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
+	{ "slime": 0.5, "poppy": 0.45, "stone_poke": 0.05, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(1.5, 2.5), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
 	# [9] 终极测试 - 全方位高压
 	{ "slime": 0.30, "poppy": 0.30, "stone_poke": 0.40, "round_time": 35.0, "hp_scale": 1.6, "dmg_scale": 1.4, "spawn_interval": Vector2(2.5, 3.5), "group_min": 4, "group_max": 8, "is_bonus": false, "is_boss": false },
 	# [10] BOSS - 多阶段

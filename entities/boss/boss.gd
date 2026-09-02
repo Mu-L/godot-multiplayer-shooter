@@ -84,6 +84,8 @@ func _ready() -> void:
 		rush_timer.wait_time = rush_cooldown
 		shoot_timer.wait_time = shoot_cooldown
 		jump_timer.wait_time = jump_cooldown
+		health_component.max_health = 300.0 + Tools.get_game_peers_count() * 200.0
+		health_component.reset()
 		health_component.health_changed_with_attacker.connect(_on_health_changed)
 
 

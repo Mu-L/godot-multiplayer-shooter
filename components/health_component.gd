@@ -2,9 +2,10 @@ class_name HealthComponent
 extends Node
 
 signal health_changed(max_value: float, current_value: float)
+signal health_changed_with_attacker(max_value: float, current_value: float, damage: float, attacker: Node2D)
 signal health_depleted
 
-@export var max_health: float = 5
+@export var max_health: float = 5.0
 
 var current_health: float = max_health:
 	get:
@@ -20,8 +21,10 @@ func _ready() -> void:
 		current_health = max_health
 
 
-func take_damage(damage: float) -> void:
+func take_damage(damage: float, attacker: Node2D) -> void:
 	current_health = clamp(current_health - damage, 0, max_health)
+	if damage > 0:
+		health_changed_with_attacker.emit(max_health, current_health, damage, attacker)
 	if is_zero_approx(current_health):
 		health_depleted.emit()
 
@@ -31,7 +34,7 @@ func healing(value: float) -> void:
 
 
 func reset(health: float = -1) -> void:
-	if health < 0:
+	if health < 0.0:
 		current_health = max_health
 	else:
 		current_health = clamp(health, 1.0, max_health)
@@ -41,5 +44,5 @@ func reset(health: float = -1) -> void:
 func set_max_health(new_max: float, heal_delta: bool = true) -> void:
 	var diff: float = new_max - max_health
 	max_health = new_max
-	if heal_delta and diff > 0:
+	if heal_delta and diff > 0.0:
 		healing(diff)

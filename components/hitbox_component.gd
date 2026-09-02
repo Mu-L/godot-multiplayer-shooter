@@ -3,12 +3,13 @@ extends Area2D
 
 signal hit(hurtbox: HurtboxComponent)
 
-var damage: float = 1
+@export var damage: float = 1
 var is_single_hit: bool = false
 var is_single_hit_per_hurtbox: bool = false
 var hit_count: int = 0
 var hit_hurtboxes: Array[HurtboxComponent] = []
-
+## server only
+var attacker: Node2D
 
 func _ready() -> void:
 	if not is_multiplayer_authority():

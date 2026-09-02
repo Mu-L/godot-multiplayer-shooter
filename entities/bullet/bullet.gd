@@ -7,6 +7,9 @@ const SPEED: float = 600.0
 var direction: Vector2
 var damage: float
 
+## server only
+var attacker: Node2D
+
 @onready var timer: Timer = $Timer
 @onready var hitbox_component: HitboxComponent = $HitboxComponent
 
@@ -16,6 +19,7 @@ func _ready() -> void:
 		timer.timeout.connect(_on_life_timer_timeout)
 		hitbox_component.damage = damage
 		hitbox_component.is_single_hit = true
+		hitbox_component.attacker = attacker
 		hitbox_component.hit.connect(_on_hit)
 	else:
 		timer.process_mode = Node.PROCESS_MODE_DISABLED

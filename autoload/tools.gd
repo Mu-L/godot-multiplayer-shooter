@@ -2,6 +2,11 @@ extends Node
 
 
 func _ready() -> void:
+	# set up logger
+	KLogger.time_format = "YYYY.MM.DD hh.mm.ss.SSS"
+	var logger_module: KLogger.Module = KLogger.get_module()
+	logger_module.output_level = KLogger.DEBUG
+	# game config
 	MultiplayerConfig.display_name = tr("DEFAULT_PLAYER_NAME")
 	if is_headless_server():
 		print("This is a headless server running!!!")

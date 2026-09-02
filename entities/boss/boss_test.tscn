@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://b3v14ymwlqr43"]
+
+[ext_resource type="Script" uid="uid://cqwsq7fqon7a0" path="res://entities/boss/boss_test.gd" id="1_bayx3"]
+[ext_resource type="PackedScene" uid="uid://dvw7ji66kmn6m" path="res://entities/boss/boss.tscn" id="1_rnueb"]
+[ext_resource type="Texture2D" uid="uid://c03ov5gcac3pw" path="res://icon.svg" id="2_p72pu"]
+[ext_resource type="Script" uid="uid://duhcwx65i60ll" path="res://entities/boss/test_player.gd" id="3_iain7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bhunq"]
+radius = 40.0
+
+[node name="BossTest" type="Node2D" unique_id=377360871]
+script = ExtResource("1_bayx3")
+
+[node name="Boss" parent="." unique_id=344429065 instance=ExtResource("1_rnueb")]
+position = Vector2(251, 139)
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=140502221 groups=["player"]]
+position = Vector2(300, 300)
+collision_layer = 8
+collision_mask = 32
+script = ExtResource("3_iain7")
+
+[node name="PlayerSprite" type="Sprite2D" parent="Player" unique_id=855138047]
+physics_interpolation_mode = 1
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_p72pu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=2008614319]
+position = Vector2(390, 239)
+scale = Vector2(0.235, 0.235)
+shape = SubResource("CircleShape2D_bhunq")

@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://be8eo74hldmow"]
+
+[sub_resource type="GDScript" id="GDScript_1bn8o"]
+script/source = "extends Node2D
+
+@onready var mesh_instance: MeshInstance2D = $MeshInstance2D
+var telegraph_tween: Tween
+
+func _ready() -> void:
+	position = Vector2(200, 100)
+	start_telegraph(3.0, 30.0, Vector2.ONE * 200.0)
+
+# 启动范围预示
+func start_telegraph(duration: float, angle: float, size: Vector2):
+	# 设置 Mesh 大小
+	mesh_instance.mesh.size = size
+
+	# 获取 Shader Material 并设置初始值
+	var mat = mesh_instance.material as ShaderMaterial
+	mat.set_shader_parameter(\"angle_degrees\", angle)
+	mat.set_shader_parameter(\"fill_progress\", 0.0)
+
+	show()
+	
+	# 使用 Tween 动画控制填充进度
+	if telegraph_tween: telegraph_tween.kill()
+	telegraph_tween = create_tween()
+	telegraph_tween.tween_property(mat, \"shader_parameter/fill_progress\", 1.0, duration)
+	
+	# 动画结束时的回调
+	telegraph_tween.finished.connect(_on_telegraph_finished)
+
+func _on_telegraph_finished():
+	hide()
+	# 在这里触发怪物的实际攻击判定
+	print(\"Attack Active!\")
+"
+
+[sub_resource type="Shader" id="Shader_ao1d7"]
+code = "shader_type canvas_item;
+render_mode unshaded; // 不受光照影响
+
+// 颜色设置
+uniform vec4 color_bg : source_color = vec4(1.0, 0.0, 0.0, 0.2); // 背景淡红
+uniform vec4 color_fill : source_color = vec4(1.0, 0.0, 0.0, 0.6); // 填充深红
+
+// 形状控制
+uniform float radius : hint_range(0.0, 1.0) = 1.0; // 相对半径
+uniform float thickness : hint_range(0.0, 1.0) = 0.1; // 描边厚度 (0代表实心)
+uniform float angle_degrees : hint_range(0.0, 360.0) = 360.0; // 扇形角度 (360为圆)
+
+// 动画控制
+uniform float fill_progress : hint_range(0.0, 1.0) = 0.0; // 填充进度
+
+void fragment() {
+	// 将 UV 坐标转换到 [-0.5, 0.5] 范围，原点在中心
+	vec2 uv = UV - 0.5;
+	
+	// 计算当前像素到中心的距离和角度
+	float dist = length(uv);
+	float angle = degrees(atan(uv.y, uv.x)) + 180.0; // 转换到 [0, 360]
+	
+	// --- 1. 计算基础形状掩码 (Shape Mask) ---
+	float shape_mask = 1.0;
+	
+	// 半径剪裁
+	shape_mask *= step(dist, radius * 0.5);
+	
+	// 内圆剪裁 (用于空心圆环)
+	if (thickness > 0.0) {
+		shape_mask *= step((radius * 0.5) - (thickness * 0.5), dist);
+	}
+	
+	// 扇形角度剪裁
+	float start_angle = (360.0 - angle_degrees) * 0.5;
+	float end_angle = start_angle + angle_degrees;
+	shape_mask *= step(start_angle, angle);
+	shape_mask *= step(angle, end_angle);
+	
+	// --- 2. 计算填充掩码 (Fill Mask) ---
+	// 这里使用径向填充（像时钟一样），也可以改为线性填充
+	float fill_mask = step(angle, start_angle + (angle_degrees * fill_progress));
+	
+	// --- 3. 混合颜色 ---
+	vec4 final_color = mix(color_bg, color_fill, fill_mask);
+	
+	// 应用形状掩码到 Alpha 通道
+	final_color.a *= shape_mask;
+	
+	COLOR = final_color;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ua572"]
+shader = SubResource("Shader_ao1d7")
+shader_parameter/color_bg = Color(1, 0, 0, 0.2)
+shader_parameter/color_fill = Color(1, 0, 0, 0.6)
+shader_parameter/radius = 1.0
+shader_parameter/thickness = 0.1
+shader_parameter/angle_degrees = 360.0
+shader_parameter/fill_progress = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_sn0t7"]
+
+[node name="AttackIndicator" type="Node2D" unique_id=202847221]
+script = SubResource("GDScript_1bn8o")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=931354916]
+material = SubResource("ShaderMaterial_ua572")
+mesh = SubResource("QuadMesh_sn0t7")

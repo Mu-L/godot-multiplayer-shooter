@@ -25,7 +25,7 @@ var track_target: Vector2
 var has_track_target: bool = false
 var charge_tip_tween: Tween
 var burst_damage: float = 2.0
-
+var is_dead: bool = false
 
 func _ready() -> void:
 	warning_icon.scale = Vector2.ZERO
@@ -131,8 +131,11 @@ func burst() -> void:
 		player_detect_component.detected_players.size()
 	])
 	for player in player_detect_component.detected_players:
-		player.hurtbox_component.take_damage(burst_damage)
+		player.hurtbox_component.take_damage(burst_damage, self)
 	# 下一帧消失
+	if is_dead:
+		return
+	is_dead = true
 	state_machine.current_state = "died"
 
 
@@ -165,6 +168,9 @@ func _on_track_timer_timeout() -> void:
 
 
 func _on_health_depleted() -> void:
+	if is_dead:
+		return
+	is_dead = true
 	_play_died_effect.rpc()
 	state_machine.current_state = "died"
 

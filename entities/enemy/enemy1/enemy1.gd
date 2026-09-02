@@ -23,6 +23,8 @@ var track_target: Vector2
 var has_track_target: bool = false
 var charge_tip_tween: Tween
 
+var is_dead: bool = false
+
 
 func _ready() -> void:
 	warning_icon.scale = Vector2.ZERO
@@ -139,6 +141,9 @@ func _on_track_timer_timeout() -> void:
 
 
 func _on_health_depleted() -> void:
+	if is_dead:
+		return
+	is_dead = true
 	_play_died_effect.rpc()
 	state_machine.current_state = "died"
 

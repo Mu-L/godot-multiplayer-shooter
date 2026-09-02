@@ -19,22 +19,22 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [4] 预压 - 石刺入场, 前半段高峰
 	{ "slime": 0.5, "poppy": 0.4, "stone_poke": 0.1, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [5] 奖励关 - 无敌人, 拾取物
-	{ "is_bonus": true, "round_time": 20.0, "pickup_count": 6 },
+	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 6 },
 	# [6] 二阶启动 - 后半段起手
 	{ "slime": 0.4, "poppy": 0.40, "stone_poke": 0.2, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
-	# [7] 坦克潮 - 石刺主导
-	{ "slime": 0.45, "poppy": 0.35, "stone_poke": 0.25, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
-	# [8] 气球暴 - 密集爆炸
-	{ "slime": 0.10, "poppy": 0.80, "stone_poke": 0.10, "round_time": 28.0, "hp_scale": 1.0, "dmg_scale": 1.2, "spawn_interval": Vector2(2.5, 3.5), "group_min": 4, "group_max": 7, "is_bonus": false, "is_boss": false },
+	# [7] 气球暴 - 密集爆炸
+	{ "slime": 0.15, "poppy": 0.80, "stone_poke": 0.05, "round_time": 28.0, "hp_scale": 1.0, "dmg_scale": 1.2, "spawn_interval": Vector2(1.5, 2.5), "group_min": 4, "group_max": 7, "is_bonus": false, "is_boss": false },
+	# [8] 怪物潮 - 密集刷新
+	{ "slime": 0.5, "poppy": 0.45, "stone_poke": 0.05, "round_time": 30.0, "hp_scale": 1.3, "dmg_scale": 1.1, "spawn_interval": Vector2(1.0, 2.0), "group_min": 3, "group_max": 6, "is_bonus": false, "is_boss": false },
 	# [9] 终极测试 - 全方位高压
 	{ "slime": 0.30, "poppy": 0.30, "stone_poke": 0.40, "round_time": 35.0, "hp_scale": 1.6, "dmg_scale": 1.4, "spawn_interval": Vector2(2.5, 3.5), "group_min": 4, "group_max": 8, "is_bonus": false, "is_boss": false },
 	# [10] BOSS - 多阶段
-	{ "is_boss": true, "round_time": 45.0 },
+	{ "is_boss": true, "round_time": 0.0 },
 ]
 
 
 const PICKUP_AREA_SCENE := preload("res://entities/pickup/pickup_area.tscn")
-const PICKUP_AREA := preload("res://entities/pickup/pickup_area.gd")
+const BOSS_SCENE := preload("res://entities/boss/boss.tscn")
 
 @export var spawn_root: Node2D
 @export var spawn_rect: ReferenceRect
@@ -127,12 +127,16 @@ func _start_bonus_round(config: Dictionary) -> void:
 	print("[EnemySpawn] Bonus Round %s started, %s pickups" % [round_count, pickup_count])
 
 
-func _start_boss_round(config: Dictionary) -> void:
+func _start_boss_round(_config: Dictionary) -> void:
 	_is_boss_round = true
 	_is_bonus_round = false
-	round_timer.start(config["round_time"])
+	round_timer.stop()
 	spawn_timer.stop()
-	# TODO (Phase 4): spawn boss via boss_scene from enemy_config.csv
+	var boss: Boss = BOSS_SCENE.instantiate()
+	boss.position = get_viewport().get_visible_rect().size * 0.5
+	spawn_root.add_child(boss, true)
+	enemy_count += 1
+	# TODO 属于boss回合的专属ui显示, 血条显示
 	synchronize()
 	boss_round_started.emit()
 	print("[EnemySpawn] Boss Round %s started" % round_count)
@@ -254,6 +258,11 @@ func _register_spawnable_scenes() -> void:
 	if not registered_scenes.has(pickup_path):
 		multiplayer_spawner.add_spawnable_scene(pickup_path)
 		registered_scenes[pickup_path] = true
+	# 注册Boss场景
+	var boss_path := BOSS_SCENE.resource_path
+	if not registered_scenes.has(boss_path):
+		multiplayer_spawner.add_spawnable_scene(boss_path)
+		registered_scenes[boss_path] = true
 
 
 ## 按权重表选择敌人类型. weights 字典: { EnemyResource.id: float }

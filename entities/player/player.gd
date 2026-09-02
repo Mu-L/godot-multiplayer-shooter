@@ -155,6 +155,7 @@ func _try_to_attack() -> void:
 		bullet.direction = Vector2.RIGHT.rotated(base_angle + angle_offset)
 		bullet.rotation = base_angle + angle_offset
 		bullet.damage = bullet_damage
+		bullet.attacker = self
 		get_parent().add_child(bullet, true)
 
 	_play_attack_effect.rpc()

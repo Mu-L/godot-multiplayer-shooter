@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://di1t1xvv6tgy7" path="res://effects/healing_effect.tscn" id="10_afbqv"]
 [ext_resource type="AudioStream" uid="uid://caovjfylqwsuh" path="res://assets/audio/fire1.mp3" id="11_j3ovn"]
 [ext_resource type="PackedScene" uid="uid://cyefbedhrtvig" path="res://components/shield_ghost_component.tscn" id="11_yqrof"]
+[ext_resource type="Shader" uid="uid://cjgjdb52r2ioj" path="res://resources/shader/shield_ghost.gdshader" id="12_3wlsy"]
 [ext_resource type="AudioStream" uid="uid://cwrv60p3wvgf5" path="res://assets/audio/fire2.mp3" id="12_afbqv"]
 [ext_resource type="PackedScene" uid="uid://bp7lwwwjqwd2k" path="res://components/detectable_component.tscn" id="12_gx6sm"]
 
@@ -25,11 +26,20 @@ properties/1/path = NodePath(".:player_look_index")
 properties/1/spawn = true
 properties/1/replication_mode = 0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_yqrof"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3wlsy"]
 resource_local_to_scene = true
 shader = ExtResource("8_7thud")
 shader_parameter/input_color = Color(0.84, 0.21839999, 0.21839999, 1)
 shader_parameter/percent = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b2kln"]
+resource_local_to_scene = true
+shader = ExtResource("12_3wlsy")
+shader_parameter/shield_color = Color(0.45, 0.7, 1, 1)
+shader_parameter/intensity = 0.0
+shader_parameter/fill_alpha = 0.70000003325
+shader_parameter/rim_power = 2.0
+shader_parameter/rim_width = 0.25
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_symyc"]
 radius = 6.0
@@ -138,6 +148,7 @@ stream_1/stream = ExtResource("12_afbqv")
 
 [node name="Player" type="CharacterBody2D" unique_id=443941569 groups=["player"]]
 collision_layer = 8
+collision_mask = 33
 motion_mode = 1
 script = ExtResource("1_abrql")
 
@@ -198,7 +209,7 @@ texture = ExtResource("5_j3ovn")
 
 [node name="FlashSpriteComponent" parent="VisualRoot" unique_id=1374404885 instance=ExtResource("7_wvtmh")]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_yqrof")
+material = SubResource("ShaderMaterial_3wlsy")
 texture = ExtResource("2_sglur")
 centered = false
 offset = Vector2(-13, -32)
@@ -226,6 +237,7 @@ unique_name_in_owner = true
 
 [node name="ShieldGhostComponent" parent="VisualRoot" unique_id=773133935 instance=ExtResource("11_yqrof")]
 unique_name_in_owner = true
+material = SubResource("ShaderMaterial_b2kln")
 scale = Vector2(1.5, 1.5)
 offset = Vector2(0, -8)
 

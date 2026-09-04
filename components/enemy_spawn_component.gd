@@ -19,7 +19,7 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [4] 预压 - 石刺入场, 前半段高峰
 	{ "slime": 0.5, "poppy": 0.4, "stone_poke": 0.1, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [5] 奖励关 - 无敌人, 拾取物
-	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 6 },
+	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 4, "peer_count": 2 },
 	# [6] 二阶启动 - 后半段起手
 	{ "slime": 0.4, "poppy": 0.40, "stone_poke": 0.2, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [7] 气球暴 - 密集爆炸
@@ -73,11 +73,13 @@ func _ready() -> void:
 		spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 		round_timer.timeout.connect(_on_round_timer_timeout)
 		GameEvents.enemy_died.connect(_on_enemy_died)
+		GameEvents.enemy_died_bonus.connect(_on_enemy_bonus)
 		upgrade_component.upgrade_finished.connect(_on_upgrade_finished)
 
 
 func start() -> void:
 	if is_multiplayer_authority():
+		_roll_enemy_bonus_pool()
 		_start_round()
 
 
@@ -115,16 +117,19 @@ func _start_bonus_round(config: Dictionary) -> void:
 	_is_boss_round = false
 	_bonus_pickups_remaining = 0
 	_roll_pickup_pool()
-	var pickup_count: int = config.get("pickup_count", 6)
+	var pickup_count: int = config.get("pickup_count", 4)
+	var peer_count: int = config.get("peer_count", 2)
+	pickup_count += Tools.get_game_peers_count() * peer_count
 	round_timer.start(config["round_time"])
 	spawn_timer.stop()
+	_bonus_pickups_remaining = pickup_count
+	synchronize()
+	print("[EnemySpawn] Bonus Round %s started, %s pickups" % [round_count, pickup_count])
 	for i in range(pickup_count):
 		var pickup_res := _roll_pickup_resource()
 		var pos := _get_random_position()
 		_spawn_pickup(pickup_res, pos)
-	synchronize()
-	bonus_round_started.emit()
-	print("[EnemySpawn] Bonus Round %s started, %s pickups" % [round_count, pickup_count])
+		await get_tree().create_timer(randf_range(0.5, 1.5)).timeout
 
 
 func _start_boss_round(_config: Dictionary) -> void:
@@ -138,7 +143,6 @@ func _start_boss_round(_config: Dictionary) -> void:
 	enemy_count += 1
 	# TODO 属于boss回合的专属ui显示, 血条显示
 	synchronize()
-	boss_round_started.emit()
 	print("[EnemySpawn] Boss Round %s started" % round_count)
 
 
@@ -148,6 +152,8 @@ const _medkit_chance: float = 0.20
 const _upgrade_chance: float = 0.55
 
 var _pickup_pool: Array[PickupItemResource] = []
+## 敌人死亡奖励 Array[[weight: float, res: PickupItemResource]]
+var _enemy_bonus_pool: Array = []
 
 func _roll_pickup_pool() -> void:
 	_pickup_pool.clear()
@@ -164,6 +170,33 @@ func _roll_pickup_pool() -> void:
 			continue
 		_pickup_pool.append(res)
 
+
+func _roll_enemy_bonus_pool() -> void:
+	_enemy_bonus_pool.clear()
+	var weight: float = 0.0
+	var passive_upgrade_weight: float = 0.1 / _passive_pickup_count()
+	for res: PickupItemResource in CSVResourceCache.get_all_pickups():
+		var w : float = 0.0
+		if res.id == "healing_potion":
+			w = 0.8 # 80% 小药瓶
+		elif res.id == "medkit":
+			w = 0.1 # 10% 医疗包
+		elif res.effect_type == "passive_upgrade":
+			w = passive_upgrade_weight # 10% 平分每个升级
+		if w <= 0.0:
+			continue
+		weight += w
+		_enemy_bonus_pool.append([weight, res])
+
+
+func _random_select_enemy_bonus() -> PickupItemResource:
+	var w: float = randf()
+	for pair: Array in _enemy_bonus_pool:
+		if w <= pair[0]:
+			return pair[1]
+	return null
+
+
 func _passive_pickup_count() -> int:
 	var n: int = 0
 	for res: PickupItemResource in CSVResourceCache.get_all_pickups():
@@ -179,16 +212,17 @@ func _roll_pickup_resource() -> PickupItemResource:
 	return _pickup_pool.pick_random()
 
 
-func _spawn_pickup(pickup_res: PickupItemResource, pos: Vector2) -> void:
+func _spawn_pickup(pickup_res: PickupItemResource, pos: Vector2, show_bubble: bool = true) -> void:
 	if not is_multiplayer_authority():
 		return
-	var pickup := PICKUP_AREA_SCENE.instantiate()
+	var pickup: PickupArea = PICKUP_AREA_SCENE.instantiate()
 	pickup.resource = pickup_res  # 仅 authority 需要保留, 用于拾取时查 effect_type/params
 	pickup.resource_id = pickup_res.id  # 字符串 id, 由 MultiplayerSynchronizer 同步给客户端
+	pickup.spawn_pos_offset = Vector2(randf_range(-1.0, 1.0) * 32.0, randf_range(-1.0, 1.0) * 32.0)
 	pickup.global_position = pos
+	pickup.show_bubble = show_bubble
 	pickup.tree_exited.connect(_on_pickup_removed)
 	spawn_root.add_child(pickup, true)
-	_bonus_pickups_remaining += 1
 
 
 func _on_pickup_removed() -> void:
@@ -198,6 +232,7 @@ func _on_pickup_removed() -> void:
 func _check_round_completed() -> void:
 	if _is_bonus_round:
 		# 奖励关时间到即完成
+		# 不可以在 _on_pickup_removed 中检测_bonus_pickups_remaining, player在时间结束后拾取物品会多次触发 round completed!
 		if round_timer.is_stopped():
 			print("Bonus Round %s completed!" % round_count)
 			_is_bonus_round = false
@@ -304,7 +339,9 @@ func synchronize(peer_id: int = -1) -> void:
 	var data = {
 		"round_count": round_count,
 		"round_timer_time_left": round_timer.time_left,
-		"round_timer_running": not round_timer.is_stopped()
+		"round_timer_running": not round_timer.is_stopped(),
+		"is_bonus_round": _is_bonus_round,
+		"is_boss_round": _is_boss_round,
 	}
 	if peer_id < 0:
 		_synchronize.rpc(data)
@@ -312,7 +349,7 @@ func synchronize(peer_id: int = -1) -> void:
 		_synchronize.rpc_id(peer_id, data)
 
 
-@rpc("authority", "call_remote", "reliable")
+@rpc("authority", "call_local", "reliable")
 func _synchronize(data: Dictionary) -> void:
 	round_count = data.round_count
 	var wait_time: float = data.round_timer_time_left
@@ -320,6 +357,10 @@ func _synchronize(data: Dictionary) -> void:
 		round_timer.wait_time = wait_time
 	if data.round_timer_running:
 		round_timer.start()
+	if data.is_bonus_round:
+		bonus_round_started.emit()
+	elif data.is_boss_round:
+		boss_round_started.emit()
 
 
 ## 配置化群组刷怪: 每次在 [group_min, group_max] 随机选组大小,
@@ -364,6 +405,12 @@ func _on_round_timer_timeout() -> void:
 func _on_enemy_died() -> void:
 	enemy_count -= 1
 	_check_round_completed()
+
+
+func _on_enemy_bonus(pos: Vector2) -> void:
+	var res: PickupItemResource = _random_select_enemy_bonus()
+	if res:
+		_spawn_pickup(res, pos, true)
 
 
 func _on_upgrade_finished() -> void:

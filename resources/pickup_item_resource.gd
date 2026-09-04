@@ -6,4 +6,4 @@ extends Resource
 @export var name_key: String
 @export var description_key: String
 @export var effect_type: String
-@export var effect_params: String
+@export var effect_params: Array

@@ -171,6 +171,7 @@ func _ready() -> void:
 func generate_options() -> void:
 	if not is_multiplayer_authority():
 		return
+	KLogger.info("generation upgrade options")
 	if resources_id_dict.is_empty():
 		push_warning("No passive item resources loaded for upgrade options.")
 		upgrade_finished.emit()

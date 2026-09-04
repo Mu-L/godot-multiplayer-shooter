@@ -172,6 +172,8 @@ func _on_health_depleted() -> void:
 		return
 	is_dead = true
 	_play_died_effect.rpc()
+	if randf() < Tools.ENEMY_BONUS_RATE:
+		GameEvents.emit_enemy_bonus(global_position)
 	state_machine.current_state = "died"
 
 

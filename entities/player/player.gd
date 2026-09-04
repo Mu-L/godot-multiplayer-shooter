@@ -193,7 +193,7 @@ func revive(pos: Vector2) -> void:
 	is_dead = false
 
 
-func healing(value: int) -> void:
+func healing(value: float) -> void:
 	if not is_multiplayer_authority():
 		return
 	health_component.healing(value)

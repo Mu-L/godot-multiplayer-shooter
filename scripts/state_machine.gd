@@ -44,6 +44,8 @@ func _process(_delta: float) -> void:
 
 
 func _state_transition(next: String) -> void:
+	if not is_inside_tree():
+		await ready
 	if next not in states:
 		push_warning("Transition to a non-exists state: %s" % next)
 		return

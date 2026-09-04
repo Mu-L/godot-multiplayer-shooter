@@ -1,6 +1,10 @@
 extends Node
 
 
+## 敌人死亡掉落物品概率
+const ENEMY_BONUS_RATE: float = 0.05
+
+
 func _ready() -> void:
 	# set up logger
 	KLogger.time_format = "YYYY.MM.DD hh.mm.ss.SSS"
@@ -21,7 +25,9 @@ func is_headless_server() -> bool:
 
 
 func get_game_peers() -> Array:
-	var game_peers := multiplayer.get_peers()
+	var game_peers := PackedInt32Array()
+	if multiplayer:
+		game_peers = multiplayer.get_peers()
 	if not Tools.is_headless_server():
 		game_peers.append(1)
 	return game_peers

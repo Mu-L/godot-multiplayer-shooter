@@ -1,6 +1,7 @@
 extends Node
 
 signal enemy_died
+signal enemy_died_bonus(pos: Vector2)
 signal local_player_health_changed(rate)
 signal local_player_defense_changed(percent)
 signal player_look_changed(peer_id: int, player_look_index: int)
@@ -10,6 +11,10 @@ signal local_player_passives_changed(passives: Dictionary)
 
 func emit_enemy_died() -> void:
 	enemy_died.emit()
+
+
+func emit_enemy_bonus(pos: Vector2) -> void:
+	enemy_died_bonus.emit(pos)
 
 
 func emit_local_player_health_changed(rate: float) -> void:

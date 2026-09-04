@@ -101,7 +101,16 @@ func _load_pickup_csv() -> void:
 		res.name_key = _col(row, header_map.get("name_key", -1))
 		res.description_key = _col(row, header_map.get("description_key", -1))
 		res.effect_type = _col(row, header_map.get("effect_type", -1))
-		res.effect_params = _col(row, header_map.get("effect_params", -1))
+		var effect_params_col: String = _col(row, header_map.get("effect_params", -1))
+		var params_strs: PackedStringArray = effect_params_col.split(";", false)
+		res.effect_params = []
+		for param_str in params_strs:
+			if param_str.is_valid_int():
+				res.effect_params.append(param_str.to_int())
+			elif param_str.is_valid_float():
+				res.effect_params.append(param_str.to_float())
+			else:
+				res.effect_params.append(param_str)
 		pickup_resources[res.id] = res
 		pickup_resources_all.append(res)
 	print("[CSV] Loaded %d pickup item configs" % pickup_resources_all.size())

@@ -32,6 +32,7 @@ GameState="*uid://ca6butkvra4ge"
 GameCursor="*uid://b4pl36qdnbkli"
 KLogger="*uid://dqkjoq0kbi8f4"
 CSVResourceCache="*res://autoload/csv_resource_cache.gd"
+PhysicsQueryManager="*uid://bttvx7ki4mspc"
 
 [display]
 

@@ -115,21 +115,17 @@ func _game_completed(win: bool) -> void:
 	is_game_over = true
 	GameState.game_win = win
 	get_tree().paused = false
-	# 服务端立即断开会导致客户端回到主界面
+	SoundManager.play_game_end(win)
+	if win:
+		game_win_ui.visible = true
+	await get_tree().create_timer(5.0).timeout
+	# 客户端先断开链接回到主界面, 服务器/Host多等待1秒, Host断开链接回到主界面, Headless服务器不关闭peer
 	if not is_multiplayer_authority():
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	else:
 		await get_tree().create_timer(1.0).timeout
 		if not Tools.is_headless_server():
 			multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
-	SoundManager.play_game_end(win)
-	if win:
-		game_win_ui.visible = true
-		if not Tools.is_headless_server():
-			await get_tree().create_timer(5.0).timeout
-	# TODO game over ui展示,并且需要等待玩家死亡UI显示一小会
-	if not Tools.is_headless_server():
-		await get_tree().create_timer(5.0).timeout
 	get_tree().change_scene_to_file("res://ui/game_end/game_end_menu.tscn")
 
 

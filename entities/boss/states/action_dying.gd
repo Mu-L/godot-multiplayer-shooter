@@ -24,7 +24,7 @@ func _on_state_entered() -> void:
 	await boss.animation_player.animation_finished
 	await get_tree().create_timer(2.0).timeout
 	GameEvents.emit_enemy_died()
-	queue_free()
+	boss.queue_free()
 
 
 func _on_state_exited() -> void:

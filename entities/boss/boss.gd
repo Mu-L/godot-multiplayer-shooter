@@ -39,10 +39,12 @@ const PROXIMITY_THREAT_WEIGHT: float = 500.0
 @onready var hurtbox_component: HurtboxComponent = %HurtboxComponent
 @onready var hurtbox_shape: CollisionShape2D = $HurtboxComponent/CollisionShape2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var visual_ring: VisualRing = $VisualRing
 
 
 @onready var visual: Node2D = $Visual
 @onready var animation: Node2D = $Visual/Animation
+@onready var shadow: Sprite2D = $Shadow
 
 var phase: Phase = Phase.NORMAL
 
@@ -84,7 +86,7 @@ func _ready() -> void:
 		rush_timer.wait_time = rush_cooldown
 		shoot_timer.wait_time = shoot_cooldown
 		jump_timer.wait_time = jump_cooldown
-		health_component.max_health = 300.0 + Tools.get_game_peers_count() * 200.0
+		health_component.max_health = 300.0 + Tools.get_game_peers_count() * 300.0
 		health_component.reset()
 		health_component.health_changed_with_attacker.connect(_on_health_changed)
 
@@ -183,12 +185,12 @@ func _on_health_changed(max_value: float, current_value: float, damage: float, a
 	take_damage_from(damage, attacker)
 	# 阶段血量阈值检查
 	var hp_ratio = current_value / max_value
-	if hp_ratio <= 0.25 and phase != Phase.FEAR:
-		# TODO 多阶段
+	if hp_ratio <= 0.3 and phase != Phase.FEAR:
+		# TODO 进入害怕阶段, 无回复
 		KLogger.debug("boss hp ratio: %s, phase to: %s" % [hp_ratio, "FEAR"])
 		# state_chart.send_event("to_fear_phase")
 	elif hp_ratio <= 0.6 and phase == Phase.NORMAL:
-		# TODO 多阶段
+		# TODO 进入愤怒阶段, 正式进入愤怒状态后回复20%血量
 		KLogger.debug("boss hp ratio: %s, phase to: %s" % [hp_ratio, "RAGE"])
 		# state_chart.send_event("to_rage_trans_phase")
 

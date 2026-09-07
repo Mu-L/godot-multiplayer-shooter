@@ -2,9 +2,9 @@ class_name GameCamera
 extends Camera2D
 
 const NORMAL_SHAKE_STRENGTH: float = 3.0
-const STRONG_SHAKE_STRENGTH: float = 10.0
+const STRONG_SHAKE_STRENGTH: float = 30.0
 const NORMAL_SHAKE_TIME: float = 0.2
-const STRONG_SHAKE_TIME: float = 1.0
+const STRONG_SHAKE_TIME: float = 0.5
 
 static var instance: GameCamera
 

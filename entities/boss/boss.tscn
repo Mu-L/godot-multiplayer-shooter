@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://jk2jm1g6q853" path="res://addons/godot_state_charts/compound_state.gd" id="7_vpqsk"]
 [ext_resource type="Script" uid="uid://b8o15hcfk7jxj" path="res://entities/boss/states/action_idle.gd" id="9_nvn07"]
 [ext_resource type="Script" uid="uid://cf1nsco3w0mf6" path="res://addons/godot_state_charts/transition.gd" id="9_vpqsk"]
+[ext_resource type="Script" uid="uid://bgk71e3e1ene4" path="res://entities/boss/action_spawn.gd" id="10_aslry"]
 [ext_resource type="PackedScene" uid="uid://d4dbjbld66ye3" path="res://components/health_component.tscn" id="10_sy3t8"]
 [ext_resource type="PackedScene" uid="uid://cjdfv3bck20to" path="res://components/hurtbox_component.tscn" id="11_3mv0g"]
 [ext_resource type="Script" uid="uid://c4q4qg23y7wmy" path="res://entities/boss/states/action_attack.gd" id="11_a7l2f"]
@@ -26,8 +27,9 @@
 [ext_resource type="Script" uid="uid://hjapfxkkdtqe" path="res://entities/boss/states/phase_fear.gd" id="21_nnldm"]
 [ext_resource type="Script" uid="uid://dvgvv5mrjmn1a" path="res://entities/boss/states/phase_rage_translation.gd" id="22_nnldm"]
 [ext_resource type="PackedScene" uid="uid://c8mojkcl4ky3a" path="res://components/hitbox_component.tscn" id="25_0p8qg"]
+[ext_resource type="Script" uid="uid://dppal4eqd4bf7" path="res://entities/boss/visual_ring.gd" id="28_i7vet"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_a4p48"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i7vet"]
 resource_local_to_scene = true
 shader = ExtResource("3_c5o42")
 shader_parameter/input_color = Color(1, 1, 1, 1)
@@ -352,7 +354,7 @@ position = Vector2(0, -20)
 [node name="Animation" type="Node2D" parent="Visual" unique_id=523084584]
 
 [node name="FlashSpriteComponent" parent="Visual/Animation" unique_id=1374404885 instance=ExtResource("2_820jm")]
-material = SubResource("ShaderMaterial_a4p48")
+material = SubResource("ShaderMaterial_i7vet")
 position = Vector2(-32, 0)
 texture = ExtResource("4_c5o42")
 hframes = 4
@@ -395,8 +397,20 @@ metadata/_custom_type_script = "uid://c1vp0ojjvaby1"
 
 [node name="Action" type="Node" parent="StateChart/Root" unique_id=2035867369]
 script = ExtResource("7_vpqsk")
-initial_state = NodePath("Idle")
+initial_state = NodePath("Spawn")
 metadata/_custom_type_script = "uid://jk2jm1g6q853"
+
+[node name="Spawn" type="Node" parent="StateChart/Root/Action" unique_id=1135800246 node_paths=PackedStringArray("boss")]
+script = ExtResource("10_aslry")
+boss = NodePath("../../../..")
+metadata/_custom_type_script = "uid://cytafq8i1y8qm"
+
+[node name="ToIdle" type="Node" parent="StateChart/Root/Action/Spawn" unique_id=1825950994]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../Idle")
+event = &"to_idle"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
 [node name="Idle" type="Node" parent="StateChart/Root/Action" unique_id=20052911 node_paths=PackedStringArray("boss")]
 script = ExtResource("9_nvn07")
@@ -685,7 +699,7 @@ debug_color = Color(0.7699836, 0.44548792, 1.92523e-07, 0.41960785)
 unique_name_in_owner = true
 position = Vector2(0, -20)
 collision_layer = 4
-damage = 2.0
+damage = 5.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RushHitboxComponent" unique_id=52585088]
 shape = SubResource("CircleShape2D_a4p48")
@@ -697,6 +711,9 @@ replication_config = SubResource("SceneReplicationConfig_3mv0g")
 [node name="AttackMultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2044862521]
 _spawnable_scenes = PackedStringArray("uid://c1qfdncimokyn")
 spawn_path = NodePath("..")
+
+[node name="VisualRing" type="Node2D" parent="." unique_id=385960764]
+script = ExtResource("28_i7vet")
 
 [connection signal="area_entered" from="DetectAreas/BigCheckArea" to="." method="_on_big_check_area_area_entered"]
 [connection signal="area_exited" from="DetectAreas/BigCheckArea" to="." method="_on_big_check_area_area_exited"]

@@ -26,6 +26,9 @@ var move_vector: Vector2 = Vector2.ZERO
 var is_dead: bool = false
 var is_immnue: bool = false
 
+var knockback_velocity: Vector2 = Vector2.ZERO
+var knockback_damping: float = 8.0 # 外力衰减阻尼，数值越小滑行越远
+
 
 @onready var player_input_multiplayer_synchronizer_component: PlayerInputMultiplayerSynchronizerComponent = $PlayerInputMultiplayerSynchronizerComponent
 @onready var weapon_root: Node2D = %WeaponRoot
@@ -80,9 +83,17 @@ func _process(delta: float) -> void:
 	elif not move_animation_player.is_playing():
 		move_animation_player.play("move")
 	if is_multiplayer_authority():
-		var target_velocity = input * _get_move_speed()
-		velocity = velocity.lerp(target_velocity, 1.0 - exp(-20.0 * delta))
+		# 1. 玩家自身输入驱动的基础速度
+		var target_velocity: Vector2 = input * _get_move_speed()
+		var move_velocity: Vector2 = velocity.lerp(target_velocity, 1.0 - exp(-20.0 * delta))
+		
+		# 2. 外部推力以独立阻尼指数衰减
+		knockback_velocity = knockback_velocity.lerp(Vector2.ZERO, 1.0 - exp(-knockback_damping * delta))
+		
+		# 3. 最终移动速度合并
+		velocity = move_velocity + knockback_velocity
 		move_and_slide()
+
 		if player_input_multiplayer_synchronizer_component.is_attack_pressing:
 			_try_to_attack()
 

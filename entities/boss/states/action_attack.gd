@@ -19,7 +19,7 @@ func _on_state_entered() -> void:
 	attack.boss = boss
 	attack.attack_ended.connect(func() -> void:
 		KLogger.debug("attack ended")
-		boss.state_chart.send_event("to_idle")
+		boss.state_chart.send_event(&"to_idle")
 	)
 	boss.speed_offset = -(boss.current_speed * 0.6) # 攻击状态减速
 	attack.position = boss.visual.position

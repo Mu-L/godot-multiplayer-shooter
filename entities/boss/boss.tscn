@@ -25,9 +25,11 @@
 [ext_resource type="Script" uid="uid://3jaoi33111lk" path="res://entities/boss/states/phase_normal.gd" id="19_qws5c"]
 [ext_resource type="Script" uid="uid://3hn16rm0xuk6" path="res://entities/boss/states/phase_rage.gd" id="20_r60ng"]
 [ext_resource type="Script" uid="uid://hjapfxkkdtqe" path="res://entities/boss/states/phase_fear.gd" id="21_nnldm"]
+[ext_resource type="Script" uid="uid://d2gdnu33nqul1" path="res://entities/boss/action_rage_translation.gd" id="22_km73v"]
 [ext_resource type="Script" uid="uid://dvgvv5mrjmn1a" path="res://entities/boss/states/phase_rage_translation.gd" id="22_nnldm"]
 [ext_resource type="PackedScene" uid="uid://c8mojkcl4ky3a" path="res://components/hitbox_component.tscn" id="25_0p8qg"]
 [ext_resource type="PackedScene" uid="uid://mcug7r2ik2gp" path="res://entities/boss/visual_ring.tscn" id="28_i7vet"]
+[ext_resource type="PackedScene" uid="uid://72y5fl1yb5i" path="res://entities/boss/shield.tscn" id="29_8iduc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i7vet"]
 resource_local_to_scene = true
@@ -293,10 +295,24 @@ tracks/0/path = NodePath("Visual/Animation/FlashSpriteComponent:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 2.5),
+"times": PackedFloat32Array(0, 2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [14, 15]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("StateChart/Root/Action/RageTranslation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(2.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"play_rage_effect"
+}]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hj6y4"]
@@ -343,6 +359,7 @@ motion_mode = 1
 script = ExtResource("1_4kg7w")
 attack_scene = ExtResource("2_yss0y")
 visual_ring_scene = ExtResource("28_i7vet")
+shield_scene = ExtResource("29_8iduc")
 
 [node name="Shadow" type="Sprite2D" parent="." unique_id=4185010]
 position = Vector2(0, 13)
@@ -460,6 +477,20 @@ event = &"to_dying"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
+[node name="ToJump" type="Node" parent="StateChart/Root/Action/Idle" unique_id=1274161703]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../Jump")
+event = &"to_jump"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="ToRageTransition" type="Node" parent="StateChart/Root/Action/Idle" unique_id=1989720694]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../RageTranslation")
+event = &"to_rage_translation"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
 [node name="Attack" type="Node" parent="StateChart/Root/Action" unique_id=1228717706 node_paths=PackedStringArray("boss")]
 script = ExtResource("11_a7l2f")
 boss = NodePath("../../../..")
@@ -476,6 +507,13 @@ metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 script = ExtResource("9_vpqsk")
 to = NodePath("../../Dying")
 event = &"to_dying"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="ToRageTransition" type="Node" parent="StateChart/Root/Action/Attack" unique_id=1236103112]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../RageTranslation")
+event = &"to_rage_translation"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
@@ -496,6 +534,13 @@ metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 script = ExtResource("9_vpqsk")
 to = NodePath("../../Dying")
 event = &"to_dying"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="ToRageTransition" type="Node" parent="StateChart/Root/Action/Rush" unique_id=771344100]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../RageTranslation")
+event = &"to_rage_translation"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
@@ -522,6 +567,13 @@ metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 script = ExtResource("9_vpqsk")
 to = NodePath("../../Dying")
 event = &"to_dying"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="ToRageTransition" type="Node" parent="StateChart/Root/Action/Chase" unique_id=1769694014]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../RageTranslation")
+event = &"to_rage_translation"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
@@ -563,6 +615,13 @@ event = &"to_dying"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
+[node name="ToRageTransition" type="Node" parent="StateChart/Root/Action/Dodge" unique_id=1089410308]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../RageTranslation")
+event = &"to_rage_translation"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
 [node name="KeepAway" type="Node" parent="StateChart/Root/Action" unique_id=915541825 node_paths=PackedStringArray("boss")]
 script = ExtResource("16_2t3u6")
 boss = NodePath("../../../..")
@@ -589,6 +648,13 @@ event = &"to_dying"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 
+[node name="ToRageTransition" type="Node" parent="StateChart/Root/Action/KeepAway" unique_id=482224582]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../RageTranslation")
+event = &"to_rage_translation"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
 [node name="Shoot" type="Node" parent="StateChart/Root/Action" unique_id=271908288 node_paths=PackedStringArray("boss")]
 script = ExtResource("17_gf2n0")
 boss = NodePath("../../../..")
@@ -605,6 +671,18 @@ metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 script = ExtResource("9_vpqsk")
 to = NodePath("../../Dying")
 event = &"to_dying"
+delay_in_seconds = "0.0"
+metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
+
+[node name="RageTranslation" type="Node" parent="StateChart/Root/Action" unique_id=508269064 node_paths=PackedStringArray("boss")]
+script = ExtResource("22_km73v")
+boss = NodePath("../../../..")
+metadata/_custom_type_script = "uid://cytafq8i1y8qm"
+
+[node name="ToIdle" type="Node" parent="StateChart/Root/Action/RageTranslation" unique_id=2114583582]
+script = ExtResource("9_vpqsk")
+to = NodePath("../../Idle")
+event = &"to_idle"
 delay_in_seconds = "0.0"
 metadata/_custom_type_script = "uid://cf1nsco3w0mf6"
 

@@ -49,13 +49,13 @@ func _on_state_physics_processing(_delta: float) -> void:
 		# 进入近身范围或 CD 转好时交还给 Idle 重新仲裁
 		if (not boss.big_area_players.is_empty() and boss.rush_timer.is_stopped()) \
 			or (not boss.small_area_players.is_empty() and boss.normal_attack_timer.is_stopped()):
-				boss.state_chart.send_event("to_idle")
+				boss.state_chart.send_event(&"to_idle")
 				return
 		# 超时检测
 		if cur_time > MAX_CHASE_TIME:
 			KLogger.info("chase timeout!!!")
-			boss.state_chart.send_event("to_idle")
+			boss.state_chart.send_event(&"to_idle")
 	# 一定概率尝试躲避子弹
 	if boss.dodge_timer.is_stopped() and not boss.big_area_bullets.is_empty() and randf() < boss.dodge_rate:
-		boss.state_chart.send_event("to_dodge")
+		boss.state_chart.send_event(&"to_dodge")
 		return

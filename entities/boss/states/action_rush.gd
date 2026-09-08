@@ -74,7 +74,7 @@ func _on_state_physics_processing(delta: float) -> void:
 			rush_hit_collision_shape.disabled = true
 			boss.speed_offset = 0.0
 			boss.rush_timer.start()
-			boss.state_chart.send_event("to_idle")
+			boss.state_chart.send_event(&"to_idle")
 		if target_fresh > TARGET_FRESH_TIME:
 			target_fresh = 0.0
 			if boss.target:

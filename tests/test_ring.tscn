@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bpuqnj8b8pmyv"]
+
+[ext_resource type="Script" uid="uid://dy7qf0j5akhxk" path="res://tests/test_ring.gd" id="1_keu01"]
+[ext_resource type="PackedScene" uid="uid://mcug7r2ik2gp" path="res://entities/boss/visual_ring.tscn" id="2_hrf1k"]
+
+[node name="TestRing" type="Node2D" unique_id=300307066]
+script = ExtResource("1_keu01")
+ring_scene = ExtResource("2_hrf1k")

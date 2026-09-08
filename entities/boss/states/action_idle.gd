@@ -22,39 +22,39 @@ func _clean_invalid_targets() -> void:
 
 func _normal_idle_decide() -> void:
 	if not boss.small_area_players.is_empty() and boss.normal_attack_timer.is_stopped():
-		boss.state_chart.send_event("to_attack")
+		boss.state_chart.send_event(&"to_attack")
 		return
 	if not boss.big_area_players.is_empty() and boss.rush_timer.is_stopped():
-		boss.state_chart.send_event("to_rush")
+		boss.state_chart.send_event(&"to_rush")
 		return
 	if boss.normal_attack_timer.is_stopped() or boss.rush_timer.is_stopped():
-		boss.state_chart.send_event("to_chase")
+		boss.state_chart.send_event(&"to_chase")
 		return
-	boss.state_chart.send_event("to_keep_away")
+	boss.state_chart.send_event(&"to_keep_away")
 
 
 func _rage_idle_decide() -> void:
 	if boss.jump_timer.is_stopped():
-		boss.state_chart.send_event("to_jump")
+		boss.state_chart.send_event(&"to_jump")
 		return
 	if not boss.small_area_players.is_empty() and boss.normal_attack_timer.is_stopped():
-		boss.state_chart.send_event("to_attack")
+		boss.state_chart.send_event(&"to_attack")
 		return
 	if boss.rush_timer.is_stopped():
-		boss.state_chart.send_event("to_rush")
+		boss.state_chart.send_event(&"to_rush")
 		return
-	boss.state_chart.send_event("to_chase")
+	boss.state_chart.send_event(&"to_chase")
 
 
 func _fear_idle_decide() -> void:
 	if not boss.small_area_players.is_empty() and boss.rush_timer.is_stopped():
 		# 近身危机时冲撞逃跑
-		boss.state_chart.send_event("to_rush")
+		boss.state_chart.send_event(&"to_rush")
 		return
 	if boss.shoot_timer.is_stopped():
-		boss.state_chart.send_event("to_shoot")
+		boss.state_chart.send_event(&"to_shoot")
 		return
-	boss.state_chart.send_event("to_keep_away")
+	boss.state_chart.send_event(&"to_keep_away")
 
 
 func _on_state_entered() -> void:

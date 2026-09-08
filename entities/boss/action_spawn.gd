@@ -60,7 +60,7 @@ func _on_state_exited() -> void:
 func _on_state_processing(delta: float) -> void:
 	cur_time += delta
 	if cur_time >= STATE_TIME and multiplayer.is_server():
-		boss.state_chart.send_event("to_idle")
+		boss.state_chart.send_event(&"to_idle")
 
 
 func _on_state_physics_processing(_delta: float) -> void:

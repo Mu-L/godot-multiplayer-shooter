@@ -1,6 +1,10 @@
 @tool
 extends AtomicState
 
+
+## 进入愤怒阶段回血比例
+const RAGE_HEALING_RATIO: float = 0.2
+
 @export var boss: Boss
 
 
@@ -17,10 +21,9 @@ func _on_state_entered() -> void:
 	KLogger.info("phase state: 'rage' entered")
 	boss.phase = boss.Phase.RAGE
 	boss.current_speed = boss.RAGE_SPEED
-	# 狂暴阶段 CD 减半
-	boss.rush_timer.wait_time = 4.0
-	boss.jump_timer.wait_time = 5.0
-	boss.normal_attack_timer.wait_time = 0.6
+	# 狂暴阶段血量回复
+	# TODO 回血特效展示
+	boss.healing(RAGE_HEALING_RATIO)
 
 
 func _on_state_exited() -> void:

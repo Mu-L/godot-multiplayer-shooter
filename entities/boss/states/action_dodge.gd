@@ -112,7 +112,7 @@ func _on_state_processing(delta: float) -> void:
 
 	# 动作完成, 退出回到 Idle
 	if dodge_timer_elapsed >= dodge_duration:
-		boss.state_chart.send_event("to_idle")
+		boss.state_chart.send_event(&"to_idle")
 
 
 func _on_state_physics_processing(_delta: float) -> void:

@@ -54,10 +54,10 @@ func _on_state_physics_processing(_delta: float) -> void:
 		boss.move_direction = -boss.global_position.direction_to(boss.target.global_position)
 	# 检测状态切换
 	if boss.normal_attack_timer.is_stopped() or boss.rush_timer.is_stopped():
-		boss.state_chart.send_event("to_idle")
+		boss.state_chart.send_event(&"to_idle")
 		return
 	# 一定概率尝试躲避子弹
 	if boss.dodge_timer.is_stopped() and not boss.big_area_bullets.is_empty() and randf() < boss.dodge_rate:
-		boss.state_chart.send_event("to_dodge")
+		boss.state_chart.send_event(&"to_dodge")
 		return
 

@@ -23,6 +23,7 @@ const PROXIMITY_THREAT_WEIGHT: float = 500.0
 
 @export var attack_scene: PackedScene
 @export var visual_ring_scene: PackedScene
+@export var shield_scene: PackedScene
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var big_check_area: Area2D = $DetectAreas/BigCheckArea
@@ -87,7 +88,6 @@ func _ready() -> void:
 		shoot_timer.wait_time = shoot_cooldown
 		jump_timer.wait_time = jump_cooldown
 		health_component.max_health = 300.0 + Tools.get_game_peers_count() * 300.0
-		health_component.reset()
 		health_component.health_changed_with_attacker.connect(_on_health_changed)
 
 
@@ -131,6 +131,7 @@ func trigger_ring(radius: float = 200.0, duration: float = 0.5, times: int = 1, 
 	ring.duration = duration
 	ring.trigger_times = times
 	ring.trigger_interval = interval
+	ring.position = Vector2(0, -20)
 	add_child(ring)
 
 
@@ -148,6 +149,34 @@ func _rpc_flip(flip: bool) -> void:
 @rpc("authority", "call_local", "reliable")
 func rpc_play_animation(animation_name: StringName) -> void:
 	animation_player.play(animation_name)
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_play_shake_animation(intensity: float = 5.0, steps: int = 10, step_time: float = 0.1) -> void:
+	var shake_tween = create_tween()
+	var origin_pos: Vector2 = animation.position
+	for i in range(steps):
+		var target_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		shake_tween.tween_property(animation, "position", origin_pos + target_offset, step_time)
+	shake_tween.tween_property(animation, "position", origin_pos, step_time)
+
+
+@rpc("authority", "call_local", "reliable")
+func rpc_close_shield() -> void:
+	close_shield()
+
+
+func open_shield() -> void:
+	var shield: Node2D = shield_scene.instantiate()
+	shield.name = "Shield"
+	shield.position = Vector2(0, -20)
+	add_child(shield)
+
+
+func close_shield() -> void:
+	var shield: Node2D = get_node_or_null(^"Shield")
+	if shield:
+		shield.queue_free()
 
 
 func push_players(max_force: float, radius: float) -> void:
@@ -176,6 +205,13 @@ func push_players(max_force: float, radius: float) -> void:
 				var impulse: Vector2 = direction * (max_force * force_factor)
 				# 施加效果
 				player.knockback_velocity = impulse
+
+
+func healing(ratio: float) -> void:
+	if not multiplayer.is_server():
+		return
+	ratio = clampf(ratio, 0.0, 1.0)
+	health_component.healing(health_component.max_health * ratio)
 
 
 func _on_big_check_area_area_entered(area: Area2D) -> void:
@@ -225,7 +261,7 @@ func _on_health_changed(max_value: float, current_value: float, damage: float, a
 	if is_zero_approx(current_value):
 		KLogger.info("boss dead!!!!!")
 		state_chart.set_expression_property("is_dead", true)
-		state_chart.send_event("to_dying")
+		state_chart.send_event(&"to_dying")
 		return
 	# 仇恨更新
 	take_damage_from(damage, attacker)
@@ -234,11 +270,11 @@ func _on_health_changed(max_value: float, current_value: float, damage: float, a
 	if hp_ratio <= 0.3 and phase != Phase.FEAR:
 		# TODO 进入害怕阶段, 无回复
 		KLogger.debug("boss hp ratio: %s, phase to: %s" % [hp_ratio, "FEAR"])
-		# state_chart.send_event("to_fear_phase")
+		# state_chart.send_event(&"to_fear_phase")
 	elif hp_ratio <= 0.6 and phase == Phase.NORMAL:
 		# TODO 进入愤怒阶段, 正式进入愤怒状态后回复20%血量
 		KLogger.debug("boss hp ratio: %s, phase to: %s" % [hp_ratio, "RAGE"])
-		# state_chart.send_event("to_rage_trans_phase")
+		state_chart.send_event(&"to_rage_trans_phase")
 
 
 # 1. 受到伤害时更新仇恨 (由伤害来源传入 attacker)

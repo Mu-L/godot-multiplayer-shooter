@@ -17,8 +17,14 @@ signal wave_triggered
 var _active_waves: Array[float] = []
 
 # 触发队列控制
-var _waves_left: int = trigger_times
+var _waves_left: int = 0
 var _spawn_timer: float = 0.0
+
+
+func _ready() -> void:
+	_active_waves.clear()
+	_waves_left = trigger_times
+	_spawn_timer = 0.0
 
 
 func _process(delta: float) -> void:

@@ -22,15 +22,15 @@ func _ready() -> void:
 
 
 func take_damage(damage: float, attacker: Node2D) -> void:
-	current_health = clamp(current_health - damage, 0, max_health)
-	if damage > 0:
+	current_health = clampf(current_health - damage, 0.0, max_health)
+	if damage > 0.0:
 		health_changed_with_attacker.emit(max_health, current_health, damage, attacker)
 	if is_zero_approx(current_health):
 		health_depleted.emit()
 
 
 func healing(value: float) -> void:
-	current_health = clamp(current_health + value, 0, max_health)
+	current_health = clampf(current_health + value, 0.0, max_health)
 
 
 func reset(health: float = -1) -> void:

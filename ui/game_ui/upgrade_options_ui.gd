@@ -54,7 +54,7 @@ func _on_item_selected(index: int) -> void:
 	selected = true
 	items_container.process_mode = Node.PROCESS_MODE_DISABLED
 	upgrade_selected.emit(index)
-	if tween != null and tween.is_valid():
+	if tween and tween.is_valid():
 		tween.kill()
 	tween = create_tween()
 	tween.tween_property(self, "item_scale", Vector2.ZERO, 0.2)\

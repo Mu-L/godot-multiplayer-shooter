@@ -282,12 +282,12 @@ func _refresh_passive_resources() -> void:
 ## 单级被动物品效果描述.
 ## 使用 PASSIVE_ITEM_*_DESCRIPTION 翻译模板,占位符 {0} {1} 直接代入 effect_params 原始数值(保留"比例"还是"数值"语义由 CSV 决定).
 static func formatted_description(resource: PassiveItemResource) -> String:
-	if resource == null:
+	if not resource:
 		return ""
 	var res: PassiveItemResource = resource
 	if is_instance_valid(instance):
 		var cached: PassiveItemResource = instance.resources_id_dict.get(resource.id)
-		if cached != null:
+		if cached:
 			res = cached
 	var template: String = instance.tr(res.description_key)
 	# 用 replace 着色,避免 % 运算符把占位符里的裸 %" 当成格式化 token 解析.
@@ -300,7 +300,7 @@ static func formatted_description(resource: PassiveItemResource) -> String:
 ## 每种道具的数值语义各不相同(整数累加 / 比例累加 / 累乘 / 混合),因此按 match case 各自独立格式化,
 ## 再通过独立的翻译模板 PASSIVE_STACKED_* 输出供外部本地化,不做统一模板.
 static func formatted_description_stacked(resource: PassiveItemResource, count: int) -> String:
-	if resource == null or count <= 0:
+	if not resource or count <= 0:
 		return ""
 	if count == 1:
 		# 叠加数 = 1 时走单级描述,与"叠加效果"区段隐藏逻辑一致.
@@ -308,7 +308,7 @@ static func formatted_description_stacked(resource: PassiveItemResource, count: 
 	var res: PassiveItemResource = resource
 	if is_instance_valid(instance):
 		var cached: PassiveItemResource = instance.resources_id_dict.get(resource.id)
-		if cached != null:
+		if cached:
 			res = cached
 	match res.id:
 		ITEM_ID_BASIC_DAMAGE_UP:

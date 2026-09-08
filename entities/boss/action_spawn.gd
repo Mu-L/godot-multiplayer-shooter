@@ -40,38 +40,13 @@ func _on_state_entered() -> void:
 	await tween.finished
 	KLogger.info("action spawn tween finished!!")
 	boss.animation_player.play(&"jump_landing")
-	# 播放特效
-	boss.visual_ring.trigger(150, 0.7)
+	var push_radius: float = 200.0
+	var push_force: float = 800.0
+	var push_duration: float = 0.5
+	# 播放特效 & 施加推力
+	boss.trigger_ring(push_radius, push_duration, 1, 0.15, push_force)
 	# 相机震动
 	GameCamera.strong_shake()
-	# 施加推力
-	if multiplayer.is_server():
-		# player 遮罩层
-		var max_push_force: float = 800.0
-		var push_radius: float = 200.0
-		var mask: int = 1 << 3;
-		var hits: Array[Dictionary] = PhysicsQueryManager.query_circle(
-			boss.get_world_2d(), boss.global_position, push_radius, mask, false, true
-		)
-
-		for hit in hits:
-			var player: Player = hit.collider as Player
-			if player:
-				# 计算距离与相对方向
-				var diff: Vector2 = player.global_position - boss.global_position
-				var distance: float = diff.length()
-				# 超出范围处理
-				if distance >= push_radius:
-					continue
-				# 防止位置重合, 重合时随机方向
-				var direction: Vector2 = diff.normalized() if distance > 0.001 else Vector2.RIGHT.rotated(randf() * TAU)
-				# 计算归一化距离 ratio: 0.0 (最靠近) -> 1.0 (边缘)
-				var ratio: float = clampf(distance / push_radius, 0.0, 1.0)
-				var force_factor: float = pow(1.0 - ratio, 2.0) # 平方衰减
-				# 最终冲量向量
-				var impulse: Vector2 = direction * (max_push_force * force_factor)
-				# 施加效果
-				player.knockback_velocity = impulse
 
 
 func _on_state_exited() -> void:

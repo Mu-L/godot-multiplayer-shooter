@@ -34,13 +34,13 @@ func show_tooltip(passive_id: String, count: int) -> void:
 	var res: PassiveItemResource = null
 	if is_instance_valid(UpgradeComponent.instance):
 		res = UpgradeComponent.instance.resources_id_dict.get(passive_id)
-	if res == null:
+	if not res:
 		# 客户端缓存中可能没有 resource, 尝试从 CSVResourceCache 取
 		for r in CSVResourceCache.get_all_passives():
 			if r.id == passive_id:
 				res = r
 				break
-	if res == null:
+	if not res:
 		return
 	title_label.text = tr(res.name_key)
 	icon_texture.texture = res.icon

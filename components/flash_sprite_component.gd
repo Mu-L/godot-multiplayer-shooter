@@ -4,7 +4,7 @@ extends Sprite2D
 var tween: Tween
 
 func play_flash_animation() -> void:
-	if (not tween == null) and tween.is_valid():
+	if tween and tween.is_valid():
 		tween.kill()
 	tween = create_tween()
 	tween.tween_property(material, "shader_parameter/percent", 0.0, 0.2)\

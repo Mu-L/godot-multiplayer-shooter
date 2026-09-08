@@ -22,6 +22,7 @@ const PROXIMITY_THREAT_WEIGHT: float = 500.0
 
 
 @export var attack_scene: PackedScene
+@export var visual_ring_scene: PackedScene
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var big_check_area: Area2D = $DetectAreas/BigCheckArea
@@ -39,7 +40,6 @@ const PROXIMITY_THREAT_WEIGHT: float = 500.0
 @onready var hurtbox_component: HurtboxComponent = %HurtboxComponent
 @onready var hurtbox_shape: CollisionShape2D = $HurtboxComponent/CollisionShape2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
-@onready var visual_ring: VisualRing = $VisualRing
 
 
 @onready var visual: Node2D = $Visual
@@ -99,21 +99,39 @@ func _physics_process(_delta: float) -> void:
 			velocity = Vector2.ZERO
 		move_and_slide()
 		# 目标更新
-		if threat_target:
-			target = threat_target
-		if not target:
-			var dis_sq: float = -1.0
-			for player: Player in get_tree().get_nodes_in_group("player"):
-				if dis_sq < 0:
-					dis_sq = global_position.distance_squared_to(player.global_position)
-					target = player
-				elif dis_sq < global_position.distance_squared_to(player.global_position):
-					target = player
+		update_target()
 
 
 func _process(_delta: float) -> void:
 	if is_check_flip:
 		check_flip()
+
+
+func update_target() -> void:
+	if threat_target and not threat_target.is_dead:
+		target = threat_target
+	else:
+		if target and not target.is_dead:
+			return
+		var dis_sq: float = -1.0
+		for player: Player in get_tree().get_nodes_in_group("player"):
+			if player.is_dead:
+				continue
+			var cur_dis_sq: float = global_position.distance_squared_to(player.global_position)
+			if dis_sq < 0 or dis_sq < cur_dis_sq:
+				dis_sq = cur_dis_sq
+				target = player
+
+
+func trigger_ring(radius: float = 200.0, duration: float = 0.5, times: int = 1, interval: float = 0.15, push_force: float = 0.0) -> void:
+	var ring: VisualRing = visual_ring_scene.instantiate()
+	if push_force > 0 and multiplayer.is_server():
+		ring.wave_triggered.connect(push_players.bind(push_force, radius))
+	ring.max_radius = radius
+	ring.duration = duration
+	ring.trigger_times = times
+	ring.trigger_interval = interval
+	add_child(ring)
 
 
 func check_flip() -> void:
@@ -132,9 +150,37 @@ func rpc_play_animation(animation_name: StringName) -> void:
 	animation_player.play(animation_name)
 
 
+func push_players(max_force: float, radius: float) -> void:
+	if multiplayer.is_server():
+		# player 遮罩层
+		var mask: int = 1 << 3;
+		var hits: Array[Dictionary] = PhysicsQueryManager.query_circle(
+			get_world_2d(), global_position, radius, mask, false, true
+		)
+
+		for hit in hits:
+			var player: Player = hit.collider as Player
+			if player:
+				# 计算距离与相对方向
+				var diff: Vector2 = player.global_position - global_position
+				var distance: float = diff.length()
+				# 超出范围处理
+				if distance >= radius:
+					continue
+				# 防止位置重合, 重合时随机方向
+				var direction: Vector2 = diff.normalized() if distance > 0.001 else Vector2.RIGHT.rotated(randf() * TAU)
+				# 计算归一化距离 ratio: 0.0 (最靠近) -> 1.0 (边缘)
+				var ratio: float = clampf(distance / radius, 0.0, 1.0)
+				var force_factor: float = pow(1.0 - ratio, 2.0) # 平方衰减
+				# 最终冲量向量
+				var impulse: Vector2 = direction * (max_force * force_factor)
+				# 施加效果
+				player.knockback_velocity = impulse
+
+
 func _on_big_check_area_area_entered(area: Area2D) -> void:
 	if multiplayer.is_server():
-		if area.owner == null:
+		if not area.owner:
 			KLogger.info("boss skip big area obj with null owner: %s" % area)
 			return
 		if area.owner.is_in_group("player"):
@@ -147,7 +193,7 @@ func _on_big_check_area_area_entered(area: Area2D) -> void:
 
 func _on_big_check_area_area_exited(area: Area2D) -> void:
 	if multiplayer.is_server():
-		if area.owner == null:
+		if not area.owner:
 			return
 		if area.owner.is_in_group("player"):
 			big_area_players.erase(area.owner)
@@ -157,7 +203,7 @@ func _on_big_check_area_area_exited(area: Area2D) -> void:
 
 func _on_small_check_area_area_entered(area: Area2D) -> void:
 	if multiplayer.is_server():
-		if area.owner == null:
+		if not area.owner:
 			return
 		if area.owner.is_in_group("player"):
 			small_area_players.append(area.owner)
@@ -165,7 +211,7 @@ func _on_small_check_area_area_entered(area: Area2D) -> void:
 
 func _on_small_check_area_area_exited(area: Area2D) -> void:
 	if multiplayer.is_server():
-		if area.owner == null:
+		if not area.owner:
 			return
 		if area.owner.is_in_group("player"):
 			small_area_players.erase(area.owner)
@@ -197,7 +243,7 @@ func _on_health_changed(max_value: float, current_value: float, damage: float, a
 
 # 1. 受到伤害时更新仇恨 (由伤害来源传入 attacker)
 func take_damage_from(amount: float, attacker: Node2D) -> void:
-	if attacker == null or not is_instance_valid(attacker):
+	if not attacker or not is_instance_valid(attacker):
 		return
 
 	threat_table[attacker] = threat_table.get(attacker, 0.0) + amount
@@ -239,7 +285,7 @@ func _evaluate_primary_target() -> void:
 			max_threat = t_val
 			highest_threat_player = p
 
-	if threat_target == null or not is_instance_valid(threat_target):
+	if not threat_target or not is_instance_valid(threat_target):
 		threat_target = highest_threat_player
 		return
 

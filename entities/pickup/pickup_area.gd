@@ -39,7 +39,7 @@ const FLASH_LIVE_TIME: float = 7.0
 		# authority 端走 resource.setter + _ready()._setup_appearance(), 无需这里重复刷新
 		if is_inside_tree() and not is_multiplayer_authority():
 			resource = CSVResourceCache.get_pickup(value)
-			if resource == null:
+			if not resource:
 				push_warning("[PickupArea] client: unknown pickup id: %s" % value)
 			_setup_appearance()
 
@@ -88,9 +88,9 @@ func _play_flash_animation() -> void:
 
 
 func _resolve_passive_resource() -> PassiveItemResource:
-	if _passive_resource != null:
+	if _passive_resource:
 		return _passive_resource
-	if resource == null or resource.effect_type != PASSIVE_EFFECT_TYPE:
+	if not resource or resource.effect_type != PASSIVE_EFFECT_TYPE:
 		return null
 	_passive_resource = CSVResourceCache.get_passive(resource.effect_params[0])
 	return _passive_resource
@@ -99,13 +99,13 @@ func _resolve_passive_resource() -> PassiveItemResource:
 func _setup_appearance() -> void:
 	if bubble_sprite:
 		bubble_sprite.visible = show_bubble
-	if resource != null:
+	if resource:
 		var passive_res := _resolve_passive_resource()
 		if is_instance_valid(icon_sprite):
-			if passive_res != null:
+			if passive_res:
 				# passive_upgrade 类型: 使用对应被动物品的 icon
 				icon_sprite.texture = passive_res.icon
-			elif resource.icon != null:
+			elif resource.icon:
 				# 普通类型: 使用 csv 中配置的 icon
 				icon_sprite.texture = resource.icon
 
@@ -187,7 +187,7 @@ func _play_collected_animation() -> void:
 func _apply_effect(player: Player) -> void:
 	if not is_multiplayer_authority():
 		return
-	if resource != null:
+	if resource:
 		if resource.effect_type == PASSIVE_EFFECT_TYPE:
 			_apply_passive_upgrade(player)
 		elif resource.id == "healing_potion":
@@ -198,7 +198,7 @@ func _apply_effect(player: Player) -> void:
 
 func _apply_passive_upgrade(player: Player) -> void:
 	var passive_res := _resolve_passive_resource()
-	if passive_res == null:
+	if not passive_res:
 		push_warning("[PickupArea] passive_upgrade 未能解析: %s" % resource.effect_params)
 		return
 	UpgradeComponent.instance.apply_specific_upgrade(player.input_peer_id, passive_res.id)

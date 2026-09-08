@@ -24,7 +24,7 @@ func _ready() -> void:
 
 func _load_enemy_csv() -> void:
 	var file := FileAccess.open(CSV_PATH_ENEMY, FileAccess.READ)
-	if file == null:
+	if not file:
 		push_error("[CSV] Failed to open enemy CSV")
 		return
 	var header_map := _build_header_map(file)
@@ -50,7 +50,7 @@ func _load_enemy_csv() -> void:
 
 func _load_passive_csv() -> void:
 	var file := FileAccess.open(CSV_PATH_PASSIVE, FileAccess.READ)
-	if file == null:
+	if not file:
 		push_error("[CSV] Failed to open passive CSV")
 		return
 	var header_map := _build_header_map(file)
@@ -85,7 +85,7 @@ func _load_passive_csv() -> void:
 
 func _load_pickup_csv() -> void:
 	var file := FileAccess.open(CSV_PATH_PICKUP, FileAccess.READ)
-	if file == null:
+	if not file:
 		push_error("[CSV] Failed to open pickup CSV")
 		return
 	var header_map := _build_header_map(file)

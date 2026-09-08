@@ -72,7 +72,7 @@ func _calculate_dodge_direction() -> Vector2:
 				escape = Vector2(-b_dir.y, b_dir.x)
 			best_escape_dir = escape.normalized()
 	
-	if highest_threat_bullet == null:
+	if not highest_threat_bullet:
 		return Vector2.ZERO
 	
 	# # 5. 防撞墙安全探测: 沿 escape_dir 探测 80px 距离

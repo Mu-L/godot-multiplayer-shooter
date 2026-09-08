@@ -27,7 +27,7 @@ func _refresh(passives: Dictionary) -> void:
 	for entry in _entries:
 		entry.queue_free()
 	_entries.clear()
-	if passives == null or passives.is_empty():
+	if not passives or passives.is_empty():
 		return
 	# 按固定顺序排列 (与 UpgradeComponent 常量顺序一致)
 	var order: Array[String] = [
@@ -45,7 +45,7 @@ func _refresh(passives: Dictionary) -> void:
 		if count <= 0:
 			continue
 		var res: PassiveItemResource = _get_resource(passive_id)
-		if res == null:
+		if not res:
 			continue
 		var entry = PASSIVE_ITEM_ENTRY.instantiate()
 		add_child(entry)
@@ -56,7 +56,7 @@ func _refresh(passives: Dictionary) -> void:
 func _get_resource(passive_id: String) -> PassiveItemResource:
 	if is_instance_valid(UpgradeComponent.instance):
 		var res: PassiveItemResource = UpgradeComponent.instance.resources_id_dict.get(passive_id)
-		if res != null:
+		if res:
 			return res
 	for r in CSVResourceCache.get_all_passives():
 		if r.id == passive_id:

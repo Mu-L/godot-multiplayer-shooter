@@ -106,14 +106,14 @@ func update_track_target() -> void:
 	for player in players:
 		if player.is_dead:
 			continue
-		if track_player == null:
+		if not track_player:
 			track_player = player
 			min_squared_distance = track_player.global_position.distance_squared_to(global_position)
 		var squared_distance = player.global_position.distance_squared_to(global_position)
 		if squared_distance < min_squared_distance:
 			min_squared_distance = squared_distance
 			track_player = player
-	if track_player != null:
+	if track_player:
 		track_target = track_player.global_position
 		has_track_target = true
 	else:

@@ -78,7 +78,7 @@ func show_charge_tip() -> void:
 
 
 func hide_charge_tip() -> void:
-	if charge_tip_tween != null and charge_tip_tween.is_valid():
+	if charge_tip_tween and charge_tip_tween.is_valid():
 		charge_tip_tween.kill()
 	charge_tip_tween = create_tween()
 	charge_tip_tween.tween_property(warning_icon, "scale", Vector2.ZERO, 0.2)\
@@ -104,14 +104,14 @@ func update_track_target() -> void:
 	for player in players:
 		if player.is_dead:
 			continue
-		if track_player == null:
+		if not track_player:
 			track_player = player
 			min_squared_distance = track_player.global_position.distance_squared_to(global_position)
 		var squared_distance: float = player.global_position.distance_squared_to(global_position)
 		if squared_distance < min_squared_distance:
 			min_squared_distance = squared_distance
 			track_player = player
-	if track_player != null:
+	if track_player:
 		track_target = track_player.global_position
 		has_track_target = true
 	else:

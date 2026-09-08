@@ -10,8 +10,6 @@ signal boss_round_started
 ## 关卡配置表, 数组索引 0-9 对应关卡 1-10
 ## weights: slime / poppy / stone_poke; spawn_interval 为 Vector2(min, max)
 const ROUND_CONFIGS: Array[Dictionary] = [
-	# todo debug
-	{ "is_boss": true, "round_time": 0.0 },
 	# [1] 热身 - 史莱姆专场, 组小(1~2), 低频
 	{ "slime": 1.0, "poppy": 0.0, "stone_poke": 0.0, "round_time": 15.0, "hp_scale": 0.6, "dmg_scale": 0.5, "spawn_interval": Vector2(2.5, 3.5), "group_min": 1, "group_max": 2, "is_bonus": false, "is_boss": false },
 	# [2] 引入 - 首次气球
@@ -276,7 +274,7 @@ func _get_random_position() -> Vector2:
 func _load_enemy_configs() -> void:
 	enemy_configs.clear()
 	for res: EnemyResource in CSVResourceCache.get_all_enemies():
-		if res.scene == null:
+		if not res.scene:
 			push_warning("[EnemySpawn] Enemy config %s has no scene" % res.id)
 			continue
 		enemy_configs.append(res)
@@ -380,7 +378,7 @@ func _spawn_enemy() -> void:
 	for i in range(group_size):
 		# 选取敌人类型
 		var config := _select_enemy_config(_current_round_config)
-		if config == null:
+		if not config:
 			push_error("[EnemySpawn] No enemy config selected")
 			spawn_timer.start(randf_range(round_min_spawn_interval, round_max_spawn_interval))
 			return

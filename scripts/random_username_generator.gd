@@ -356,7 +356,7 @@ const NOUNS := [
 
 static func generate_username(separator: String = "", rng: RandomNumberGenerator = null) -> String:
 	var local_rng := rng
-	if local_rng == null:
+	if not local_rng:
 		local_rng = RandomNumberGenerator.new()
 		local_rng.randomize()
 

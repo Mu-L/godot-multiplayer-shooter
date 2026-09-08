@@ -2,27 +2,57 @@
 class_name VisualRing
 extends Node2D
 
-var _radius: float = 0.0
-var _alpha: float = 1.0
+signal wave_triggered
+
+# 触发参数
+@export var max_radius: float = 200.0
+@export var duration: float = 0.7
+@export var trigger_times: int = 1
+@export var trigger_interval: float = 0.15
+@export var wave_color: Color = Color(0.2, 0.8, 1.0, 1.0)
+@export var line_width: float = 3.0
+@export var arc_points: int = 64
+
+# 保存每个活跃光波的存活时间 (秒)
+var _active_waves: Array[float] = []
+
+# 触发队列控制
+var _waves_left: int = trigger_times
+var _spawn_timer: float = 0.0
 
 
-func trigger(max_radius: float, duration: float) -> void:
-	_radius = 0.0
-	_alpha = 0.8
-	show()
-	
-	var tween: Tween = create_tween().set_parallel(true)
-	tween.tween_property(self, "_radius", max_radius, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(self, "_alpha", 0.0, duration).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tween.finished.connect(hide)
-
-
-func _process(_delta: float) -> void:
-	if is_visible():
+func _process(delta: float) -> void:
+	# 1. 触发间隔计时与波纹发射
+	if _waves_left > 0:
+		_spawn_timer -= delta
+		while _spawn_timer <= 0.0 and _waves_left > 0:
+			# abs(_spawn_timer) 用于补偿帧间隔引起的亚帧发射误差
+			_active_waves.append(abs(_spawn_timer))
+			_waves_left -= 1
+			_spawn_timer += trigger_interval
+			wave_triggered.emit()
+	# 2. 更新所有波纹的生命周期
+	var needs_redraw: bool = not _active_waves.is_empty()
+	for i in range(_active_waves.size() - 1, -1, -1):
+		_active_waves[i] += delta
+		if _active_waves[i] >= duration:
+			_active_waves.remove_at(i)
+	# 3. 仅在有活动波纹或刚清空时触发重绘
+	if needs_redraw:
 		queue_redraw()
+	else:
+		queue_free()
 
 
 func _draw() -> void:
-	if _radius > 0.0:
-		# 绘制空心音波光圈
-		draw_arc(Vector2.ZERO, _radius, 0.0, TAU, 64, Color(1.0, 0.9, 0.6, _alpha), 4.0, true)
+	for elapsed in _active_waves:
+		var t: float = clampf(elapsed / duration, 0.0, 1.0)
+		# Quad Ease-Out
+		var r_factor: float = t * (2.0 - t)
+		var current_radius: float = max_radius * r_factor
+		# Cubic Ease-In (Fade out)
+		var a_factor: float = 1.0 - (t * t * t)
+		var current_color: Color = wave_color
+		current_color.a *= a_factor
+		if current_radius > 0.0 and current_color.a > 0.0:
+			draw_arc(Vector2.ZERO, current_radius, 0.0, TAU, arc_points, current_color, line_width, true)

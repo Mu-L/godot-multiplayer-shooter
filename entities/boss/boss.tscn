@@ -27,7 +27,7 @@
 [ext_resource type="Script" uid="uid://hjapfxkkdtqe" path="res://entities/boss/states/phase_fear.gd" id="21_nnldm"]
 [ext_resource type="Script" uid="uid://dvgvv5mrjmn1a" path="res://entities/boss/states/phase_rage_translation.gd" id="22_nnldm"]
 [ext_resource type="PackedScene" uid="uid://c8mojkcl4ky3a" path="res://components/hitbox_component.tscn" id="25_0p8qg"]
-[ext_resource type="Script" uid="uid://dppal4eqd4bf7" path="res://entities/boss/visual_ring.gd" id="28_i7vet"]
+[ext_resource type="PackedScene" uid="uid://mcug7r2ik2gp" path="res://entities/boss/visual_ring.tscn" id="28_i7vet"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i7vet"]
 resource_local_to_scene = true
@@ -342,6 +342,7 @@ collision_layer = 34
 motion_mode = 1
 script = ExtResource("1_4kg7w")
 attack_scene = ExtResource("2_yss0y")
+visual_ring_scene = ExtResource("28_i7vet")
 
 [node name="Shadow" type="Sprite2D" parent="." unique_id=4185010]
 position = Vector2(0, 13)
@@ -711,9 +712,6 @@ replication_config = SubResource("SceneReplicationConfig_3mv0g")
 [node name="AttackMultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2044862521]
 _spawnable_scenes = PackedStringArray("uid://c1qfdncimokyn")
 spawn_path = NodePath("..")
-
-[node name="VisualRing" type="Node2D" parent="." unique_id=385960764]
-script = ExtResource("28_i7vet")
 
 [connection signal="area_entered" from="DetectAreas/BigCheckArea" to="." method="_on_big_check_area_area_entered"]
 [connection signal="area_exited" from="DetectAreas/BigCheckArea" to="." method="_on_big_check_area_area_exited"]

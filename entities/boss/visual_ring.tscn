@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://mcug7r2ik2gp"]
+
+[ext_resource type="Script" uid="uid://dppal4eqd4bf7" path="res://entities/boss/visual_ring.gd" id="1_g67qr"]
+
+[node name="VisualRing" type="Node2D" unique_id=1314799391]
+script = ExtResource("1_g67qr")

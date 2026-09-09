@@ -1,6 +1,9 @@
 @tool
 extends AtomicState
 
+## 进入愤怒阶段回血比例
+const RAGE_HEALING_RATIO: float = 0.2
+
 @export var boss: Boss
 
 
@@ -54,9 +57,10 @@ func _on_state_entered() -> void:
 	boss.rpc_play_animation.rpc(&"rage_transform")
 	# 动画播放完毕转换状态
 	await boss.animation_player.animation_finished
-	# 动画播放完，光波效果还没结束
-	await get_tree().create_timer(2.0).timeout
-	boss.state_chart.send_event(&"to_rage_phase")
+	# 狂暴阶段血量回复
+	boss.healing(RAGE_HEALING_RATIO)
+	# 阶段切换
+	boss.phase = boss.Phase.RAGE
 	boss.state_chart.send_event(&"to_idle")
 
 

@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://cngr5m2phyb4w"]
+
+[ext_resource type="Script" uid="uid://cdroiuybofevh" path="res://entities/boss/enemy_bullet.gd" id="1_u6iud"]
+[ext_resource type="Texture2D" uid="uid://e00f2kp1llfd" path="res://assets/boss_bullet_slime.tres" id="2_7qodh"]
+[ext_resource type="Texture2D" uid="uid://bppnpbkkjs82q" path="res://assets/boss_bullet_stone.tres" id="3_exm7l"]
+[ext_resource type="PackedScene" uid="uid://c8mojkcl4ky3a" path="res://components/hitbox_component.tscn" id="4_qenjq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lc4n4"]
+radius = 8.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_u6iud"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 0
+properties/2/path = NodePath(".:direction")
+properties/2/spawn = true
+properties/2/replication_mode = 0
+properties/3/path = NodePath(".:speed")
+properties/3/spawn = true
+properties/3/replication_mode = 0
+properties/4/path = NodePath(".:style_index")
+properties/4/spawn = true
+properties/4/replication_mode = 0
+
+[node name="EnemyBullet" type="Node2D" unique_id=1252429921 node_paths=PackedStringArray("sprite", "hitbox", "timer")]
+script = ExtResource("1_u6iud")
+style_textures = Array[Texture2D]([ExtResource("2_7qodh"), ExtResource("3_exm7l")])
+sprite = NodePath("Sprite2D")
+hitbox = NodePath("HitboxComponent")
+timer = NodePath("LifeTimer")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1155275174]
+texture = ExtResource("3_exm7l")
+
+[node name="HitboxComponent" parent="." unique_id=206202765 instance=ExtResource("4_qenjq")]
+collision_layer = 512
+damage = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent" unique_id=1489646928]
+shape = SubResource("CircleShape2D_lc4n4")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=699954259]
+replication_config = SubResource("SceneReplicationConfig_u6iud")
+
+[node name="LifeTimer" type="Timer" parent="." unique_id=1964508257]
+wait_time = 2.0
+one_shot = true
+autostart = true

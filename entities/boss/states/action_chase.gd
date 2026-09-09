@@ -25,11 +25,11 @@ func _on_state_entered() -> void:
 	KLogger.debug("chase target: %s" % boss.target.name)
 	boss.move_direction = boss.global_position.direction_to(boss.target.global_position)
 	boss.speed_offset = boss.current_speed * 0.2
-	boss.animation_tween.play()
+	boss.rpc_play_move_tween.rpc(true)
 
 
 func _on_state_exited() -> void:
-	boss.animation_tween.stop()
+	boss.rpc_play_move_tween.rpc(false)
 	boss.animation.scale = Vector2.ONE
 	cur_time = 0.0
 

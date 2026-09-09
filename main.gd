@@ -29,9 +29,11 @@ var is_game_over: bool = false
 @onready var round_win_ui: RoundWinUI = %RoundWinUI
 @onready var upgrade_component: UpgradeComponent = %UpgradeComponent
 @onready var player_stats_panel: Node = %PlayerStatsPanel
+@onready var reference_rect: ReferenceRect = %ReferenceRect
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	Tools.world_refer_rect = reference_rect
 	# 仅本地主控玩家可操作, 暂停/游戏结束时无响应
 	if get_tree().paused or is_game_over:
 		return

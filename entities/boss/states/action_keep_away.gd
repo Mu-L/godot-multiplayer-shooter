@@ -1,6 +1,8 @@
 @tool
 extends AtomicState
 
+const ON_WALL_RUSH_TIME: float = 2.0
+
 @export var boss: Boss
 
 
@@ -34,11 +36,11 @@ func get_multiplayer_repulsion_vector() -> Vector2:
 
 func _on_state_entered() -> void:
 	KLogger.info("action state: 'keep away' entered")
-	boss.animation_tween.play()
+	boss.rpc_play_move_tween.rpc(true)
 
 
 func _on_state_exited() -> void:
-	boss.animation_tween.stop()
+	boss.rpc_play_move_tween.rpc(false)
 	boss.animation.scale = Vector2.ONE
 
 
@@ -52,12 +54,23 @@ func _on_state_physics_processing(_delta: float) -> void:
 	# 无效时再看看目标
 	if boss.move_direction.is_zero_approx():
 		boss.move_direction = -boss.global_position.direction_to(boss.target.global_position)
-	# 检测状态切换
-	if boss.normal_attack_timer.is_stopped() or boss.rush_timer.is_stopped():
-		boss.state_chart.send_event(&"to_idle")
-		return
+	# 不同状态不同动作
+	match boss.phase:
+		boss.Phase.NORMAL, boss.Phase.RAGE:
+			# 检测状态切换
+			if boss.normal_attack_timer.is_stopped() or boss.rush_timer.is_stopped():
+				boss.state_chart.send_event(&"to_idle")
+				return
+		boss.Phase.FEAR:
+			# 检测是不是需要冲刺逃跑
+			if not boss.big_area_players.is_empty() and boss.rush_timer.is_stopped() and boss.on_wall_time > ON_WALL_RUSH_TIME:
+				boss.state_chart.send_event(&"to_rush")
+				return
+			# 检测shoot cd
+			if boss.shoot_timer.is_stopped():
+				boss.state_chart.send_event(&"to_idle")
+				return
 	# 一定概率尝试躲避子弹
 	if boss.dodge_timer.is_stopped() and not boss.big_area_bullets.is_empty() and randf() < boss.dodge_rate:
 		boss.state_chart.send_event(&"to_dodge")
 		return
-

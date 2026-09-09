@@ -19,11 +19,14 @@ const FEAR_SPEED: float = 200.0
 const THREAT_SWITCH_THRESHOLD: float = 1.2 # 新目标仇恨必须高出 20% 才切目标
 const PROXIMITY_THREAT_WEIGHT: float = 500.0
 
-
+const BULLET_SPREAD_ANGLE: float = deg_to_rad(30.0)
+const BULLET_SPAWN_OFFSET: float = 4.0
 
 @export var attack_scene: PackedScene
 @export var visual_ring_scene: PackedScene
 @export var shield_scene: PackedScene
+@export var dodge_shield_scene: PackedScene
+@export var bullet_scene: PackedScene
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var big_check_area: Area2D = $DetectAreas/BigCheckArea
@@ -47,7 +50,20 @@ const PROXIMITY_THREAT_WEIGHT: float = 500.0
 @onready var animation: Node2D = $Visual/Animation
 @onready var shadow: Sprite2D = $Shadow
 
-var phase: Phase = Phase.NORMAL
+var phase: Phase = Phase.NORMAL:
+	get:
+		return phase
+	set(value):
+		phase = value
+		match value:
+			Phase.NORMAL:
+				current_speed = NORMAL_SPEED
+			Phase.FEAR:
+				current_speed = FEAR_SPEED
+			Phase.RAGE:
+				current_speed = RAGE_SPEED
+			_:
+				pass
 
 var big_area_players: Array = []
 var small_area_players: Array = []
@@ -73,6 +89,9 @@ var is_check_flip: bool = true
 
 var shield: Node2D
 
+var on_wall_time: float = 0.0
+var wall_bodys: Array = []
+
 # 仇恨表: Dictionary[Node2D, float]
 var threat_table: Dictionary = {}
 var threat_target: Node2D = null
@@ -93,7 +112,7 @@ func _ready() -> void:
 		health_component.health_changed_with_attacker.connect(_on_health_changed)
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if multiplayer.is_server():
 		if not move_direction.is_zero_approx():
 			velocity = move_direction * (current_speed + speed_offset)
@@ -102,6 +121,9 @@ func _physics_process(_delta: float) -> void:
 		move_and_slide()
 		# 目标更新
 		update_target()
+		# 挨墙时间
+		if not wall_bodys.is_empty():
+			on_wall_time += delta
 
 
 func _process(_delta: float) -> void:
@@ -140,12 +162,15 @@ func trigger_ring(radius: float = 200.0, duration: float = 0.5, times: int = 1, 
 func check_flip() -> void:
 	if target:
 		var flip: bool = target.global_position.x < self.global_position.x
-		_rpc_flip.rpc(flip)
+		visual.scale = Vector2(-1.0, 1.0) if flip else Vector2.ONE
 
 
 @rpc("authority", "call_local", "unreliable")
-func _rpc_flip(flip: bool) -> void:
-	visual.scale = Vector2(-1.0, 1.0) if flip else Vector2.ONE
+func rpc_play_move_tween(enable: bool) -> void:
+	if enable:
+		animation_tween.play()
+	else:
+		animation_tween.stop()
 
 
 @rpc("authority", "call_local", "reliable")
@@ -163,6 +188,14 @@ func rpc_play_shake_animation(intensity: float = 5.0, steps: int = 10, step_time
 	shake_tween.tween_property(animation, "position", origin_pos, step_time)
 
 
+@rpc("authority", "call_local", "reliable")
+func rpc_dodge_shield(time: float) -> void:
+	var dodge_shield: DodgeShield = dodge_shield_scene.instantiate()
+	dodge_shield.init_max_time = time
+	dodge_shield.position = visual.position
+	add_child(dodge_shield)
+
+
 func open_shield() -> void:
 	shield = shield_scene.instantiate()
 	shield.name = "Shield"
@@ -172,6 +205,32 @@ func open_shield() -> void:
 
 func close_shield() -> void:
 	shield.queue_free()
+
+
+func shoot_attack(count: int, aim_vector: Vector2) -> void:
+	if not multiplayer.is_server():
+		return
+	var base_angle: float = aim_vector.angle()
+	var spawn_perp: Vector2 = Vector2(-sin(base_angle), cos(base_angle))
+	var rand_speed: float = randf_range(EnemyBullet.MIN_SPEED, EnemyBullet.MAX_SPEED)
+	var rand_style: int = randi_range(0, 1)
+	for i in range(count):
+		var angle_offset: float = 0.0
+		var pos_offset: float = 0.0
+		if count > 1:
+			var t := i - (count - 1) * 0.5
+			angle_offset = t * BULLET_SPREAD_ANGLE / (count - 1)
+			pos_offset = t * BULLET_SPAWN_OFFSET
+
+		var bullet := bullet_scene.instantiate() as EnemyBullet
+		var parent: Node2D = get_parent()
+		bullet.position = parent.to_local(global_position + spawn_perp * pos_offset)
+		bullet.direction = Vector2.RIGHT.rotated(base_angle + angle_offset)
+		bullet.rotation = base_angle + angle_offset
+		bullet.attacker = self
+		bullet.speed = rand_speed
+		bullet.style_index = rand_style
+		parent.add_child(bullet, true)
 
 
 func jump_hurt_players(radius: float = 120.0, max_damage: float = 10.0) -> void:
@@ -229,6 +288,7 @@ func push_players(max_force: float, radius: float) -> void:
 func healing(ratio: float) -> void:
 	if not multiplayer.is_server():
 		return
+	# TODO 回血特效展示
 	ratio = clampf(ratio, 0.0, 1.0)
 	health_component.healing(health_component.max_health * ratio)
 
@@ -287,13 +347,24 @@ func _on_health_changed(max_value: float, current_value: float, damage: float, a
 	# 阶段血量阈值检查
 	var hp_ratio = current_value / max_value
 	if hp_ratio <= 0.3 and phase != Phase.FEAR:
-		# TODO 进入害怕阶段, 无回复
 		KLogger.debug("boss hp ratio: %s, phase to: %s" % [hp_ratio, "FEAR"])
-		# state_chart.send_event(&"to_fear_phase")
+		phase = Phase.FEAR
+		state_chart.send_event(&"to_idle")
 	elif hp_ratio <= 0.6 and phase == Phase.NORMAL:
-		# TODO 进入愤怒阶段, 正式进入愤怒状态后回复20%血量
 		KLogger.debug("boss hp ratio: %s, phase to: %s" % [hp_ratio, "RAGE"])
-		state_chart.send_event(&"to_rage_trans_phase")
+		state_chart.send_event(&"to_rage_translation")
+
+
+func _on_small_check_area_body_entered(body: Node2D) -> void:
+	if body.is_in_group("wall"):
+		wall_bodys.append(body)
+
+
+func _on_small_check_area_body_exited(body: Node2D) -> void:
+	if body.is_in_group("wall"):
+		wall_bodys.erase(body)
+		if wall_bodys.is_empty():
+			on_wall_time = 0
 
 
 # 1. 受到伤害时更新仇恨 (由伤害来源传入 attacker)

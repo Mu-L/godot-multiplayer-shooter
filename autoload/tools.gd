@@ -5,7 +5,9 @@ extends Node
 const ENEMY_BONUS_RATE: float = 0.05
 
 ## player所在的collision layer层级
-const PLAYER_COLLISION_LAYER: int = 1 << 3;
+const PLAYER_COLLISION_LAYER: int = 1 << 3
+
+var world_refer_rect: ReferenceRect
 
 
 func _ready() -> void:
@@ -38,3 +40,7 @@ func get_game_peers() -> Array:
 
 func get_game_peers_count() -> int:
 	return get_game_peers().size()
+
+
+func get_pos_far_away_players() -> Vector2:
+	return Vector2.ZERO

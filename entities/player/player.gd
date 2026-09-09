@@ -162,12 +162,13 @@ func _try_to_attack() -> void:
 			pos_offset = t * BULLET_SPAWN_OFFSET
 
 		var bullet := BULLET.instantiate() as Bullet
-		bullet.global_position = attack_point.global_position + spawn_perp * pos_offset
+		var parent: Node2D = get_parent()
+		bullet.position = parent.to_local(attack_point.global_position + spawn_perp * pos_offset)
 		bullet.direction = Vector2.RIGHT.rotated(base_angle + angle_offset)
 		bullet.rotation = base_angle + angle_offset
 		bullet.damage = bullet_damage
 		bullet.attacker = self
-		get_parent().add_child(bullet, true)
+		parent.add_child(bullet, true)
 
 	_play_attack_effect.rpc()
 
@@ -179,9 +180,9 @@ func _play_attack_effect() -> void:
 	weapon_animation_player.play("attack")
 	audio_stream_player.play()
 	var effect: Node2D = MUZZLE_FLASH_EFFECT.instantiate()
-	effect.global_position = attack_point.global_position
-	effect.global_rotation = attack_point.global_rotation
-	get_parent().add_child(effect)
+	var parent: Node2D = get_parent()
+	effect.position = parent.to_local(attack_point.global_position)
+	parent.add_child(effect)
 	if player_input_multiplayer_synchronizer_component.is_multiplayer_authority():
 		GameCamera.shake()
 

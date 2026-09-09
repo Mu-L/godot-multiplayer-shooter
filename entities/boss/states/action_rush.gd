@@ -24,12 +24,14 @@ func _ready() -> void:
 
 func _on_state_entered() -> void:
 	KLogger.info("action state: 'rush' entered")
+	boss.is_check_flip = false
 	rushing = false
 	rushing_time = 0.0
 	target_fresh = 0.0
 	boss.speed_offset = -boss.current_speed
 	if boss.target:
 		boss.move_direction = boss.global_position.direction_to(boss.target.global_position)
+		boss.check_flip()
 
 	KLogger.debug("start rush charge")
 	boss.rpc_play_animation.rpc(&"normal_rush_charge" if boss.phase == boss.Phase.NORMAL else &"rage_rush_charge")
@@ -42,6 +44,7 @@ func _on_state_exited() -> void:
 		charge_tween.kill()
 	rush_hit_collision_shape.disabled = true
 	boss.speed_offset = 0.0
+	boss.is_check_flip = true
 
 
 func _on_state_processing(_delta: float) -> void:
@@ -50,12 +53,6 @@ func _on_state_processing(_delta: float) -> void:
 
 func _on_state_physics_processing(delta: float) -> void:
 	if not boss.rush_timer.is_stopped():
-		return
-	if _chart.get_expression_property("is_dead"):
-		if charge_tween and charge_tween.is_valid():
-			charge_tween.kill()
-		rush_hit_collision_shape.disabled = true
-		boss.speed_offset = 0.0
 		return
 	if not rushing and not charge_tween.is_running():
 		rushing = true
@@ -77,3 +74,4 @@ func _on_state_physics_processing(delta: float) -> void:
 			target_fresh = 0.0
 			if boss.target:
 				boss.move_direction = boss.global_position.direction_to(boss.target.global_position)
+				boss.check_flip()

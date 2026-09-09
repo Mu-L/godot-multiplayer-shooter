@@ -55,10 +55,6 @@ func _rage_idle_decide() -> void:
 
 
 func _fear_idle_decide() -> void:
-	if not boss.small_area_players.is_empty() and boss.rush_timer.is_stopped():
-		# 近身危机时冲撞逃跑
-		boss.state_chart.send_event(&"to_rush")
-		return
 	if boss.shoot_timer.is_stopped():
 		boss.state_chart.send_event(&"to_shoot")
 		return

@@ -1,12 +1,18 @@
 extends Node
 
+@warning_ignore_start("unused_signal")
 signal enemy_died
 signal enemy_died_bonus(pos: Vector2)
 signal local_player_health_changed(rate)
 signal local_player_defense_changed(percent)
 signal player_look_changed(peer_id: int, player_look_index: int)
+signal boss_spawned
+signal boss_died
+signal boss_health_changed(cur: float, full: float)
+signal game_ended
  ## 本地玩家的被动道具持有数发生变化 (客户端缓存同步后触发)
 signal local_player_passives_changed(passives: Dictionary)
+@warning_ignore_restore("unused_signal")
 
 
 func emit_enemy_died() -> void:

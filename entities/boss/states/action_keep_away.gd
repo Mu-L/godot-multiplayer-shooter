@@ -62,10 +62,6 @@ func _on_state_physics_processing(_delta: float) -> void:
 				boss.state_chart.send_event(&"to_idle")
 				return
 		boss.Phase.FEAR:
-			# 检测是不是需要冲刺逃跑
-			if not boss.big_area_players.is_empty() and boss.rush_timer.is_stopped() and boss.on_wall_time > ON_WALL_RUSH_TIME:
-				boss.state_chart.send_event(&"to_rush")
-				return
 			# 检测shoot cd
 			if boss.shoot_timer.is_stopped():
 				boss.state_chart.send_event(&"to_idle")

@@ -23,6 +23,7 @@ func _on_state_entered() -> void:
 	boss.is_check_flip = false
 	await boss.animation_player.animation_finished
 	await get_tree().create_timer(2.0).timeout
+	GameEvents.boss_died.emit()
 	GameEvents.emit_enemy_died()
 	boss.queue_free()
 

@@ -2,13 +2,13 @@
 extends AtomicState
 
 const FEAR_DODGE_SHIELD_RATIO: float = 0.7
-const DODGE_SHIELD_TIME: float = 0.5
+const DODGE_SHIELD_TIME: float = 1.0
 
 @export var boss: Boss
 @export var dodge_shield: PackedScene
 
 
-var dodge_speed_ratio_offset: float = 4.0       # 闪避速度倍率
+var dodge_speed_ratio_offset: float = 5.0       # 闪避速度倍率
 var dodge_duration: float = 0.35     # 闪避持续时间 (秒)
 var dodge_speed: float
 

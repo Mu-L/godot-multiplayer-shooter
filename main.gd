@@ -30,6 +30,7 @@ var is_game_over: bool = false
 @onready var upgrade_component: UpgradeComponent = %UpgradeComponent
 @onready var player_stats_panel: Node = %PlayerStatsPanel
 @onready var reference_rect: ReferenceRect = %ReferenceRect
+@onready var boss_hp: BossHp = %BossHp
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -108,6 +109,7 @@ func _create_player(player_data: Dictionary) -> void:
 func _end_game() -> void:
 	if not Tools.is_headless_server():
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	GameEvents.game_ended.emit()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://ui/menu/main_menu.tscn")
 

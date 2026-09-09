@@ -58,6 +58,10 @@ func _fear_idle_decide() -> void:
 	if boss.shoot_timer.is_stopped():
 		boss.state_chart.send_event(&"to_shoot")
 		return
+	# 检测是不是能够冲刺
+	if boss.rush_timer.is_stopped():
+		boss.state_chart.send_event(&"to_rush")
+		return
 	boss.state_chart.send_event(&"to_keep_away")
 
 

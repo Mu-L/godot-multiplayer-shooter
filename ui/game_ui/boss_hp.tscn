@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://d373jbemyw1nw"]
+
+[ext_resource type="Texture2D" uid="uid://l34bq07gpblg" path="res://assets/health_bar1.png" id="1_fuumb"]
+[ext_resource type="Script" uid="uid://xpn3d41mfdkt" path="res://ui/game_ui/boss_hp.gd" id="1_yhgdm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wwdcr"]
+atlas = ExtResource("1_fuumb")
+region = Rect2(1, 7, 29, 17)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_whuv2"]
+atlas = ExtResource("1_fuumb")
+region = Rect2(34, 7, 29, 17)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_yhgdm"]
+properties/0/path = NodePath(".:value")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:visible")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+
+[node name="BossHp" type="MarginContainer" unique_id=1238794802 node_paths=PackedStringArray("progress_bar")]
+anchors_preset = -1
+anchor_left = 0.25
+anchor_top = 0.1
+anchor_right = 0.75
+anchor_bottom = 0.15
+grow_horizontal = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_yhgdm")
+progress_bar = NodePath("TextureProgressBar")
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="." unique_id=1000448747]
+layout_mode = 2
+mouse_filter = 2
+max_value = 1.0
+step = 0.01
+nine_patch_stretch = true
+stretch_margin_left = 5
+stretch_margin_top = 5
+stretch_margin_right = 5
+stretch_margin_bottom = 5
+texture_under = SubResource("AtlasTexture_wwdcr")
+texture_progress = SubResource("AtlasTexture_whuv2")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1203672501]
+replication_config = SubResource("SceneReplicationConfig_yhgdm")

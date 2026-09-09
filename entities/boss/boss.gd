@@ -102,6 +102,7 @@ func _ready() -> void:
 	animation_tween.tween_property(animation, "scale", Vector2(1.1, 0.9), 0.5)
 	animation_tween.tween_property(animation, "scale", Vector2(0.9, 1.1), 0.5)
 	animation_tween.stop()
+	GameEvents.boss_spawned.emit()
 	if multiplayer.is_server():
 		normal_attack_timer.wait_time = normal_attack_cooldown
 		rush_timer.wait_time = rush_cooldown
@@ -110,6 +111,9 @@ func _ready() -> void:
 		health_component.max_health = 300.0 + Tools.get_game_peers_count() * 300.0
 		health_component.reset()
 		health_component.health_changed_with_attacker.connect(_on_health_changed)
+		health_component.health_changed.connect(func(full: float, cur: float) -> void:
+			GameEvents.boss_health_changed.emit(cur, full)
+		)
 
 
 func _physics_process(delta: float) -> void:

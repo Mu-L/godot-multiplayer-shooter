@@ -3,6 +3,7 @@ extends AtomicState
 
 @export var boss: Boss
 
+var attack: BossNormalAttack
 
 func _ready() -> void:
 	super()
@@ -15,7 +16,7 @@ func _ready() -> void:
 
 func _on_state_entered() -> void:
 	KLogger.info("action state: 'attack' entered")
-	var attack: BossNormalAttack = boss.attack_scene.instantiate()
+	attack = boss.attack_scene.instantiate()
 	attack.boss = boss
 	attack.attack_ended.connect(func() -> void:
 		KLogger.debug("attack ended")
@@ -30,6 +31,8 @@ func _on_state_exited() -> void:
 	KLogger.info("action state: 'attack' exited")
 	boss.speed_offset = 0
 	boss.normal_attack_timer.start()
+	if attack:
+		attack.queue_free()
 
 
 func _on_state_processing(_delta: float) -> void:

@@ -13,8 +13,8 @@ enum Phase {
 }
 
 const NORMAL_SPEED: float = 150.0
-const RAGE_SPEED: float = 220.0
-const FEAR_SPEED: float = 180.0
+const RAGE_SPEED: float = 180.0
+const FEAR_SPEED: float = 200.0
 
 const THREAT_SWITCH_THRESHOLD: float = 1.2 # 新目标仇恨必须高出 20% 才切目标
 const PROXIMITY_THREAT_WEIGHT: float = 500.0
@@ -67,10 +67,11 @@ var current_speed: float = NORMAL_SPEED
 var speed_offset: float = 0.0
 
 var move_direction: Vector2 = Vector2.ZERO
-var rush_direction: Vector2 = Vector2.ZERO
 
 var target: Node2D
 var is_check_flip: bool = true
+
+var shield: Node2D
 
 # 仇恨表: Dictionary[Node2D, float]
 var threat_table: Dictionary = {}
@@ -88,6 +89,7 @@ func _ready() -> void:
 		shoot_timer.wait_time = shoot_cooldown
 		jump_timer.wait_time = jump_cooldown
 		health_component.max_health = 300.0 + Tools.get_game_peers_count() * 300.0
+		health_component.reset()
 		health_component.health_changed_with_attacker.connect(_on_health_changed)
 
 
@@ -131,7 +133,7 @@ func trigger_ring(radius: float = 200.0, duration: float = 0.5, times: int = 1, 
 	ring.duration = duration
 	ring.trigger_times = times
 	ring.trigger_interval = interval
-	ring.position = Vector2(0, -20)
+	ring.position = visual.position
 	add_child(ring)
 
 
@@ -156,33 +158,50 @@ func rpc_play_shake_animation(intensity: float = 5.0, steps: int = 10, step_time
 	var shake_tween = create_tween()
 	var origin_pos: Vector2 = animation.position
 	for i in range(steps):
-		var target_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		var target_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity) * 0.5)
 		shake_tween.tween_property(animation, "position", origin_pos + target_offset, step_time)
 	shake_tween.tween_property(animation, "position", origin_pos, step_time)
 
 
-@rpc("authority", "call_local", "reliable")
-func rpc_close_shield() -> void:
-	close_shield()
-
-
 func open_shield() -> void:
-	var shield: Node2D = shield_scene.instantiate()
+	shield = shield_scene.instantiate()
 	shield.name = "Shield"
-	shield.position = Vector2(0, -20)
+	shield.position = visual.position
 	add_child(shield)
 
 
 func close_shield() -> void:
-	var shield: Node2D = get_node_or_null(^"Shield")
-	if shield:
-		shield.queue_free()
+	shield.queue_free()
+
+
+func jump_hurt_players(radius: float = 120.0, max_damage: float = 10.0) -> void:
+	if not multiplayer.is_server():
+		return
+	var mask: int = Tools.PLAYER_COLLISION_LAYER;
+	var hits: Array[Dictionary] = PhysicsQueryManager.query_circle(
+		get_world_2d(), global_position, radius, mask, false, true
+	)
+	for hit in hits:
+		var player: Player = hit.collider as Player
+		if not player:
+			continue
+		# 计算距离
+		var distance: float = (player.global_position - global_position).length()
+		# 超出范围处理
+		if distance >= radius:
+			continue
+		# 计算归一化距离 ratio: 0.0 (最靠近) -> 1.0 (边缘)
+		var ratio: float = clampf(distance / radius, 0.0, 1.0)
+		# 伤害值平方衰减
+		var damage_factor: float = pow(1.0 - ratio, 2.0)
+		# 应用伤害
+		player.hurtbox_component.take_damage(max_damage * damage_factor, self)
 
 
 func push_players(max_force: float, radius: float) -> void:
 	if multiplayer.is_server():
 		# player 遮罩层
-		var mask: int = 1 << 3;
+		var mask: int = Tools.PLAYER_COLLISION_LAYER;
 		var hits: Array[Dictionary] = PhysicsQueryManager.query_circle(
 			get_world_2d(), global_position, radius, mask, false, true
 		)

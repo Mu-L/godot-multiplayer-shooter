@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://5kj540y8utbj"]
+
+[ext_resource type="Material" uid="uid://cydh74lyt37q" path="res://resources/shader/indicator.tres" id="1_j6spa"]
+[ext_resource type="Script" uid="uid://b053ynfodiubg" path="res://components/range_indicator.gd" id="1_mdys2"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_bhunq"]
+
+[node name="RangeIndicator" type="Node2D" unique_id=595962932 node_paths=PackedStringArray("mesh")]
+script = ExtResource("1_mdys2")
+mesh = NodePath("MeshInstance2D")
+
+[node name="MeshInstance2D" type="MeshInstance2D" parent="." unique_id=1787171862]
+material = ExtResource("1_j6spa")
+mesh = SubResource("QuadMesh_bhunq")

@@ -16,6 +16,7 @@ func _ready() -> void:
 func play_rage_effect() -> void:
 	# 默认所有peer上执行
 	# 打开无敌盾
+	KLogger.debug("boss open shield!!!")
 	boss.open_shield()
 	# 吼叫，光波, 推开所有player (物理效果已经限制仅server执行)
 	var radius: float = 300.0
@@ -23,9 +24,14 @@ func play_rage_effect() -> void:
 	var times: int = 20
 	var interval: float = 0.15
 	var push_force: float = 350.0
+	var total_time: float = duration + (times - 1) * interval
 	boss.trigger_ring(radius, duration, times, interval, push_force)
 	# 镜头抖动
-	GameCamera.strong_shake(duration + (times - 1) * interval)
+	GameCamera.strong_shake(total_time)
+	# 动画结束后关闭护盾
+	await get_tree().create_timer(total_time).timeout
+	KLogger.debug("boss close shield!!!")
+	boss.close_shield()
 	# TODO 音效
 
 
@@ -49,7 +55,7 @@ func _on_state_entered() -> void:
 	# 动画播放完毕转换状态
 	await boss.animation_player.animation_finished
 	# 动画播放完，光波效果还没结束
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(2.0).timeout
 	boss.state_chart.send_event(&"to_rage_phase")
 	boss.state_chart.send_event(&"to_idle")
 
@@ -58,7 +64,6 @@ func _on_state_exited() -> void:
 	KLogger.info("action state: 'rage translation' exited")
 	boss.is_check_flip = true
 	boss.hurtbox_shape.disabled = false
-	boss.rpc_close_shield.rpc()
 
 
 func _on_state_processing(_delta: float) -> void:

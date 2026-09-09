@@ -4,6 +4,9 @@ extends Node
 ## 敌人死亡掉落物品概率
 const ENEMY_BONUS_RATE: float = 0.05
 
+## player所在的collision layer层级
+const PLAYER_COLLISION_LAYER: int = 1 << 3;
+
 
 func _ready() -> void:
 	# set up logger

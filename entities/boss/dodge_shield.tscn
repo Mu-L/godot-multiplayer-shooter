@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://dcwrgju6dsguh"]
+
+[ext_resource type="Script" uid="uid://b6a65v2ypteeu" path="res://entities/boss/dodge_shield.gd" id="1_u6ig1"]
+[ext_resource type="Texture2D" uid="uid://rnho2a824a3g" path="res://assets/defence_up.tres" id="2_2resm"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_sn0t7"]
+radius = 35.0
+
+[node name="DodgeShield" type="Area2D" unique_id=1359307645 node_paths=PackedStringArray("collision_shape", "sprite")]
+script = ExtResource("1_u6ig1")
+collision_shape = NodePath("CollisionShape2D")
+sprite = NodePath("Sprite2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=810568661]
+shape = SubResource("CircleShape2D_sn0t7")
+debug_color = Color(0.9414034, 0.20233113, 0.35269162, 0.41960785)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1279599455]
+modulate = Color(0.7959813, 0.58803535, 0.25286394, 0.5176471)
+scale = Vector2(3, 3)
+texture = ExtResource("2_2resm")

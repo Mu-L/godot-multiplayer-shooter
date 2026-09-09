@@ -24,10 +24,10 @@ func _on_state_entered() -> void:
 	KLogger.info("action state: 'spawn' entered")
 	original_shadow_scale = boss.shadow.scale
 	original_shadow_modulate = boss.shadow.self_modulate
-	original_visual_pos = boss.visual.position
+	original_visual_pos = boss.animation.position
 	boss.shadow.scale = original_shadow_scale * 0.2
 	boss.shadow.self_modulate = Color.TRANSPARENT
-	boss.visual.position.y = MAX_HEIGHT
+	boss.animation.position.y = MAX_HEIGHT
 	# 禁用碰撞, 禁用伤害
 	boss.collision_shape.disabled = true
 	boss.hurtbox_shape.disabled = true
@@ -36,7 +36,7 @@ func _on_state_entered() -> void:
 	var tween: Tween = create_tween().set_parallel()
 	tween.tween_property(boss.shadow, "scale", original_shadow_scale, ANIM_TIME)
 	tween.tween_property(boss.shadow, "self_modulate", original_shadow_modulate, ANIM_TIME)
-	tween.tween_property(boss.visual, "position", original_visual_pos, ANIM_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(boss.animation, "position", original_visual_pos, ANIM_TIME).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	await tween.finished
 	KLogger.info("action spawn tween finished!!")
 	boss.animation_player.play(&"jump_landing")

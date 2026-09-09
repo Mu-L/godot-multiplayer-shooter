@@ -42,7 +42,7 @@ func _on_state_physics_processing(_delta: float) -> void:
 	cur_time += _delta
 	# 尝试靠近目标
 	if boss.target:
-		if boss.global_position.distance_squared_to(boss.target.global_position) > 9.0:
+		if boss.global_position.distance_squared_to(boss.target.global_position) > 64.0:
 			boss.move_direction = boss.global_position.direction_to(boss.target.global_position)
 		else:
 			boss.move_direction = Vector2.ZERO

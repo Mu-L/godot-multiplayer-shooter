@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://cydh74lyt37q"]
+
+[ext_resource type="Shader" uid="uid://dwihia51d0y03" path="res://resources/shader/indicator.gdshader" id="1_amnhr"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_amnhr")
+shader_parameter/shape_type = 0
+shader_parameter/fill_mode = 0
+shader_parameter/bg_color = Color(1, 0.3, 0.3, 0.4)
+shader_parameter/fill_color = Color(1, 0.12, 0.12, 0.4)
+shader_parameter/progress = 0.0
+shader_parameter/sector_angle = 90.0
+shader_parameter/edge_feather = 0.015
+shader_parameter/dynamic_fill_gradient = true
+shader_parameter/fill_center_alpha_ratio = 0.05

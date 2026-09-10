@@ -11,7 +11,7 @@ enum {
 
 @export var boss: Boss
 
-var init_damage: float = 3.0
+var init_damage: float = 2.0
 var state: int = LOOK
 
 

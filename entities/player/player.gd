@@ -13,7 +13,7 @@ const REVIVE_HEALTH: int = 1
 const BASE_MOVE_SPEED: float = 100
 const BASE_FIRE_RATE: float = 0.5
 const BASE_BULLET_DAMAGE: int = 1
-const BASE_HEALTH_LIMIT: float = 5
+const BASE_HEALTH_LIMIT: float = 10
 const BULLET_SPREAD_ANGLE: float = deg_to_rad(30.0)
 const BULLET_SPAWN_OFFSET: float = 4.0
 
@@ -68,6 +68,8 @@ func _ready() -> void:
 	else:
 		display_name_label.text = input_display_name
 	if is_multiplayer_authority():
+		health_component.max_health = BASE_HEALTH_LIMIT
+		health_component.reset()
 		health_component.health_depleted.connect(_on_health_depleted)
 		health_component.health_changed.connect(_on_health_changed)
 		hurtbox_component.hit.connect(_on_hit)

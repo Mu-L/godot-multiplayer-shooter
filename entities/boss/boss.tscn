@@ -29,7 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://72y5fl1yb5i" path="res://entities/boss/shield.tscn" id="29_8iduc"]
 [ext_resource type="PackedScene" uid="uid://dcwrgju6dsguh" path="res://entities/boss/dodge_shield.tscn" id="32_hrrdv"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_aslry"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i7vet"]
 resource_local_to_scene = true
 shader = ExtResource("3_c5o42")
 shader_parameter/input_color = Color(1, 1, 1, 1)
@@ -375,7 +375,7 @@ position = Vector2(0, -20)
 [node name="Animation" type="Node2D" parent="Visual" unique_id=523084584]
 
 [node name="FlashSpriteComponent" parent="Visual/Animation" unique_id=1374404885 instance=ExtResource("2_820jm")]
-material = SubResource("ShaderMaterial_aslry")
+material = SubResource("ShaderMaterial_i7vet")
 position = Vector2(-32, 0)
 texture = ExtResource("4_c5o42")
 hframes = 4
@@ -746,7 +746,7 @@ debug_color = Color(0.7699836, 0.44548792, 1.92523e-07, 0.41960785)
 unique_name_in_owner = true
 position = Vector2(0, -20)
 collision_layer = 4
-damage = 5.0
+damage = 3.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RushHitboxComponent" unique_id=52585088]
 shape = SubResource("CircleShape2D_a4p48")

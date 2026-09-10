@@ -2,6 +2,7 @@
 extends AtomicState
 
 const MAX_CHASE_TIME: float = 5.0
+const MIN_CHASE_TIME: float = 0.5
 
 @export var boss: Boss
 
@@ -47,10 +48,13 @@ func _on_state_physics_processing(_delta: float) -> void:
 		else:
 			boss.move_direction = Vector2.ZERO
 		# 进入近身范围或 CD 转好时交还给 Idle 重新仲裁
+		# 有一些抖动, 可能Player在边缘位置, idle 与 chase 疯狂切换
+		# 进入chase状态至少保持一小段时间, 比如0.5秒?
 		if (not boss.big_area_players.is_empty() and boss.rush_timer.is_stopped()) \
 			or (not boss.small_area_players.is_empty() and boss.normal_attack_timer.is_stopped()):
-				boss.state_chart.send_event(&"to_idle")
-				return
+				if cur_time > MIN_CHASE_TIME:
+					boss.state_chart.send_event(&"to_idle")
+					return
 		# 超时检测
 		if cur_time > MAX_CHASE_TIME:
 			KLogger.info("chase timeout!!!")

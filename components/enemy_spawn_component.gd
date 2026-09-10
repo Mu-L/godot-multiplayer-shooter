@@ -19,7 +19,7 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [4] 预压 - 石刺入场, 前半段高峰
 	{ "slime": 0.5, "poppy": 0.4, "stone_poke": 0.1, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [5] 奖励关 - 无敌人, 拾取物
-	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 4, "peer_count": 2 },
+	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 3, "peer_count": 3 },
 	# [6] 二阶启动 - 后半段起手
 	{ "slime": 0.4, "poppy": 0.40, "stone_poke": 0.2, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [7] 气球暴 - 密集爆炸
@@ -138,10 +138,9 @@ func _start_boss_round(_config: Dictionary) -> void:
 	round_timer.stop()
 	spawn_timer.stop()
 	var boss: Boss = BOSS_SCENE.instantiate()
-	boss.position = get_viewport().get_visible_rect().size * 0.5
+	boss.position = spawn_rect.global_position + spawn_rect.size * 0.5
 	spawn_root.add_child(boss, true)
 	enemy_count += 1
-	# TODO 属于boss回合的专属ui显示, 血条显示
 	synchronize()
 	print("[EnemySpawn] Boss Round %s started" % round_count)
 

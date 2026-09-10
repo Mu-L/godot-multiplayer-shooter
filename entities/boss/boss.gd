@@ -175,6 +175,7 @@ func rpc_play_move_tween(enable: bool) -> void:
 		animation_tween.play()
 	else:
 		animation_tween.stop()
+		animation.scale = Vector2.ONE
 
 
 @rpc("authority", "call_local", "reliable")

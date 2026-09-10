@@ -19,7 +19,7 @@ const ROUND_CONFIGS: Array[Dictionary] = [
 	# [4] 预压 - 石刺入场, 前半段高峰
 	{ "slime": 0.5, "poppy": 0.4, "stone_poke": 0.1, "round_time": 25.0, "hp_scale": 1.0, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 2, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [5] 奖励关 - 无敌人, 拾取物
-	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 3, "peer_count": 3 },
+	{ "is_bonus": true, "round_time": 15.0, "pickup_count": 5, "peer_count": 3 },
 	# [6] 二阶启动 - 后半段起手
 	{ "slime": 0.4, "poppy": 0.40, "stone_poke": 0.2, "round_time": 25.0, "hp_scale": 1.1, "dmg_scale": 1.0, "spawn_interval": Vector2(2.5, 3.5), "group_min": 3, "group_max": 5, "is_bonus": false, "is_boss": false },
 	# [7] 气球暴 - 密集爆炸
